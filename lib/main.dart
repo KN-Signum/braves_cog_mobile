@@ -3,8 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:braves_cog/core/theme/app_theme.dart';
 import 'package:braves_cog/core/providers/theme_provider.dart';
 import 'package:braves_cog/features/splash/splash_screen.dart';
+import 'package:research_package/research_package.dart';
+import 'package:cognition_package/cognition_package.dart';
 
-void main() {
+Future main() async {
+  CognitionPackage.ensureInitialized();
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -21,6 +24,28 @@ class MyApp extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
+      supportedLocales: const [
+        Locale('en'),
+        Locale('da'),
+        Locale('fr'),
+        Locale('pt'),
+      ],
+      localizationsDelegates: [
+        RPLocalizations.delegate,
+        CPLocalizations.delegate,
+      ],
+      // Returns a locale which will be used by the app
+      localeResolutionCallback: (locale, supportedLocales) {
+        // Check if the current device locale is supported
+        for (var supportedLocale in supportedLocales) {
+          if (supportedLocale.languageCode == locale!.languageCode) {
+            return supportedLocale;
+          }
+        }
+        // if the locale of the device is not supported, use the first one
+        // from the list (English, in this case).
+        return supportedLocales.first;
+      },
       home: const SplashScreen(),
     );
   }

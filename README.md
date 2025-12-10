@@ -1,16 +1,17 @@
 # Braves Cog 
 
-A modern Flutter application built with **Riverpod** state management, featuring authentication, theme management, and a multi-page navigation structure.
+A Flutter application built with **Riverpod** state management, featuring authentication, theme management, and a multi-page navigation structure.
 
-## 📱 Features
+## Features
 
-- ✅ **Authentication System** - Login/Register with mock service
-- ✅ **Theme Management** - Light/Dark theme with persistent storage
-- ✅ **Multi-Page Navigation** - 5 main sections with bottom navigation
-- ✅ **Riverpod State Management** - Clean, scalable architecture
-- ✅ **Responsive UI** - Material 3 design with Polish localization
+- **Authentication System** - Login/Register
+- **Theme Management** - Different themes for specific groups of users for accessablity
+- **Multi-Page Navigation** - 5 main sections with bottom navigation (Home, Lifestyle module, Cognitive games, Surveys and Profile settings)
+- **Cognitive games** - used carp cognition package: https://pub.dev/packages/cognition_package
+- **Riverpod State Management** - Clean, scalable architecture
+- **Responsive UI** - Material 3 design
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -20,10 +21,7 @@ A modern Flutter application built with **Riverpod** state management, featuring
 
 ### Installation
 
-1. **Clone the repository** (if applicable):
-   ```bash
-   cd /Users/adamgruda/Projects/braves_cog
-   ```
+1. **Clone the repository**:
 
 2. **Install dependencies**:
    ```bash
@@ -88,7 +86,7 @@ assets/
     └── (custom icons)
 ```
 
-## 🏗️ Architecture
+## Architecture
 
 ### State Management - Riverpod
 
@@ -114,35 +112,36 @@ The app uses **Riverpod** for state management with the following providers:
 
 ### Features
 
-#### 🔐 Authentication Flow
+#### Authentication Flow
 1. **Splash Screen** → Checks authentication status
 2. **Auth Screen** → Login/Register with validation
 3. **Main Screen** → Redirects after successful login
 
-#### 🎨 Theme System
+#### Theme System
 - Material 3 design
-- Light and Dark themes
+- Light and Dark themes (for now)
 - Persistent storage with SharedPreferences
 - Toggle from Profile screen
 
 #### 🗂️ Navigation
 5 main sections accessible via bottom navigation:
 - **Menu** - main dashboard
-- **Zdrowie** - Health tracking
-- **Testy** - Tests and assessments
-- **Gry** - Games and activities
-- **Profil** - User profile and settings
+- **Health** - Health tracking
+- **Tests** - Tests and assessments
+- **Games** - Games and activities
+- **Profile** - User profile and settings
 
 ## 📦 Dependencies
 
 ### Production
 ```yaml
 dependencies:
-  flutter_riverpod: ^2.5.1      # State management
-  riverpod_annotation: ^2.3.5   # Riverpod annotations
+  flutter_riverpod: ^2.5.1       # State management
+  riverpod_annotation: ^2.3.5    # Riverpod annotations
   http: ^1.2.0                   # HTTP client
   shared_preferences: ^2.2.2     # Local storage
   flutter_svg: ^2.0.10           # SVG support (optional)
+  cognition_package: ^1.7.0      # Ready cognitive games
 ```
 
 ### Development
@@ -181,77 +180,3 @@ flutter build appbundle --release
 # iOS
 flutter build ios --release
 ```
-
-### Testing
-
-```bash
-# Run all tests
-flutter test
-
-# Run with coverage
-flutter test --coverage
-```
-
-### Code Generation
-
-If you use Riverpod code generation (future enhancement):
-```bash
-flutter pub run build_runner build --delete-conflicting-outputs
-```
-
-## 🎨 Customization
-
-### Changing Theme Colors
-
-Edit `lib/core/theme/app_theme.dart`:
-```dart
-static const Color primaryColor = Color(0xFF1976D2);  // Change this
-static const Color secondaryColor = Color(0xFF424242); // And this
-```
-
-### Adding New Pages
-
-1. Create new screen in `lib/features/your_feature/`
-2. Add to `MainScreen._pages` list
-3. Add navigation item to `MainScreen._navItems`
-4. Update `bottomNavIndexProvider` if needed
-
-### Replacing Mock Auth with Real API
-
-1. Update `lib/core/services/mock_auth_service.dart` with real API calls
-2. Or create new service: `lib/core/services/auth_service.dart`
-3. Update provider in `lib/core/providers/auth_provider.dart`
-
-## 🐛 Troubleshooting
-
-### Logo Not Showing
-- Ensure PNG file exists: `assets/images/braves_logo.png`
-- Run: `flutter clean && flutter pub get`
-- Do a **full restart** (not hot reload)
-- See: `TROUBLESHOOTING_LOGO.md` for details
-
-### Build Errors
-```bash
-flutter clean
-flutter pub get
-flutter pub upgrade
-flutter run
-```
-
-### Theme Not Persisting
-- Check SharedPreferences permissions
-- Clear app data and try again
-
-### Authentication Not Working
-- Using demo credentials? Check `mock_auth_service.dart`
-- Check console for error messages
-
-## 📄 License
-
-
-
-## 👤 Author
-
-Built with ❤️ for Braves Cog
-
-**Last Updated**: November 12, 2025

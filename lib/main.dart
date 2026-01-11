@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:braves_cog/core/theme/app_theme.dart';
 import 'package:braves_cog/core/providers/theme_provider.dart';
-import 'package:braves_cog/features/splash/splash_screen.dart';
+import 'package:braves_cog/features/main/main_screen_new.dart';
 import 'package:research_package/research_package.dart';
 import 'package:cognition_package/cognition_package.dart';
 
@@ -46,7 +46,7 @@ class MyApp extends ConsumerWidget {
         // from the list (English, in this case).
         return supportedLocales.first;
       },
-      home: const SplashScreen(),
+      home: const MainScreenNew(),
     );
   }
 }

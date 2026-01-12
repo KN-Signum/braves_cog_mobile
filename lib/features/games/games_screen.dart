@@ -96,6 +96,15 @@ class GamesScreen extends StatelessWidget {
             onTap: () => _launchCorsiBlockTest(context),
           ),
 
+          // Reaction Time (NOWA GRA)
+          _GameCard(
+            title: 'Test Czasu Reakcji',
+            description: 'Szybkość reakcji na bodźce wzrokowe',
+            icon: Icons.timer,
+            color: Colors.amber,
+            onTap: () => _launchReactionTimeTest(context),
+          ),
+
           const SizedBox(height: 16),
           // Info card
           Card(
@@ -150,6 +159,10 @@ class GamesScreen extends StatelessWidget {
 
   void _launchCorsiBlockTest(BuildContext context) {
     _launchSingleTest(context, corsiBlockTapping, 'Test Bloków Corsi');
+  }
+
+  void _launchReactionTimeTest(BuildContext context) {
+    _launchSingleTest(context, reactionTime, 'Test Czasu Reakcji');
   }
 
   void _launchSingleTest(
@@ -211,6 +224,9 @@ class GamesScreen extends StatelessWidget {
         return 'Zapamiętaj kolejność w jakiej zaświecają się bloki, '
             'a następnie powtórz tę sekwencję. '
             'Sekwencje stają się coraz dłuższe.';
+      case 'reaction_time_step':
+        return 'Gdy zobaczysz pojawiający się bodziec, stuknij ekran tak szybko jak możesz. '
+            'Test mierzy Twój czas reakcji. Bądź gotowy i reaguj natychmiast!';
       default:
         return 'Postępuj zgodnie z instrukcjami na ekranie.';
     }

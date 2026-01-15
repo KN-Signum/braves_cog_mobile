@@ -1,14 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:research_package/research_package.dart';
 import '../../cognition_config.dart';
+import 'dart:convert';
 
 class GamesScreen extends StatelessWidget {
-  const GamesScreen({super.key});
+  final VoidCallback? onBack;
+
+  const GamesScreen({super.key, this.onBack});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Gry Kognitywne'), centerTitle: true),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.chevron_left),
+          onPressed: () {
+            if (onBack != null) {
+              onBack?.call();
+            } else {
+              Navigator.pop(context);
+            }
+          },
+        ),
+        title: const Text('Gry Kognitywne'),
+        centerTitle: true,
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -96,7 +112,7 @@ class GamesScreen extends StatelessWidget {
             onTap: () => _launchCorsiBlockTest(context),
           ),
 
-          // Reaction Time (NOWA GRA)
+          // Reaction Time
           _GameCard(
             title: 'Test Czasu Reakcji',
             description: 'Szybkość reakcji na bodźce wzrokowe',
@@ -106,28 +122,6 @@ class GamesScreen extends StatelessWidget {
           ),
 
           const SizedBox(height: 16),
-          // Info card
-          Card(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.info_outline,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Regularne ćwiczenia mogą poprawić funkcje poznawcze',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -232,14 +226,21 @@ class GamesScreen extends StatelessWidget {
     }
   }
 
-  void _showResults(BuildContext context, RPTaskResult result) {
-    // RPUITask already navigated back, so we're already on the games screen
-    // Process and display results
-    print('Test completed: ${result.identifier}');
-    print('Results: ${result.results}');
+  void printWrapped(String text) {
+    final pattern = RegExp('.{1,800}');
+    pattern.allMatches(text).forEach((match) => print(match.group(0)));
+  }
 
-    // You can extract specific scores from the result
-    // Different tests store results differently
+  void _showResults(BuildContext context, RPTaskResult result) {
+    final Map<String, dynamic> jsonMap = result.toJson();
+
+    const JsonEncoder encoder = JsonEncoder.withIndent('  ');
+    final String jsonString = encoder.convert(jsonMap);
+
+    print("================ RESULT START ================");
+    printWrapped(jsonString);
+    print("================ RESULT END ================");
+
     final activityResults = result.results.values.whereType<RPActivityResult>();
 
     if (activityResults.isNotEmpty) {

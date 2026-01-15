@@ -1,0 +1,1083 @@
+test stroopa:
+flutter: {
+flutter:   "__type": "RPTaskResult",
+flutter:   "identifier": "task_stroop_ffect_step",
+flutter:   "startDate": "2026-01-14T13:48:59.766220",
+flutter:   "endDate": "2026-01-14T13:49:59.244286",
+flutter:   "results": {
+flutter:     "stroop_ffect_step": {
+flutter:       "__type": "RPActivityResult",
+flutter:       "identifier": "stroop_ffect_step",
+flutter:       "endDate": "2026-01-14T13:49:54.148605",
+flutter:       "results": {
+flutter:         "result": {
+flutter:           "mistakes": 7,
+flutter:           "correct taps": 15
+flutter:         }
+flutter:       },
+flutter:       "stepTimes": {
+flutter:         "instruction_started": "2026-01-14T13:49:13.029390",
+flutter:         "instruction_ended": "2026-01-14T13:49:14.145469",
+flutter:         "test_started": "2026-01-14T13:49:14.145627",
+flutter:         "test_ended": "2026-01-14T13:49:54.147459",
+flutter:         "results_shown": "2026-01-14T13:49:54.149265"
+flutter:       },
+flutter:       "interactions": [
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:15.906473",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "No color tapped. The color was BLUE. The word spelled GREEN. Total words passed: 1"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:17.578964",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Correct color tapped. The color was YELLOW and the word spelled RED. Total words passed: 2"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:19.415131",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "No color tapped. The color was BLUE. The word spelled GREEN. Total words passed: 3"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:21.110701",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Correct color tapped. The color was GREEN and the word spelled RED. Total words passed: 4"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:22.926166",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "No color tapped. The color was RED. The word spelled BLUE. Total words passed: 5"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:24.679645",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "No color tapped. The color was YELLOW. The word spelled RED. Total words passed: 6"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:26.294250",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Correct color tapped. The color was RED and the word spelled GREEN. Total words passed: 7"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:27.761671",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Correct color tapped. The color was RED and the word spelled GREEN. Total words passed: 8"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:29.946660",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "No color tapped. The color was YELLOW. The word spelled RED. Total words passed: 9"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:31.610939",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Correct color tapped. The color was YELLOW and the word spelled RED. Total words passed: 10"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:33.457932",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "No color tapped. The color was GREEN. The word spelled BLUE. Total words passed: 11"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:35.212606",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "No color tapped. The color was YELLOW. The word spelled BLUE. Total words passed: 12"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:36.859759",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Correct color tapped. The color was RED and the word spelled YELLOW. Total words passed: 13"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:38.577743",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Correct color tapped. The color was YELLOW and the word spelled GREEN. Total words passed: 14"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:40.244409",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Correct color tapped. The color was BLUE and the word spelled YELLOW. Total words passed: 15"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:42.027921",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Correct color tapped. The color was BLUE and the word spelled RED. Total words passed: 16"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:43.644252",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Correct color tapped. The color was BLUE and the word spelled BLUE. Total words passed: 17"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:45.360772",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Correct color tapped. The color was BLUE and the word spelled BLUE. Total words passed: 18"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:47.343454",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Correct color tapped. The color was GREEN and the word spelled BLUE. Total words passed: 19"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:49.094110",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Correct color tapped. The color was YELLOW and the word spelled BLUE. Total words passed: 20"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:50.894813",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Correct color tapped. The color was RED and the word spelled GREEN. Total words passed: 21"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:49:52.677630",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Correct color tapped. The color was YELLOW and the word spelled GREEN. Total words passed: 22"
+flutter:         }
+flutter:       ]
+flutter:     }
+flutter:   }
+flutter: }
+
+Test łączenia punktów:
+flutter: {
+flutter:   "__type": "RPTaskResult",
+flutter:   "identifier": "task_trail_making_step",
+flutter:   "startDate": "2026-01-14T13:50:27.977640",
+flutter:   "endDate": "2026-01-14T13:51:04.277079",
+flutter:   "results": {
+flutter:     "trail_making_step": {
+flutter:       "__type": "RPActivityResult",
+flutter:       "identifier": "trail_making_step",
+flutter:       "endDate": "2026-01-14T13:51:01.512198",
+flutter:       "results": {
+flutter:         "result": {
+flutter:           "Completion time": 19,
+flutter:           "score": 1
+flutter:         }
+flutter:       },
+flutter:       "stepTimes": {
+flutter:         "instruction_started": "2026-01-14T13:50:35.260549",
+flutter:         "instruction_ended": "2026-01-14T13:50:39.395261",
+flutter:         "test_started": "2026-01-14T13:50:39.395268",
+flutter:         "test_ended": "2026-01-14T13:51:01.511567",
+flutter:         "results_shown": "2026-01-14T13:51:01.511571"
+flutter:       },
+flutter:       "interactions": [
+flutter:         {
+flutter:           "time": "2026-01-14T13:50:41.733389",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Draw path",
+flutter:           "description": "Drew a path which didnt end in A"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:50:42.495473",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Draw path",
+flutter:           "description": "Drew a path which hit 2 instead of the correct, next item A"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:50:44.845120",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Draw path",
+flutter:           "description": "Drew a path which hit 2 instead of the correct, next item A"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:50:46.528045",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Draw path",
+flutter:           "description": "Drew a path which hit 2 instead of the correct, next item A"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:50:48.161447",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Draw path",
+flutter:           "description": "Drew a correct path from 1 to A"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:50:50.028363",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Draw path",
+flutter:           "description": "Drew a correct path from A to 2"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:50:50.778872",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Draw path",
+flutter:           "description": "Drew a correct path from 2 to B"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:50:54.178308",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Draw path",
+flutter:           "description": "Drew a correct path from B to 3"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:50:55.428693",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Draw path",
+flutter:           "description": "Drew a correct path from 3 to C"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:50:56.295175",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Draw path",
+flutter:           "description": "Drew a correct path from C to 4"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:50:57.428573",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Draw path",
+flutter:           "description": "Drew a correct path from 4 to D"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:50:58.061724",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Draw path",
+flutter:           "description": "Drew a path which hit E instead of the correct, next item 5"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:51:00.845082",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Draw path",
+flutter:           "description": "Drew a correct path from D to 5"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T13:51:01.511411",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Draw path",
+flutter:           "description": "Drew a correct path from 5 to E"
+flutter:         }
+flutter:       ]
+flutter:     }
+flutter:   }
+flutter: }
+
+Test Flankera:
+flutter: {
+flutter:   "__type": "RPTaskResult",
+flutter:   "identifier": "task_flanker_step",
+flutter:   "startDate": "2026-01-14T13:51:51.498485",
+flutter:   "endDate": "2026-01-14T13:52:13.095192",
+flutter:   "results": {
+flutter:     "flanker_step": {
+flutter:       "__type": "RPActivityResult",
+flutter:       "identifier": "flanker_step",
+flutter:       "endDate": "2026-01-14T13:52:09.143044",
+flutter:       "results": {
+flutter:         "result": {
+flutter:           "wrong swipes": 0,
+flutter:           "right swipes": 10,
+flutter:           "time": 7,
+flutter:           "score": 1,
+flutter:           "meanCongruent": 612.6666666666666,
+flutter:           "meanIncongruent": 702.5,
+flutter:           "numberCardsCongruent": 6,
+flutter:           "numberCardsIncongruent": 4
+flutter:         }
+flutter:       },
+flutter:       "stepTimes": {
+flutter:         "instruction_started": "2026-01-14T13:51:58.462070",
+flutter:         "instruction_ended": "2026-01-14T13:52:01.194213",
+flutter:         "test_started": "2026-01-14T13:52:01.194219",
+flutter:         "test_ended": "2026-01-14T13:52:09.142441",
+flutter:         "results_shown": "2026-01-14T13:52:09.143078"
+flutter:       },
+flutter:       "interactions": []
+flutter:     }
+flutter:   }
+flutter: }
+
+Szybkie przetwarzanie wzrokowe:
+flutter: {
+flutter:   "__type": "RPTaskResult",
+flutter:   "identifier": "task_RVIP_step",
+flutter:   "startDate": "2026-01-14T14:02:07.456712",
+flutter:   "endDate": "2026-01-14T14:02:30.311891",
+flutter:   "results": {
+flutter:     "RVIP_step": {
+flutter:       "__type": "RPActivityResult",
+flutter:       "identifier": "RVIP_step",
+flutter:       "endDate": "2026-01-14T14:02:23.416835",
+flutter:       "results": {
+flutter:         "result": {
+flutter:           "Correct taps": 0,
+flutter:           "incorrect taps": 6,
+flutter:           "passed sequences": false,
+flutter:           "Delay on correct taps": []
+flutter:         }
+flutter:       },
+flutter:       "stepTimes": {
+flutter:         "instruction_started": "2026-01-14T14:02:10.694979",
+flutter:         "instruction_ended": "2026-01-14T14:02:12.409577",
+flutter:         "test_started": "2026-01-14T14:02:12.409648",
+flutter:         "test_ended": "2026-01-14T14:02:23.416431",
+flutter:         "results_shown": "2026-01-14T14:02:23.417118"
+flutter:       },
+flutter:       "interactions": [
+flutter:         {
+flutter:           "time": "2026-01-14T14:02:19.397679",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Incorrect tap. Number of sequences passed: 0. Shown sequence: [1, 8, 2, 6, 7]"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:02:19.879578",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Incorrect tap. Number of sequences passed: 0. Shown sequence: [1, 8, 2, 6, 7, 2]"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:02:20.045665",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Incorrect tap. Number of sequences passed: 0. Shown sequence: [1, 8, 2, 6, 7, 2]"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:02:20.179046",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Incorrect tap. Number of sequences passed: 0. Shown sequence: [1, 8, 2, 6, 7, 2]"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:02:20.628094",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Incorrect tap. Number of sequences passed: 0. Shown sequence: [1, 8, 2, 6, 7, 2, 3]"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:02:21.446515",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Incorrect tap. Number of sequences passed: 0. Shown sequence: [1, 8, 2, 6, 7, 2, 3, 9]"
+flutter:         }
+flutter:       ]
+flutter:     }
+flutter:   }
+flutter: }
+
+Test Stukania
+lutter: {
+flutter:   "__type": "RPTaskResult",
+flutter:   "identifier": "task_tapping_step",
+flutter:   "startDate": "2026-01-14T14:04:09.133333",
+flutter:   "endDate": "2026-01-14T14:05:03.827263",
+flutter:   "results": {
+flutter:     "tapping_step": {
+flutter:       "__type": "RPActivityResult",
+flutter:       "identifier": "tapping_step",
+flutter:       "endDate": "2026-01-14T14:05:00.004926",
+flutter:       "results": {
+flutter:         "result": {
+flutter:           "Total taps": 86
+flutter:         }
+flutter:       },
+flutter:       "stepTimes": {
+flutter:         "instruction_started": "2026-01-14T14:04:11.511010",
+flutter:         "instruction_ended": "2026-01-14T14:04:26.994848",
+flutter:         "test_started": "2026-01-14T14:04:26.994861",
+flutter:         "test_ended": "2026-01-14T14:05:00.004836",
+flutter:         "results_shown": "2026-01-14T14:05:00.005169"
+flutter:       },
+flutter:       "interactions": [
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:30.510890",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:30.910452",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:31.193768",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:31.560427",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:31.843734",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:32.143428",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:32.462314",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:32.760546",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:33.160350",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:33.576349",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:33.860277",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:34.160062",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:34.562211",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:34.842748",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:35.326910",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:35.660439",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:35.995437",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:36.326053",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:36.643509",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:36.910534",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:37.243441",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:37.626885",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:37.943707",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:38.293829",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:38.627058",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:38.909587",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:39.243666",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:39.593108",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:39.926974",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:40.293823",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:40.610030",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:40.993325",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:41.360295",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:41.693720",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:42.027036",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:42.393488",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:42.793784",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:43.143488",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:43.493798",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:43.810776",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:44.143580",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:44.510180",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:44.859362",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:45.226669",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:45.559995",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:45.910238",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:46.210414",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:46.526228",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:47.110406",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:47.460310",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:47.927304",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:48.443758",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:48.859992",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:49.194497",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:49.460704",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:49.810349",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:50.126416",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:50.526629",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:50.810330",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:51.143537",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:51.443976",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:51.759973",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:52.060185",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:52.327364",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:52.593723",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:52.945143",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:53.143619",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:53.461842",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:53.710080",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:54.309853",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:54.643763",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:54.926854",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:55.292807",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:55.611409",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:55.876929",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:56.211629",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:56.426719",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:56.893166",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:57.311984",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:57.560355",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:57.827089",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:58.143658",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:58.409365",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:58.743545",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:59.310116",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the right button"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:04:59.760164",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Pressed the left button"
+flutter:         }
+flutter:       ]
+flutter:     }
+flutter:   }
+flutter: }
+
+Test bloków Corsi
+flutter: {
+flutter:   "__type": "RPTaskResult",
+flutter:   "identifier": "task_corsi_block_step",
+flutter:   "startDate": "2026-01-14T14:06:21.498402",
+flutter:   "endDate": "2026-01-14T14:08:16.693764",
+flutter:   "results": {
+flutter:     "corsi_block_step": {
+flutter:       "__type": "RPActivityResult",
+flutter:       "identifier": "corsi_block_step",
+flutter:       "endDate": "2026-01-14T14:08:11.879358",
+flutter:       "results": {
+flutter:         "result": 6
+flutter:       },
+flutter:       "stepTimes": {
+flutter:         "instruction_started": "2026-01-14T14:06:27.328481",
+flutter:         "instruction_ended": "2026-01-14T14:06:51.444150",
+flutter:         "test_started": "2026-01-14T14:06:51.444158",
+flutter:         "test_ended": "2026-01-14T14:08:11.879444",
+flutter:         "results_shown": "2026-01-14T14:08:11.879460"
+flutter:       },
+flutter:       "interactions": [
+flutter:         {
+flutter:           "time": "2026-01-14T14:06:57.826298",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Succeeded test in first try. Tap order was: [5, 3]"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:07:04.510199",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Succeeded test in first try. Tap order was: [7, 6, 1]"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:07:12.560613",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Succeeded test in first try. Tap order was: [6, 8, 5, 7]"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:07:23.143404",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Succeeded test in first try. Tap order was: [5, 4, 1, 8, 3]"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:07:33.645196",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Failed first try - Tapped the order: [0, 2, 2, 5, 1, 6]. The correct order was: (0, 2, 5, 1, 6, 7)"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:07:44.976851",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Succeeded test in second try. Tap order was: [0, 7, 8, 4, 5, 3]"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:07:58.543759",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Failed first try - Tapped the order: [6, 0, 7, 3, 4, 8, 1]. The correct order was: (6, 0, 3, 7, 1, 4, 8)"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:08:11.176812",
+flutter:           "correctness": "Wrong gesture",
+flutter:           "type": "Button tap",
+flutter:           "description": "Test Finished after second fail - Tapped the order: [1, 3, 8, 5, 4, 7, 0]. The correct order was: (1, 3, 8, 5, 4, 2, 7)"
+flutter:         }
+flutter:       ]
+flutter:     }
+flutter:   }
+flutter: }
+
+Test czasu reakcji
+flutter: {
+flutter:   "__type": "RPTaskResult",
+flutter:   "identifier": "task_reaction_time_step",
+flutter:   "startDate": "2026-01-14T14:08:51.827325",
+flutter:   "endDate": "2026-01-14T14:09:43.960282",
+flutter:   "results": {
+flutter:     "reaction_time_step": {
+flutter:       "__type": "RPActivityResult",
+flutter:       "identifier": "reaction_time_step",
+flutter:       "endDate": "2026-01-14T14:09:30.464248",
+flutter:       "results": {
+flutter:         "result": {
+flutter:           "avg. reaction time": 436,
+flutter:           "Wrong taps": 0,
+flutter:           "Correct taps": 9
+flutter:         }
+flutter:       },
+flutter:       "stepTimes": {
+flutter:         "instruction_started": "2026-01-14T14:08:53.345579",
+flutter:         "instruction_ended": "2026-01-14T14:09:00.460368",
+flutter:         "test_started": "2026-01-14T14:09:00.460376",
+flutter:         "test_ended": "2026-01-14T14:09:30.463979",
+flutter:         "results_shown": "2026-01-14T14:09:30.464355"
+flutter:       },
+flutter:       "interactions": [
+flutter:         {
+flutter:           "time": "2026-01-14T14:09:04.877939",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Correct Screen Tap",
+flutter:           "description": "Tapped the screen after 414 ms"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:09:06.293890",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Correct Screen Tap",
+flutter:           "description": "Tapped the screen after 414 ms"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:09:08.677130",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Correct Screen Tap",
+flutter:           "description": "Tapped the screen after 381 ms"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:09:10.076769",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Correct Screen Tap",
+flutter:           "description": "Tapped the screen after 397 ms"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:09:13.477587",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Correct Screen Tap",
+flutter:           "description": "Tapped the screen after 397 ms"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:09:16.944404",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Correct Screen Tap",
+flutter:           "description": "Tapped the screen after 463 ms"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:09:18.460122",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Correct Screen Tap",
+flutter:           "description": "Tapped the screen after 513 ms"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:09:22.960395",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Correct Screen Tap",
+flutter:           "description": "Tapped the screen after 498 ms"
+flutter:         },
+flutter:         {
+flutter:           "time": "2026-01-14T14:09:26.410411",
+flutter:           "correctness": "Correct gesture",
+flutter:           "type": "Correct Screen Tap",
+flutter:           "description": "Tapped the screen after 446 ms"
+flutter:         }
+flutter:       ]
+flutter:     }
+flutter:   }
+flutter: }

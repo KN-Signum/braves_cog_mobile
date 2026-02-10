@@ -5,10 +5,23 @@ import 'package:braves_cog/core/providers/theme_provider.dart';
 import 'package:braves_cog/features/main/main_screen_new.dart';
 import 'package:research_package/research_package.dart';
 import 'package:cognition_package/cognition_package.dart';
+import 'package:braves_cog/core/config/env_config.dart';
+import 'package:braves_cog/core/providers/shared_preferences_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 Future main() async {
+  await EnvConfig.init();
+  final prefs = await SharedPreferences.getInstance();
   CognitionPackage.ensureInitialized();
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(
+    ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends ConsumerWidget {

@@ -4,6 +4,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:braves_cog/core/theme/app_theme.dart';
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:braves_cog/core/theme/app_theme.dart';
+import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
+import 'package:braves_cog/core/providers/shared_preferences_provider.dart';
+import 'dart:convert';
+
 class LoginScreen extends ConsumerStatefulWidget {
   final VoidCallback onLogin;
   
@@ -27,12 +34,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _checkReturningUser();
+    // Use addPostFrameCallback to safely read provider after build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkReturningUser();
+    });
     _showSplashScreen();
   }
 
   Future<void> _checkReturningUser() async {
-    final prefs = await SharedPreferences.getInstance();
+    // We can access sharedPreferencesProvider synchronously because it's initialized in main
+    final prefs = ref.read(sharedPreferencesProvider);
     final hasRegistered = prefs.getBool('user-registered') ?? false;
     setState(() {
       _isReturningUser = hasRegistered;
@@ -57,14 +68,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('user-registered', true);
-    await prefs.setString('user-credentials', jsonEncode({
-      'login': _loginController.text,
-      'password': _passwordController.text,
-    }));
-    
-    widget.onLogin();
+    try {
+      await ref.read(authProvider.notifier).register(
+        _loginController.text, 
+        _passwordController.text, 
+        'User', // Name placeholder
+      );
+      
+      // Update UI state for returning user
+      final prefs = ref.read(sharedPreferencesProvider);
+      await prefs.setBool('user-registered', true);
+      
+      widget.onLogin();
+    } catch (e) {
+      _showAlert('Błąd rejestracji: ${e.toString()}');
+    }
   }
 
   Future<void> _handleLogin() async {
@@ -73,14 +91,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user-credentials', jsonEncode({
-      'login': _loginController.text,
-      'password': _passwordController.text,
-    }));
-    await prefs.setBool('user-registered', true);
-    
-    widget.onLogin();
+    try {
+       await ref.read(authProvider.notifier).login(
+        _loginController.text, 
+        _passwordController.text,
+      );
+      widget.onLogin();
+    } catch (e) {
+      _showAlert('Błąd logowania: ${e.toString()}');
+    }
   }
 
   void _showAlert(String message) {
@@ -107,15 +126,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+
     if (_showSplash) {
       return _buildSplashScreen();
     }
 
-    if (!_isReturningUser) {
-      return _buildRegistrationScreen();
-    }
-
-    return _buildLoginScreen();
+    // Stack to show loading overlay
+    return Stack(
+      children: [
+        if (!_isReturningUser) 
+          _buildRegistrationScreen()
+        else 
+          _buildLoginScreen(),
+          
+        if (authState.isLoading)
+          Container(
+            color: Colors.black.withOpacity(0.5),
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+      ],
+    );
   }
 
   Widget _buildSplashScreen() {

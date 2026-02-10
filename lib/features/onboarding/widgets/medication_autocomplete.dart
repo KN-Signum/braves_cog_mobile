@@ -57,7 +57,6 @@ class _MedicationAutocompleteState extends State<MedicationAutocomplete> {
         });
       }
     } catch (e) {
-      print('Error loading medications: $e');
       if (mounted) {
         setState(() {
           _isLoading = false;

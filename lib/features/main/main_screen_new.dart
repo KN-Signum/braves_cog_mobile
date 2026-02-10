@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:braves_cog/core/theme/app_theme.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
 import '../auth/login_screen.dart';
 import '../onboarding/onboarding_screen.dart';
 import '../home/home_screen.dart';
@@ -10,14 +12,14 @@ import '../psychological_tests/psychological_tests_screen.dart';
 import '../profile/user_profile_screen.dart';
 import '../games/games_screen.dart';
 
-class MainScreenNew extends StatefulWidget {
+class MainScreenNew extends ConsumerStatefulWidget {
   const MainScreenNew({Key? key}) : super(key: key);
 
   @override
-  State<MainScreenNew> createState() => _MainScreenNewState();
+  ConsumerState<MainScreenNew> createState() => _MainScreenNewState();
 }
 
-class _MainScreenNewState extends State<MainScreenNew> {
+class _MainScreenNewState extends ConsumerState<MainScreenNew> {
   String _currentView = 'splash';
   bool _isLoading = true;
 
@@ -30,6 +32,8 @@ class _MainScreenNewState extends State<MainScreenNew> {
   Future<void> _checkOnboardingStatus() async {
     await Future.delayed(const Duration(milliseconds: 500));
 
+    // We can use the provider, but initializing shared prefs is async anyway so using instance is fine here too
+    // But consistent usage is better.
     final prefs = await SharedPreferences.getInstance();
     final isRegistered = prefs.getBool('user-registered') ?? false;
     final onboardingCompleted = prefs.getBool('onboarding-completed') ?? false;
@@ -192,8 +196,15 @@ class _MainScreenNewState extends State<MainScreenNew> {
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () async {
+              await ref.read(authProvider.notifier).logout();
+              // Also clear other prefs if needed, but auth provider clears user info
               final prefs = await SharedPreferences.getInstance();
+               // We might NOT want to clear EVERYTHING like onboarding status on logout?
+               // The original code did `await prefs.clear()`.
+               // If we clear everything, we reset onboarding too.
+               // Assuming this is desired behavior for full reset.
               await prefs.clear();
+              
               setState(() => _currentView = 'login');
             },
             style: ElevatedButton.styleFrom(

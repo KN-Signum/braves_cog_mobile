@@ -4,19 +4,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 class HomeScreen extends StatefulWidget {
-  final VoidCallback onUserProfileClick;
-  final VoidCallback onSettingsClick;
   final VoidCallback onHealthClick;
   final VoidCallback onTestsClick;
-  final VoidCallback onGamesClick;
 
   const HomeScreen({
     super.key,
-    required this.onUserProfileClick,
-    required this.onSettingsClick,
     required this.onHealthClick,
     required this.onTestsClick,
-    required this.onGamesClick,
   });
 
   @override
@@ -109,9 +103,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-
-            // Bottom Navigation
-            _buildBottomNavigation(),
           ],
         ),
       ),
@@ -224,85 +215,5 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildBottomNavigation() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        border: Border(
-          top: BorderSide(color: Theme.of(context).colorScheme.surfaceContainerHighest, width: 1),
-        ),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: AppTheme.spacingSm),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(Icons.home, 'Dom', true, () {}),
-              _buildNavItem(
-                Icons.person,
-                'Profil',
-                false,
-                widget.onUserProfileClick,
-              ),
-              _buildNavItem(
-                Icons.settings,
-                'Ustawienia',
-                false,
-                widget.onSettingsClick,
-              ),
-              _buildNavItem(Icons.gamepad, 'Gry', false, widget.onGamesClick),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
-  Widget _buildNavItem(
-    IconData icon,
-    String label,
-    bool isActive,
-    VoidCallback onTap,
-  ) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        constraints: BoxConstraints(minHeight: AppTheme.minTouchTarget),
-        padding: EdgeInsets.symmetric(
-          horizontal: AppTheme.spacingMd,
-          vertical: AppTheme.spacingSm,
-        ),
-        decoration: BoxDecoration(
-          color: isActive
-              ? Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(AppTheme.borderRadiusMedium),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isActive
-                  ? Theme.of(context).colorScheme.secondary
-                  : Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
-              size: 24,
-            ),
-            SizedBox(height: AppTheme.spacingXs),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                color: isActive
-                    ? Theme.of(context).colorScheme.secondary
-                    : Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

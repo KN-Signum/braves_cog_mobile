@@ -9,16 +9,13 @@ import 'package:braves_cog/core/config/env_config.dart';
 import 'package:braves_cog/core/providers/shared_preferences_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 Future main() async {
   await EnvConfig.init();
   final prefs = await SharedPreferences.getInstance();
   CognitionPackage.ensureInitialized();
   runApp(
     ProviderScope(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
-      ],
+      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
       child: const MyApp(),
     ),
   );

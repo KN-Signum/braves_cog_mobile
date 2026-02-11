@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
-import 'package:braves_cog/core/providers/theme_provider.dart';
+
+import 'package:braves_cog/core/widgets/app_bottom_nav_bar.dart';
 import '../auth/login_screen.dart';
 import '../onboarding/onboarding_screen.dart';
 import '../home/home_screen.dart';
@@ -11,6 +11,7 @@ import '../health/health_module_screen.dart';
 import '../psychological_tests/psychological_tests_screen.dart';
 import '../profile/user_profile_screen.dart';
 import '../games/games_screen.dart';
+import '../settings/settings_screen.dart';
 
 class MainScreenNew extends ConsumerStatefulWidget {
   const MainScreenNew({super.key});
@@ -22,6 +23,7 @@ class MainScreenNew extends ConsumerStatefulWidget {
 class _MainScreenNewState extends ConsumerState<MainScreenNew> {
   String _currentView = 'splash';
   bool _isLoading = true;
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -31,9 +33,6 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
 
   Future<void> _checkOnboardingStatus() async {
     await Future.delayed(const Duration(milliseconds: 500));
-
-    // We can use the provider, but initializing shared prefs is async anyway so using instance is fine here too
-    // But consistent usage is better.
     final prefs = await SharedPreferences.getInstance();
     final isRegistered = prefs.getBool('user-registered') ?? false;
     final onboardingCompleted = prefs.getBool('onboarding-completed') ?? false;
@@ -55,32 +54,59 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
   }
 
   void _handleOnboardingComplete() {
-    setState(() => _currentView = 'home');
+    setState(() {
+      _currentView = 'home';
+      _currentIndex = 0;
+    });
   }
 
+  void _onBottomNavTap(int index) {
+    setState(() {
+      _currentIndex = index;
+      switch (index) {
+        case 0:
+          _currentView = 'home';
+          break;
+        case 1:
+          _currentView = 'health';
+          break;
+        case 2:
+          _currentView = 'games';
+          break;
+        case 3:
+          _currentView = 'profile'; // Profile is index 3
+          break;
+        case 4:
+          _currentView = 'settings';
+          break;
+      }
+    });
+  }
+  
   void _navigateToHome() {
-    setState(() => _currentView = 'home');
-  }
-
-  void _navigateToProfile() {
-    setState(() => _currentView = 'profile');
-  }
-
-  void _navigateToGames() {
-    setState(() => _currentView = 'games');
+    setState(() {
+      _currentView = 'home';
+      _currentIndex = 0;
+    });
   }
 
   void _navigateToHealth() {
-    setState(() => _currentView = 'health');
+    setState(() {
+      _currentView = 'health';
+      _currentIndex = 1;
+    });
   }
 
   void _navigateToTests() {
     setState(() => _currentView = 'tests');
+    // Tests doesn't have a bottom nav item, keep current index or deselect?
+    // Keeping current index might be confusing if we show nav bar.
+    // Let's assume Tests is a sub-screen of Home or standalone.
   }
-
-  void _navigateToSettings() {
-    setState(() => _currentView = 'settings');
-  }
+  
+  // Handlers for specific back navigations if needed, but generic to home is usually fine
+  // for top level items, but if we are deep in stack...
+  // Here we are doing flat navigation mostly.
 
   @override
   Widget build(BuildContext context) {
@@ -88,257 +114,70 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/braves_logo.png',
-                width: 200,
-                height: 200,
-              ),
-              const SizedBox(height: 32),
-              CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.secondary,
-                strokeWidth: 3,
-              ),
-            ],
+          child: CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.secondary,
           ),
         ),
       );
     }
 
+    if (_currentView == 'login') {
+      return LoginScreen(onLogin: _handleLoginComplete);
+    }
+
+    if (_currentView == 'onboarding') {
+      return OnboardingScreen(onComplete: _handleOnboardingComplete);
+    }
+    
+    // Check if we should show bottom nav.
+    // We show it for: home, health, games, profile, settings.
+    // What about tests? If tests is a full screen flow, maybe hide it?
+    // User asked for bottom nav to be accessed from main health, home, games and settings.
+    // Let's show it for all these "main" views.
+    final bool showBottomNav = ['home', 'health', 'games', 'profile', 'settings'].contains(_currentView);
+
+    return Scaffold(
+      body: _buildBody(),
+      bottomNavigationBar: showBottomNav 
+          ? AppBottomNavigationBar(
+              currentIndex: _currentIndex,
+              onTap: _onBottomNavTap,
+            )
+          : null,
+    );
+  }
+
+  Widget _buildBody() {
     switch (_currentView) {
-      case 'login':
-        return LoginScreen(onLogin: _handleLoginComplete);
-
-      case 'onboarding':
-        return OnboardingScreen(onComplete: _handleOnboardingComplete);
-
       case 'home':
         return HomeScreen(
-          onUserProfileClick: _navigateToProfile,
-          onSettingsClick: _navigateToSettings,
           onHealthClick: _navigateToHealth,
           onTestsClick: _navigateToTests,
-          onGamesClick: _navigateToGames,
         );
-
-      case 'profile':
-        return UserProfileScreen(onBack: _navigateToHome);
-
       case 'health':
         return HealthModuleScreen(onBack: _navigateToHome);
-
-      case 'tests':
-        return PsychologicalTestsScreen(onBack: _navigateToHome);
-
       case 'games':
         return GamesScreen(onBack: _navigateToHome);
-
+      case 'profile':
+        return UserProfileScreen(onBack: _navigateToHome);
       case 'settings':
-        return _buildSettingsScreen();
-
+        return SettingsScreen(
+          onBack: _navigateToHome,
+          onLogout: () {
+            setState(() {
+              _currentView = 'login';
+              _currentIndex = 0;
+            });
+          },
+        );
+      case 'tests':
+        return PsychologicalTestsScreen(onBack: _navigateToHome);
       default:
+        // Fallback to home
         return HomeScreen(
-          onUserProfileClick: _navigateToProfile,
-          onSettingsClick: _navigateToSettings,
           onHealthClick: _navigateToHealth,
           onTestsClick: _navigateToTests,
-          onGamesClick: _navigateToGames,
         );
     }
-  }
-
-  Widget _buildSettingsScreen() {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.chevron_left,
-            color: Theme.of(context).colorScheme.primary,
-            size: 28,
-          ),
-          onPressed: _navigateToHome,
-        ),
-        title: Text(
-          'Ustawienia',
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
-        ),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _buildThemeSwitchTile(),
-          _buildSettingsTile(
-            icon: Icons.notifications,
-            title: 'Powiadomienia',
-            subtitle: 'Zarządzaj powiadomieniami',
-            onTap: () {},
-          ),
-          _buildSettingsTile(
-            icon: Icons.privacy_tip,
-            title: 'Prywatność',
-            subtitle: 'Zarządzaj danymi osobowymi',
-            onTap: () {},
-          ),
-          _buildSettingsTile(
-            icon: Icons.info,
-            title: 'O aplikacji',
-            subtitle: 'Wersja 1.0.0',
-            onTap: () {},
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () async {
-              await ref.read(authProvider.notifier).logout();
-              // Also clear other prefs if needed, but auth provider clears user info
-              final prefs = await SharedPreferences.getInstance();
-              // We might NOT want to clear EVERYTHING like onboarding status on logout?
-              // The original code did `await prefs.clear()`.
-              // If we clear everything, we reset onboarding too.
-              // Assuming this is desired behavior for full reset.
-              await prefs.clear();
-
-              setState(() => _currentView = 'login');
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFEF5350),
-              minimumSize: const Size(double.infinity, 56),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-            ),
-            child: Text(
-              'Wyloguj się',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildThemeSwitchTile() {
-    final themeMode = ref.watch(themeModeProvider);
-    final isDarkMode = themeMode == ThemeMode.dark;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          width: 2,
-        ),
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        minVerticalPadding: 16,
-        leading: Container(
-          width: 44,
-          height: 44,
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Theme.of(
-              context,
-            ).colorScheme.secondary.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(
-            isDarkMode ? Icons.dark_mode : Icons.light_mode,
-            color: Theme.of(context).colorScheme.secondary,
-            size: 24,
-          ),
-        ),
-        title: Text(
-          'Motyw',
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-        ),
-        subtitle: Text(
-          isDarkMode ? 'Ciemny' : 'Jasny',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
-          ),
-        ),
-        trailing: Switch(
-          value: isDarkMode,
-          onChanged: (value) {
-            ref.read(themeModeProvider.notifier).toggleTheme();
-          },
-          activeColor: Theme.of(context).colorScheme.secondary,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSettingsTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          width: 2,
-        ),
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        minVerticalPadding: 16,
-        leading: Container(
-          width: 44,
-          height: 44,
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Theme.of(
-              context,
-            ).colorScheme.secondary.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(
-            icon,
-            color: Theme.of(context).colorScheme.secondary,
-            size: 24,
-          ),
-        ),
-        title: Text(
-          title,
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
-          ),
-        ),
-        trailing: Icon(
-          Icons.chevron_right,
-          color: Theme.of(context).colorScheme.primary,
-          size: 24,
-        ),
-        onTap: onTap,
-      ),
-    );
   }
 }

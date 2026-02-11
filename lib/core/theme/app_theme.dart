@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:carp_themes_package/carp_themes_package.dart';
 
 // BRAVES-COG Styling Guide:
 // Headings: Space Grotesk Bold
@@ -363,7 +364,7 @@ class AppTheme {
         labelStyle: GoogleFonts.inter(fontSize: 16, color: primaryColor),
         hintStyle: GoogleFonts.inter(
           fontSize: 16,
-          color: primaryColor.withOpacity(0.5),
+          color: primaryColor.withValues(alpha: 0.5),
         ),
       ),
 
@@ -372,7 +373,7 @@ class AppTheme {
         type: BottomNavigationBarType.fixed,
         backgroundColor: backgroundColor,
         selectedItemColor: accentColor,
-        unselectedItemColor: primaryColor.withOpacity(0.5),
+        unselectedItemColor: primaryColor.withValues(alpha: 0.5),
         selectedLabelStyle: GoogleFonts.inter(
           fontSize: 12,
           fontWeight: FontWeight.w600,
@@ -396,7 +397,7 @@ class AppTheme {
 
       // Research Package Colors
       extensions: <ThemeExtension<dynamic>>[
-        RPColors(
+        CarpColors(
           primary: primaryColor,
           warningColor: Colors.orange[500],
           backgroundGray: lightBackgroundColor,
@@ -441,20 +442,24 @@ class AppTheme {
       ),
 
       textTheme: TextTheme(
+        // Headings - Space Grotesk Bold
         displayLarge: GoogleFonts.spaceGrotesk(
           fontSize: 48,
           fontWeight: FontWeight.bold,
           color: inverseTextColor,
+          letterSpacing: -0.5,
         ),
         displayMedium: GoogleFonts.spaceGrotesk(
           fontSize: 36,
           fontWeight: FontWeight.bold,
           color: inverseTextColor,
+          letterSpacing: -0.5,
         ),
         displaySmall: GoogleFonts.spaceGrotesk(
           fontSize: 30,
           fontWeight: FontWeight.bold,
           color: inverseTextColor,
+          letterSpacing: -0.3,
         ),
         headlineLarge: GoogleFonts.spaceGrotesk(
           fontSize: 28,
@@ -471,8 +476,58 @@ class AppTheme {
           fontWeight: FontWeight.bold,
           color: inverseTextColor,
         ),
-        bodyLarge: GoogleFonts.inter(fontSize: 18, color: inverseTextColor),
-        bodyMedium: GoogleFonts.inter(fontSize: 16, color: inverseTextColor),
+        titleLarge: GoogleFonts.spaceGrotesk(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: inverseTextColor,
+        ),
+        titleMedium: GoogleFonts.spaceGrotesk(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: inverseTextColor,
+        ),
+        titleSmall: GoogleFonts.spaceGrotesk(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: inverseTextColor,
+        ),
+
+        // Body Text - Inter Regular
+        bodyLarge: GoogleFonts.inter(
+          fontSize: 18,
+          fontWeight: FontWeight.w400,
+          color: inverseTextColor,
+          height: 1.5,
+        ),
+        bodyMedium: GoogleFonts.inter(
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          color: inverseTextColor,
+          height: 1.5,
+        ),
+        bodySmall: GoogleFonts.inter(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: inverseTextColor,
+          height: 1.4,
+        ),
+
+        // Labels - Inter
+        labelLarge: GoogleFonts.inter(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: inverseTextColor,
+        ),
+        labelMedium: GoogleFonts.inter(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: inverseTextColor,
+        ),
+        labelSmall: GoogleFonts.inter(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          color: inverseTextColor,
+        ),
       ),
 
       appBarTheme: AppBarTheme(
@@ -485,10 +540,135 @@ class AppTheme {
           fontWeight: FontWeight.bold,
           color: inverseTextColor,
         ),
+        iconTheme: const IconThemeData(color: inverseTextColor, size: 24),
+      ),
+
+      // Cards
+      cardTheme: CardThemeData(
+        elevation: 0,
+        color: darkBackground,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(borderRadiusMedium),
+          side: BorderSide(color: darkSurface, width: 1),
+        ),
+        margin: const EdgeInsets.all(spacingMd),
+      ),
+
+      // Buttons
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: accentColor,
+          foregroundColor: primaryColor,
+          minimumSize: const Size(minTouchTarget, minTouchTarget),
+          padding: const EdgeInsets.symmetric(
+            horizontal: spacingLg,
+            vertical: spacingSm,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadiusMedium),
+          ),
+          elevation: 0,
+          textStyle: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: accentColor,
+          minimumSize: const Size(minTouchTarget, minTouchTarget),
+          padding: const EdgeInsets.symmetric(
+            horizontal: spacingLg,
+            vertical: spacingSm,
+          ),
+          side: const BorderSide(color: accentColor, width: 2),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadiusMedium),
+          ),
+          textStyle: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: accentColor,
+          minimumSize: const Size(minTouchTarget, minTouchTarget),
+          padding: const EdgeInsets.symmetric(
+            horizontal: spacingMd,
+            vertical: spacingSm,
+          ),
+          textStyle: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+
+      // Input fields
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: darkSurface,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: spacingMd,
+          vertical: spacingSm,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(borderRadiusMedium),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(borderRadiusMedium),
+          borderSide: BorderSide(color: darkSurface),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(borderRadiusMedium),
+          borderSide: const BorderSide(color: accentColor, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(borderRadiusMedium),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+        ),
+        labelStyle: GoogleFonts.inter(fontSize: 16, color: inverseTextColor),
+        hintStyle: GoogleFonts.inter(
+          fontSize: 16,
+          color: inverseTextColor.withValues(alpha: 0.5),
+        ),
+      ),
+
+      // Bottom Navigation
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: darkBackground,
+        selectedItemColor: accentColor,
+        unselectedItemColor: inverseTextColor.withValues(alpha: 0.5),
+        selectedLabelStyle: GoogleFonts.inter(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
+        unselectedLabelStyle: GoogleFonts.inter(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+        ),
+        elevation: 0,
+      ),
+
+      // Icon Theme
+      iconTheme: const IconThemeData(color: inverseTextColor, size: 24),
+
+      // Divider
+      dividerTheme: DividerThemeData(
+        color: darkSurface,
+        thickness: 1,
+        space: spacingMd,
       ),
 
       extensions: <ThemeExtension<dynamic>>[
-        RPColors(
+        CarpColors(
           primary: accentColor,
           warningColor: Colors.orange[700],
           backgroundGray: darkSurface,

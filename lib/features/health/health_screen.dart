@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
-import 'package:braves_cog/core/theme/app_theme.dart';
+
 import 'package:braves_cog/features/health/health_module_screen.dart';
 import 'package:braves_cog/features/health/presentation/providers/health_history_provider.dart';
 
+import 'package:intl/intl.dart';
+
 class HealthScreen extends ConsumerStatefulWidget {
-  const HealthScreen({Key? key}) : super(key: key);
+  const HealthScreen({super.key});
 
   @override
   ConsumerState<HealthScreen> createState() => _HealthScreenState();
@@ -26,14 +26,11 @@ class _HealthScreenState extends ConsumerState<HealthScreen> {
     final state = ref.watch(healthHistoryProvider);
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           'Twoje zdrowie',
-          style: GoogleFonts.spaceGrotesk(
-            fontWeight: FontWeight.w700,
-            color: AppTheme.primaryColor,
-          ),
+          style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -50,13 +47,12 @@ class _HealthScreenState extends ConsumerState<HealthScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.monitor_heart_outlined, 
-                               size: 64, color: AppTheme.primaryColor.withOpacity(0.5)),
+                               size: 64, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)),
                           const SizedBox(height: 16),
                           Text(
                             'Brak wpisów w historii',
-                            style: GoogleFonts.inter(
-                              fontSize: 16,
-                              color: AppTheme.primaryColor.withOpacity(0.6),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                             ),
                           ),
                         ],
@@ -72,7 +68,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                             side: BorderSide(
-                              color: AppTheme.lightBackgroundColor,
+                              color: Theme.of(context).colorScheme.surfaceContainerHighest,
                               width: 1,
                             ),
                           ),
@@ -94,25 +90,23 @@ class _HealthScreenState extends ConsumerState<HealthScreen> {
                                         entry.submittedAt != null
                                             ? DateFormat('dd.MM.yyyy HH:mm').format(entry.submittedAt!)
                                             : 'Brak daty',
-                                        style: GoogleFonts.inter(
-                                          fontSize: 12,
+                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                           fontWeight: FontWeight.w500,
-                                          color: AppTheme.primaryColor.withOpacity(0.6),
+                                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                                         ),
                                       ),
                                       if (entry.doctorVisited)
                                         Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                           decoration: BoxDecoration(
-                                            color: AppTheme.accentColor.withOpacity(0.2),
+                                            color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2),
                                             borderRadius: BorderRadius.circular(8),
                                           ),
                                           child: Text(
                                             'Wizyta u lekarza',
-                                            style: GoogleFonts.inter(
-                                              fontSize: 10,
+                                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
                                               fontWeight: FontWeight.w600,
-                                              color: AppTheme.primaryColor,
+                                              color: Theme.of(context).colorScheme.primary,
                                             ),
                                           ),
                                         ),
@@ -121,10 +115,9 @@ class _HealthScreenState extends ConsumerState<HealthScreen> {
                                   const SizedBox(height: 8),
                                   Text(
                                     'Samopoczucie: ${entry.symptoms?.isNotEmpty == true ? entry.symptoms : "Brak objawów"}',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 14,
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                       fontWeight: FontWeight.w600,
-                                      color: AppTheme.primaryColor,
+                                      color: Theme.of(context).colorScheme.primary,
                                     ),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
@@ -149,13 +142,13 @@ class _HealthScreenState extends ConsumerState<HealthScreen> {
           // Refresh history after returning
           ref.read(healthHistoryProvider.notifier).loadHistory();
         },
-        backgroundColor: AppTheme.primaryColor,
-        icon: const Icon(Icons.add, color: Colors.white),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        icon: Icon(Icons.add, color: Theme.of(context).colorScheme.onPrimary),
         label: Text(
           'Dodaj wpis',
-          style: GoogleFonts.inter(
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
             fontWeight: FontWeight.w600,
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
         ),
       ),

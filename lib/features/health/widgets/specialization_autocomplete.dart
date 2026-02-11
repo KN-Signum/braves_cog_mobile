@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:braves_cog/core/theme/app_theme.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 
 class SpecializationAutocomplete extends StatefulWidget {
   final String? initialValue;
@@ -9,12 +8,12 @@ class SpecializationAutocomplete extends StatefulWidget {
   final String hint;
 
   const SpecializationAutocomplete({
-    Key? key,
+    super.key,
     this.initialValue,
     required this.onChanged,
     this.label = 'Specjalizacja lekarza',
     this.hint = 'Wpisz specjalizację',
-  }) : super(key: key);
+  });
 
   @override
   State<SpecializationAutocomplete> createState() => _SpecializationAutocompleteState();
@@ -125,36 +124,30 @@ class _SpecializationAutocompleteState extends State<SpecializationAutocomplete>
           controller: textEditingController,
           focusNode: focusNode,
           onChanged: widget.onChanged,
-          style: GoogleFonts.inter(
-            fontSize: 16,
-            color: AppTheme.primaryColor,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium,
           decoration: InputDecoration(
             labelText: widget.label,
             hintText: widget.hint,
-            hintStyle: GoogleFonts.inter(
-              fontSize: 16,
-              color: AppTheme.primaryColor.withOpacity(0.5),
+            hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
             ),
-            labelStyle: GoogleFonts.inter(
-              fontSize: 14,
+            labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.w600,
-              color: AppTheme.primaryColor,
             ),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: Theme.of(context).scaffoldBackgroundColor,
             contentPadding: const EdgeInsets.all(16),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24),
-              borderSide: BorderSide(color: AppTheme.lightBackgroundColor, width: 2),
+              borderSide: BorderSide(color: Theme.of(context).colorScheme.surfaceContainerHighest, width: 2),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24),
-              borderSide: BorderSide(color: AppTheme.lightBackgroundColor, width: 2),
+              borderSide: BorderSide(color: Theme.of(context).colorScheme.surfaceContainerHighest, width: 2),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24),
-              borderSide: BorderSide(color: AppTheme.accentColor, width: 2),
+              borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary, width: 2),
             ),
           ),
         );
@@ -169,44 +162,41 @@ class _SpecializationAutocompleteState extends State<SpecializationAutocomplete>
           child: Material(
             elevation: 4.0,
             borderRadius: BorderRadius.circular(12),
-            child: Container(
-              constraints: const BoxConstraints(maxHeight: 200, maxWidth: 343),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.lightBackgroundColor, width: 2),
-              ),
-              child: ListView.builder(
-                padding: const EdgeInsets.all(8),
-                itemCount: options.length,
-                shrinkWrap: true,
-                itemBuilder: (BuildContext context, int index) {
-                  final String option = options.elementAt(index);
-                  return Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        onSelected(option);
-                      },
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        child: Text(
-                          option,
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            color: AppTheme.primaryColor,
+              child: Container(
+                constraints: const BoxConstraints(maxHeight: 200, maxWidth: 343),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Theme.of(context).colorScheme.surfaceContainerHighest, width: 2),
+                ),
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: options.length,
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index) {
+                    final String option = options.elementAt(index);
+                    return Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          onSelected(option);
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          child: Text(
+                            option,
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
           ),
         );
       },

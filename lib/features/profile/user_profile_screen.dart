@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:braves_cog/core/theme/app_theme.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'dart:convert';
 
 class UserProfileScreen extends StatefulWidget {
   final VoidCallback onBack;
 
-  const UserProfileScreen({Key? key, required this.onBack}) : super(key: key);
+  const UserProfileScreen({super.key, required this.onBack});
 
   @override
   State<UserProfileScreen> createState() => _UserProfileScreenState();
@@ -69,17 +68,17 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   Color _getBMIColor(double bmi) {
-    if (bmi < 18.5) return AppTheme.accentColor;
-    if (bmi < 25) return const Color(0xFF4CAF50); // zielony dla prawidłowej wagi
-    if (bmi < 30) return const Color(0xFFFFA726); // pomarańczowy
-    return const Color(0xFFEF5350); // czerwony
+    if (bmi < 18.5) return Theme.of(context).colorScheme.secondary;
+    if (bmi < 25) return const Color(0xFF4CAF50); // green
+    if (bmi < 30) return const Color(0xFFFFA726); // orange
+    return const Color(0xFFEF5350); // red
   }
 
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: AppTheme.backgroundColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -91,7 +90,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               ),
               const SizedBox(height: 32),
               CircularProgressIndicator(
-                color: AppTheme.accentColor,
+                color: Theme.of(context).colorScheme.secondary,
                 strokeWidth: 3,
               ),
             ],
@@ -104,21 +103,17 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     final bmi = _calculateBMI(_profileData['height'], _profileData['weight']);
 
     return Scaffold(
-      backgroundColor: AppTheme.lightBackgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       appBar: AppBar(
-        backgroundColor: AppTheme.backgroundColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.chevron_left, color: AppTheme.primaryColor, size: 28),
+          icon: Icon(Icons.chevron_left, color: Theme.of(context).colorScheme.primary, size: 28),
           onPressed: widget.onBack,
         ),
         title: Text(
           'Twój profil',
-          style: GoogleFonts.spaceGrotesk(
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-            color: AppTheme.primaryColor,
-          ),
+          style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
       ),
       body: SingleChildScrollView(
@@ -142,7 +137,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFA726).withOpacity(0.15),
+        color: const Color(0xFFFFA726).withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: const Color(0xFFFFA726), width: 2),
       ),
@@ -153,10 +148,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           Expanded(
             child: Text(
               'Minęło już 6 miesięcy od ostatniej aktualizacji wagi. Zaktualizuj swoje dane!',
-              style: GoogleFonts.inter(
-                fontSize: 14,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w500,
-                color: AppTheme.primaryColor,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
           ),
@@ -169,10 +163,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: AppTheme.lightBackgroundColor,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           width: 2,
         ),
       ),
@@ -180,11 +174,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         children: [
           Text(
             '$age lat',
-            style: GoogleFonts.spaceGrotesk(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              color: AppTheme.primaryColor,
-            ),
+            style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 28),
           ),
           const SizedBox(height: 24),
           Row(
@@ -214,22 +204,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Widget _buildStatItem(IconData icon, String value, String label) {
     return Column(
       children: [
-        Icon(icon, size: 32, color: AppTheme.accentColor),
+        Icon(icon, size: 32, color: Theme.of(context).colorScheme.secondary),
         const SizedBox(height: 8),
         Text(
           value,
-          style: GoogleFonts.spaceGrotesk(
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-            color: AppTheme.primaryColor,
-          ),
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
         Text(
           label,
-          style: GoogleFonts.inter(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppTheme.primaryColor.withOpacity(0.6),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
           ),
         ),
       ],
@@ -240,7 +224,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _getBMIColor(bmi).withOpacity(0.15),
+        color: _getBMIColor(bmi).withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: _getBMIColor(bmi), width: 2),
       ),
@@ -252,16 +236,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             children: [
               Text(
                 'BMI',
-                style: GoogleFonts.inter(
-                  fontSize: 14,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppTheme.primaryColor,
                 ),
               ),
               Text(
                 bmi.toStringAsFixed(1),
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: 24,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.w800,
                   color: _getBMIColor(bmi),
                 ),
@@ -278,10 +259,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             child: Center(
               child: Text(
                 _getBMICategory(bmi),
-                style: GoogleFonts.inter(
-                  fontSize: 14,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
             ),
@@ -342,10 +322,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: AppTheme.lightBackgroundColor,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           width: 2,
         ),
       ),
@@ -354,10 +334,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         children: [
           Text(
             'Informacje zdrowotne',
-            style: GoogleFonts.spaceGrotesk(
-              fontSize: 20,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w800,
-              color: AppTheme.primaryColor,
             ),
           ),
           const SizedBox(height: 16),
@@ -402,10 +380,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             const SizedBox(height: 8),
             Text(
               'Brak danych zdrowotnych z onboardingu',
-              style: GoogleFonts.inter(
-                fontSize: 14,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontStyle: FontStyle.italic,
-                color: AppTheme.primaryColor.withOpacity(0.5),
+                    color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
               ),
             ),
           ],
@@ -441,10 +418,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: AppTheme.lightBackgroundColor,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           width: 2,
         ),
       ),
@@ -453,10 +430,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         children: [
           Text(
             'Informacje osobiste',
-            style: GoogleFonts.spaceGrotesk(
-              fontSize: 20,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w800,
-              color: AppTheme.primaryColor,
             ),
           ),
           const SizedBox(height: 16),
@@ -496,10 +471,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               flex: 2,
               child: Text(
                 label,
-                style: GoogleFonts.inter(
-                  fontSize: 14,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w500,
-                  color: AppTheme.primaryColor.withOpacity(0.6),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                 ),
               ),
             ),
@@ -507,10 +481,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               flex: 3,
               child: Text(
                 value,
-                style: GoogleFonts.inter(
-                  fontSize: 14,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppTheme.primaryColor,
                 ),
               ),
             ),
@@ -518,7 +490,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         ),
         if (!isLast) ...[
           const SizedBox(height: 12),
-          Divider(color: AppTheme.lightBackgroundColor, thickness: 2),
+          Divider(color: Theme.of(context).colorScheme.surfaceContainerHighest, thickness: 2),
           const SizedBox(height: 12),
         ],
       ],

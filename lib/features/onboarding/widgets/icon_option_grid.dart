@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../core/theme/app_theme.dart';
+
 
 class IconOption {
   final String value;
@@ -21,12 +20,12 @@ class IconOptionGrid extends StatelessWidget {
   final int columns;
 
   const IconOptionGrid({
-    Key? key,
+    super.key,
     required this.options,
     required this.value,
     required this.onChange,
     this.columns = 2,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -42,16 +41,18 @@ class IconOptionGrid extends StatelessWidget {
             height: 100,
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
             decoration: BoxDecoration(
-              color: isSelected ? AppTheme.accentColor : Colors.white,
+              color: isSelected ? Theme.of(context).colorScheme.secondary : Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: isSelected ? AppTheme.accentColor : AppTheme.lightBackgroundColor,
+                color: isSelected 
+                  ? Theme.of(context).colorScheme.secondary 
+                  : Theme.of(context).colorScheme.surfaceContainerHighest,
                 width: 2,
               ),
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: AppTheme.accentColor.withOpacity(0.25),
+                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
                         blurRadius: 0,
                         spreadRadius: 4,
                       ),
@@ -65,16 +66,14 @@ class IconOptionGrid extends StatelessWidget {
                 Icon(
                   option.icon,
                   size: 32,
-                  color: isSelected ? AppTheme.primaryColor : AppTheme.primaryColor,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
                 const SizedBox(height: 8),
                 Text(
                   option.label,
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: isSelected ? AppTheme.primaryColor : AppTheme.primaryColor,
                   ),
                 ),
               ],

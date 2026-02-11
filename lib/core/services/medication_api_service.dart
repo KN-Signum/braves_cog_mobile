@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,7 +23,7 @@ class MedicationApiService {
 
       return _getStaticMedications();
     } catch (e) {
-      print('Error fetching medications: $e');
+      debugPrint('Error fetching medications: $e');
       final cachedMedications = await _getCachedMedicationsIgnoreExpiry();
       if (cachedMedications != null && cachedMedications.isNotEmpty) {
         return cachedMedications;
@@ -54,7 +55,7 @@ class MedicationApiService {
 
       return [];
     } catch (e) {
-      print('API fetch error: $e');
+      debugPrint('API fetch error: $e');
       return [];
     }
   }
@@ -79,7 +80,7 @@ class MedicationApiService {
       
       return null;
     } catch (e) {
-      print('Cache read error: $e');
+      debugPrint('Cache read error: $e');
       return null;
     }
   }
@@ -99,7 +100,7 @@ class MedicationApiService {
       await prefs.setStringList(_cacheKey, medications);
       await prefs.setInt(_cacheTimestampKey, DateTime.now().millisecondsSinceEpoch);
     } catch (e) {
-      print('Cache write error: $e');
+      debugPrint('Cache write error: $e');
     }
   }
 

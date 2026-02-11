@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:braves_cog/core/theme/app_theme.dart';
+
 import 'package:braves_cog/features/onboarding/presentation/providers/onboarding_provider.dart';
 import 'package:braves_cog/features/onboarding/domain/entities/consents_entity.dart';
 
@@ -46,7 +45,7 @@ class _ConsentsScreenState extends ConsumerState<ConsentsScreen> {
     final consents = onboardingState.consents;
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           Positioned(
@@ -57,10 +56,10 @@ class _ConsentsScreenState extends ConsumerState<ConsentsScreen> {
               children: [
                 IconButton(
                   onPressed: _currentStep == 0 ? null : _handleBack,
-                  icon: Icon(Icons.chevron_left, size: 24, color: AppTheme.primaryColor),
+                  icon: Icon(Icons.chevron_left, size: 24, color: Theme.of(context).colorScheme.primary),
                   style: IconButton.styleFrom(
                     shape: const CircleBorder(),
-                    side: BorderSide(color: AppTheme.primaryColor, width: 2),
+                    side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
                     minimumSize: const Size(44, 44),
                   ),
                 ),
@@ -73,20 +72,16 @@ class _ConsentsScreenState extends ConsumerState<ConsentsScreen> {
                         children: [
                           Text(
                             'Zgody',
-                            style: GoogleFonts.spaceGrotesk(
-                              fontSize: 20,
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.w800,
-                              color: AppTheme.primaryColor,
                               letterSpacing: -0.1,
                             ),
                           ),
                           const Spacer(),
                           Text(
                             '${((_currentStep + 1) / _totalSteps * 100).round()}%',
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
+                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: AppTheme.primaryColor,
                             ),
                           ),
                         ],
@@ -96,8 +91,8 @@ class _ConsentsScreenState extends ConsumerState<ConsentsScreen> {
                         borderRadius: BorderRadius.circular(10),
                         child: LinearProgressIndicator(
                           value: (_currentStep + 1) / _totalSteps,
-                          backgroundColor: AppTheme.lightBackgroundColor,
-                          valueColor: AlwaysStoppedAnimation<Color>(AppTheme.accentColor),
+                          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                          valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.secondary),
                           minHeight: 6,
                         ),
                       ),
@@ -118,10 +113,8 @@ class _ConsentsScreenState extends ConsumerState<ConsentsScreen> {
                   Text(
                     _stepTitles[_currentStep],
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 30,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w800,
-                      color: AppTheme.primaryColor,
                       letterSpacing: -0.3,
                     ),
                   ),
@@ -139,7 +132,7 @@ class _ConsentsScreenState extends ConsumerState<ConsentsScreen> {
             child: ElevatedButton(
               onPressed: () => _handleNext(consents),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryColor,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 minimumSize: const Size(double.infinity, 56),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(1000),
@@ -150,15 +143,14 @@ class _ConsentsScreenState extends ConsumerState<ConsentsScreen> {
                 children: [
                   Text(
                     _currentStep == _totalSteps - 1 ? 'Dalej' : 'Kontynuuj',
-                    style: GoogleFonts.inter(
-                      fontSize: 18,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: AppTheme.inverseTextColor,
+                      color: Theme.of(context).colorScheme.onPrimary,
                       letterSpacing: -0.072,
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Icon(Icons.chevron_right, color: AppTheme.inverseTextColor),
+                  Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.onPrimary),
                 ],
               ),
             ),
@@ -209,9 +201,9 @@ class _ConsentsScreenState extends ConsumerState<ConsentsScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppTheme.lightBackgroundColor, width: 2),
+        border: Border.all(color: Theme.of(context).colorScheme.surfaceContainerHighest, width: 2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -221,26 +213,28 @@ class _ConsentsScreenState extends ConsumerState<ConsentsScreen> {
               Expanded(
                 child: Text(
                   title,
-                  style: GoogleFonts.inter(
-                    fontSize: 16,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: AppTheme.primaryColor,
                   ),
                 ),
               ),
               Switch(
                 value: value,
                 onChanged: onChanged,
-                activeColor: AppTheme.accentColor,
+                thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {
+                  if (states.contains(WidgetState.selected)) {
+                    return Theme.of(context).colorScheme.secondary;
+                  }
+                  return null;
+                }),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
             description,
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              color: AppTheme.primaryColor.withOpacity(0.6),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
             ),
           ),
         ],

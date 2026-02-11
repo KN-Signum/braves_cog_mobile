@@ -1,15 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:braves_cog/core/theme/app_theme.dart';
-import 'dart:convert';
-
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:braves_cog/core/theme/app_theme.dart';
 import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
 import 'package:braves_cog/core/providers/shared_preferences_provider.dart';
-import 'dart:convert';
 
 class LoginScreen extends ConsumerStatefulWidget {
   final VoidCallback onLogin;
@@ -108,10 +101,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         content: Text(
           message,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: AppTheme.inverseTextColor,
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
         ),
-        backgroundColor: AppTheme.primaryColor,
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
     );
   }
@@ -142,7 +135,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           
         if (authState.isLoading)
           Container(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withValues(alpha: 0.5),
             child: const Center(
               child: CircularProgressIndicator(),
             ),
@@ -153,7 +146,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Widget _buildSplashScreen() {
     return Scaffold(
-      backgroundColor: AppTheme.lightBackgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       body: Center(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 440),
@@ -165,13 +158,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 width: 250,
                 height: 250,
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor,
+                  color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
                 ),
                 child: Icon(
                   Icons.psychology,
                   size: 120,
-                  color: AppTheme.accentColor,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
               ),
               SizedBox(height: AppTheme.spacingLg),
@@ -188,7 +181,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Widget _buildRegistrationScreen() {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(AppTheme.spacingLg),
@@ -206,7 +199,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Container(
                   padding: EdgeInsets.all(AppTheme.spacingXl),
                   decoration: BoxDecoration(
-                    color: AppTheme.lightBackgroundColor,
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
                   ),
                   child: Column(
@@ -234,6 +227,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         controller: _passwordController,
                         placeholder: 'Twoje hasło',
                         isPassword: true,
+                        // Note: To truly match design, we'd style TextField via InputDeco theme in AppTheme, 
+                        // but here passing isPassword affects obscureText only.
                       ),
                       SizedBox(height: AppTheme.spacingXl),
                       SizedBox(
@@ -260,7 +255,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         child: Text(
                           'Polityka Prywatności | Regulamin',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppTheme.accentColor,
+                            color: Theme.of(context).colorScheme.secondary,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -278,7 +273,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Widget _buildLoginScreen() {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(AppTheme.spacingLg),
@@ -296,7 +291,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Container(
                   padding: EdgeInsets.all(AppTheme.spacingXl),
                   decoration: BoxDecoration(
-                    color: AppTheme.lightBackgroundColor,
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
                   ),
                   child: Column(
@@ -310,7 +305,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Text(
                         'Zaloguj się, by rozwijać swój mózg',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppTheme.primaryColor.withOpacity(0.7),
+                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -352,7 +347,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         child: Text(
                           'Polityka Prywatności | Regulamin',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppTheme.accentColor,
+                            color: Theme.of(context).colorScheme.secondary,
                           ),
                           textAlign: TextAlign.center,
                         ),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:braves_cog/core/theme/app_theme.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
+import 'package:braves_cog/core/providers/theme_provider.dart';
 import '../auth/login_screen.dart';
 import '../onboarding/onboarding_screen.dart';
 import '../home/home_screen.dart';
@@ -13,7 +13,7 @@ import '../profile/user_profile_screen.dart';
 import '../games/games_screen.dart';
 
 class MainScreenNew extends ConsumerStatefulWidget {
-  const MainScreenNew({Key? key}) : super(key: key);
+  const MainScreenNew({super.key});
 
   @override
   ConsumerState<MainScreenNew> createState() => _MainScreenNewState();
@@ -86,7 +86,7 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: AppTheme.backgroundColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -98,7 +98,7 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
               ),
               const SizedBox(height: 32),
               CircularProgressIndicator(
-                color: AppTheme.accentColor,
+                color: Theme.of(context).colorScheme.secondary,
                 strokeWidth: 3,
               ),
             ],
@@ -151,30 +151,29 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
 
   Widget _buildSettingsScreen() {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppTheme.backgroundColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.chevron_left,
-            color: AppTheme.primaryColor,
+            color: Theme.of(context).colorScheme.primary,
             size: 28,
           ),
           onPressed: _navigateToHome,
         ),
         title: Text(
           'Ustawienia',
-          style: GoogleFonts.spaceGrotesk(
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-            color: AppTheme.primaryColor,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
         ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          _buildThemeSwitchTile(),
           _buildSettingsTile(
             icon: Icons.notifications,
             title: 'Powiadomienia',
@@ -199,12 +198,12 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
               await ref.read(authProvider.notifier).logout();
               // Also clear other prefs if needed, but auth provider clears user info
               final prefs = await SharedPreferences.getInstance();
-               // We might NOT want to clear EVERYTHING like onboarding status on logout?
-               // The original code did `await prefs.clear()`.
-               // If we clear everything, we reset onboarding too.
-               // Assuming this is desired behavior for full reset.
+              // We might NOT want to clear EVERYTHING like onboarding status on logout?
+              // The original code did `await prefs.clear()`.
+              // If we clear everything, we reset onboarding too.
+              // Assuming this is desired behavior for full reset.
               await prefs.clear();
-              
+
               setState(() => _currentView = 'login');
             },
             style: ElevatedButton.styleFrom(
@@ -216,7 +215,7 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
             ),
             child: Text(
               'Wyloguj się',
-              style: GoogleFonts.inter(
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
@@ -224,6 +223,63 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildThemeSwitchTile() {
+    final themeMode = ref.watch(themeModeProvider);
+    final isDarkMode = themeMode == ThemeMode.dark;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          width: 2,
+        ),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        minVerticalPadding: 16,
+        leading: Container(
+          width: 44,
+          height: 44,
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Theme.of(
+              context,
+            ).colorScheme.secondary.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            isDarkMode ? Icons.dark_mode : Icons.light_mode,
+            color: Theme.of(context).colorScheme.secondary,
+            size: 24,
+          ),
+        ),
+        title: Text(
+          'Motyw',
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+        ),
+        subtitle: Text(
+          isDarkMode ? 'Ciemny' : 'Jasny',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w500,
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
+          ),
+        ),
+        trailing: Switch(
+          value: isDarkMode,
+          onChanged: (value) {
+            ref.read(themeModeProvider.notifier).toggleTheme();
+          },
+          activeColor: Theme.of(context).colorScheme.secondary,
+        ),
       ),
     );
   }
@@ -237,9 +293,12 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppTheme.lightBackgroundColor, width: 2),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          width: 2,
+        ),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -249,30 +308,33 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
           height: 44,
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: AppTheme.accentColor.withOpacity(0.15),
+            color: Theme.of(
+              context,
+            ).colorScheme.secondary.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(icon, color: AppTheme.accentColor, size: 24),
+          child: Icon(
+            icon,
+            color: Theme.of(context).colorScheme.secondary,
+            size: 24,
+          ),
         ),
         title: Text(
           title,
-          style: GoogleFonts.inter(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: AppTheme.primaryColor,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
         ),
         subtitle: Text(
           subtitle,
-          style: GoogleFonts.inter(
-            fontSize: 14,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w500,
-            color: AppTheme.primaryColor.withOpacity(0.6),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
           ),
         ),
         trailing: Icon(
           Icons.chevron_right,
-          color: AppTheme.primaryColor,
+          color: Theme.of(context).colorScheme.primary,
           size: 24,
         ),
         onTap: onTap,

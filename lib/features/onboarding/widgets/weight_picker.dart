@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../core/theme/app_theme.dart';
+
 
 class WeightPicker extends StatelessWidget {
-  final String value;
-  final Function(String) onChange;
+  final String weight;
+  final Function(String) onWeightChanged;
 
   const WeightPicker({
-    Key? key,
-    required this.value,
-    required this.onChange,
-  }) : super(key: key);
+    super.key,
+    required this.weight,
+    required this.onWeightChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
     final weights = List.generate(151, (index) => (40 + index).toString());
-    final initialIndex = weights.indexOf(value);
+    final initialIndex = weights.indexOf(weight);
 
-    return Container(
+    return SizedBox(
       height: 200,
-      width: 200,
+      width: double.infinity,
       child: ListWheelScrollView.useDelegate(
         itemExtent: 50,
         diameterRatio: 1.5,
@@ -27,21 +26,23 @@ class WeightPicker extends StatelessWidget {
           initialItem: initialIndex >= 0 ? initialIndex : weights.indexOf('70'),
         ),
         onSelectedItemChanged: (index) {
-          onChange(weights[index]);
+          onWeightChanged(weights[index]);
         },
         childDelegate: ListWheelChildBuilderDelegate(
           builder: (context, index) {
             if (index < 0 || index >= weights.length) return null;
-            final weight = weights[index];
-            final isSelected = weight == value;
+            final itemWeight = weights[index];
+            final isSelected = itemWeight == weight;
             
             return Center(
               child: Text(
-                '$weight kg',
-                style: GoogleFonts.spaceGrotesk(
+                '$itemWeight kg',
+                style: Theme.of(context).textTheme.displaySmall?.copyWith(
                   fontSize: isSelected ? 32 : 24,
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  color: isSelected ? AppTheme.primaryColor : AppTheme.primaryColor.withOpacity(0.5),
+                  color: isSelected 
+                    ? Theme.of(context).colorScheme.primary 
+                    : Theme.of(context).colorScheme.primary.withAlpha((255 * 0.1).round()),
                 ),
               ),
             );

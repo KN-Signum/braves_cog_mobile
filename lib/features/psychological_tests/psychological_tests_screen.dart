@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:braves_cog/core/theme/app_theme.dart';
+
 
 class PsychologicalTestsScreen extends StatelessWidget {
   final VoidCallback onBack;
 
-  const PsychologicalTestsScreen({Key? key, required this.onBack}) : super(key: key);
+  const PsychologicalTestsScreen({super.key, required this.onBack});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.lightBackgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -56,7 +56,7 @@ class PsychologicalTestsScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -94,7 +94,7 @@ class PsychologicalTestsScreen extends StatelessWidget {
                       subtitle,
                       style: TextStyle(
                         fontSize: 14,
-                        color: const Color(0xFF4F3422).withOpacity(0.6),
+                        color: const Color(0xFF4F3422).withValues(alpha: 0.6),
                       ),
                     ),
                   ],
@@ -120,7 +120,7 @@ class PsychologicalTestsScreen extends StatelessWidget {
                   Icon(
                     Icons.lock_outline,
                     size: 48,
-                    color: const Color(0xFF4F3422).withOpacity(0.4),
+                    color: const Color(0xFF4F3422).withValues(alpha: 0.4),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -128,7 +128,7 @@ class PsychologicalTestsScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF4F3422).withOpacity(0.6),
+                      color: const Color(0xFF4F3422).withValues(alpha: 0.6),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -137,7 +137,7 @@ class PsychologicalTestsScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 14,
-                      color: const Color(0xFF4F3422).withOpacity(0.6),
+                      color: const Color(0xFF4F3422).withValues(alpha: 0.6),
                     ),
                   ),
                 ],
@@ -149,7 +149,7 @@ class PsychologicalTestsScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: const Color(0xFF4F3422).withOpacity(0.6),
+                color: const Color(0xFF4F3422).withValues(alpha: 0.6),
               ),
             ),
             const SizedBox(height: 8),
@@ -166,7 +166,7 @@ class PsychologicalTestsScreen extends StatelessWidget {
                         width: 6,
                         height: 6,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF4F3422).withOpacity(0.3),
+                          color: const Color(0xFF4F3422).withValues(alpha: 0.3),
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -175,7 +175,7 @@ class PsychologicalTestsScreen extends StatelessWidget {
                         test,
                         style: TextStyle(
                           fontSize: 13,
-                          color: const Color(0xFF4F3422).withOpacity(0.6),
+                          color: const Color(0xFF4F3422).withValues(alpha: 0.6),
                         ),
                       ),
                     ],

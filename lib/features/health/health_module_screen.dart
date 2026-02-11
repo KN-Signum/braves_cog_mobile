@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:braves_cog/core/theme/app_theme.dart';
+
 import 'package:braves_cog/features/health/domain/entities/health_data_entity.dart';
 import 'package:braves_cog/features/health/presentation/providers/health_form_provider.dart';
 
-import 'package:braves_cog/core/theme/app_theme.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:convert';
 import '../onboarding/widgets/medication_autocomplete.dart';
 import 'widgets/specialization_autocomplete.dart';
 
 class HealthModuleScreen extends ConsumerStatefulWidget {
   final VoidCallback onBack;
 
-  const HealthModuleScreen({Key? key, required this.onBack}) : super(key: key);
+  const HealthModuleScreen({super.key, required this.onBack});
 
   @override
   ConsumerState<HealthModuleScreen> createState() => _HealthModuleScreenState();
@@ -45,7 +43,7 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
     final totalSteps = _totalSteps;
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
           SafeArea(
@@ -56,13 +54,13 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
                   IconButton(
                     icon: Icon(
                       Icons.chevron_left,
-                      color: AppTheme.primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                       size: 28,
                     ),
                     onPressed: _handleBack,
                     style: IconButton.styleFrom(
                       shape: const CircleBorder(),
-                      side: BorderSide(color: AppTheme.primaryColor, width: 2),
+                      side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
                       minimumSize: const Size(44, 44),
                     ),
                   ),
@@ -75,20 +73,16 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
                           children: [
                             Text(
                               'Moduł zdrowia',
-                              style: GoogleFonts.spaceGrotesk(
-                                fontSize: 20,
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.w800,
-                                color: AppTheme.primaryColor,
                                 letterSpacing: -0.1,
                               ),
                             ),
                             const Spacer(),
                             Text(
                               '${((currentStep + 1) / totalSteps * 100).round()}%',
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
+                              style: Theme.of(context).textTheme.labelMedium?.copyWith(
                                 fontWeight: FontWeight.w600,
-                                color: AppTheme.primaryColor,
                               ),
                             ),
                           ],
@@ -98,9 +92,9 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
                           borderRadius: BorderRadius.circular(10),
                           child: LinearProgressIndicator(
                             value: (currentStep + 1) / totalSteps,
-                            backgroundColor: AppTheme.lightBackgroundColor,
+                            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              AppTheme.accentColor,
+                              Theme.of(context).colorScheme.secondary,
                             ),
                             minHeight: 6,
                           ),
@@ -123,7 +117,8 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
             child: ElevatedButton(
               onPressed: () => _handleNext(state.data, currentStep),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryColor,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 minimumSize: const Size(double.infinity, 56),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(1000),
@@ -136,16 +131,15 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
                       children: [
                         Text(
                           currentStep == totalSteps - 1 ? 'Wyślij' : 'Dalej',
-                          style: GoogleFonts.inter(
-                            fontSize: 18,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w700,
-                            color: AppTheme.inverseTextColor,
+                            color: Theme.of(context).colorScheme.onPrimary,
                           ),
                         ),
                         const SizedBox(width: 12),
                         Icon(
                           Icons.arrow_forward,
-                          color: AppTheme.inverseTextColor,
+                          color: Theme.of(context).colorScheme.onPrimary,
                         ),
                       ],
                     ),
@@ -270,10 +264,8 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
       children: [
         Text(
           'Czy byłeś/aś u lekarza w ostatnim tygodniu?',
-          style: GoogleFonts.spaceGrotesk(
-            fontSize: 24,
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.w800,
-            color: AppTheme.primaryColor,
           ),
         ),
         const SizedBox(height: 24),
@@ -351,10 +343,8 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
       children: [
         Text(
           'Czy przyjmujesz jakieś leki?',
-          style: GoogleFonts.spaceGrotesk(
-            fontSize: 24,
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.w800,
-            color: AppTheme.primaryColor,
           ),
         ),
         const SizedBox(height: 24),
@@ -426,7 +416,7 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
                 ],
               ),
             );
-          }).toList(),
+          }),
           const SizedBox(height: 8),
           ElevatedButton.icon(
             onPressed: () {
@@ -439,14 +429,14 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
             icon: const Icon(Icons.add),
             label: Text(
               data.medicationNames.isEmpty ? 'Dodaj lek' : 'Dodaj kolejny lek',
-              style: GoogleFonts.inter(
-                fontSize: 16,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.accentColor,
-              foregroundColor: AppTheme.primaryColor,
+              backgroundColor: Theme.of(context).colorScheme.secondary,
+              foregroundColor: Theme.of(context).colorScheme.primary,
               minimumSize: const Size(double.infinity, 56),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(1000),
@@ -460,9 +450,8 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
               child: Text(
                 'Kliknij przycisk aby dodać lek',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  color: AppTheme.primaryColor.withOpacity(0.6),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                 ),
               ),
             ),
@@ -549,10 +538,8 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
       children: [
         Text(
           'Czy wystąpiły jakieś działania niepożądane?',
-          style: GoogleFonts.spaceGrotesk(
-            fontSize: 24,
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.w800,
-            color: AppTheme.primaryColor,
           ),
         ),
         const SizedBox(height: 24),
@@ -594,43 +581,37 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
                                 data.copyWith(adverseEventsOther: newOther),
                               );
                         },
-                        style: GoogleFonts.inter(
-                          fontSize: 16,
-                          color: AppTheme.primaryColor,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium,
                         decoration: InputDecoration(
                           labelText: 'Inne działanie niepożądane ${index + 1}',
                           hintText: 'Wpisz działanie niepożądane',
-                          hintStyle: GoogleFonts.inter(
-                            fontSize: 16,
-                            color: AppTheme.primaryColor.withOpacity(0.5),
+                          hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
                           ),
-                          labelStyle: GoogleFonts.inter(
-                            fontSize: 14,
+                          labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: AppTheme.primaryColor,
                           ),
                           filled: true,
-                          fillColor: Colors.white,
+                          fillColor: Theme.of(context).scaffoldBackgroundColor,
                           contentPadding: const EdgeInsets.all(16),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
                             borderSide: BorderSide(
-                              color: AppTheme.lightBackgroundColor,
+                              color: Theme.of(context).colorScheme.surfaceContainerHighest,
                               width: 2,
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
                             borderSide: BorderSide(
-                              color: AppTheme.lightBackgroundColor,
+                              color: Theme.of(context).colorScheme.surfaceContainerHighest,
                               width: 2,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
                             borderSide: BorderSide(
-                              color: AppTheme.accentColor,
+                              color: Theme.of(context).colorScheme.secondary,
                               width: 2,
                             ),
                           ),
@@ -661,7 +642,7 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
                 ],
               ),
             );
-          }).toList(),
+          }),
           const SizedBox(height: 8),
           ElevatedButton.icon(
             onPressed: () {
@@ -674,14 +655,13 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
             icon: const Icon(Icons.add),
             label: Text(
               data.adverseEventsOther.isEmpty ? 'Dodaj' : 'Dodaj kolejne',
-              style: GoogleFonts.inter(
-                fontSize: 16,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.accentColor,
-              foregroundColor: AppTheme.primaryColor,
+              backgroundColor: Theme.of(context).colorScheme.secondary,
+              foregroundColor: Theme.of(context).colorScheme.primary,
               minimumSize: const Size(double.infinity, 56),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
@@ -699,20 +679,16 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
       children: [
         Text(
           'Ile godzin spałeś/aś ostatniej nocy?',
-          style: GoogleFonts.spaceGrotesk(
-            fontSize: 24,
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.w800,
-            color: AppTheme.primaryColor,
           ),
         ),
         const SizedBox(height: 48),
         Center(
           child: Text(
             '${data.sleepHours}h',
-            style: GoogleFonts.spaceGrotesk(
-              fontSize: 48,
+            style: Theme.of(context).textTheme.displayLarge?.copyWith(
               fontWeight: FontWeight.w800,
-              color: AppTheme.primaryColor,
             ),
           ),
         ),
@@ -722,8 +698,8 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
           max: 12,
           divisions: 12,
           label: '${data.sleepHours}h',
-          activeColor: AppTheme.accentColor,
-          inactiveColor: AppTheme.lightBackgroundColor,
+          activeColor: Theme.of(context).colorScheme.secondary,
+          inactiveColor: Theme.of(context).colorScheme.surfaceContainerHighest,
           onChanged: (value) {
             ref
                 .read(healthFormProvider.notifier)
@@ -751,7 +727,7 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
           style: GoogleFonts.spaceGrotesk(
             fontSize: 24,
             fontWeight: FontWeight.w800,
-            color: AppTheme.primaryColor,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
         const SizedBox(height: 24),
@@ -781,7 +757,7 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
           style: GoogleFonts.spaceGrotesk(
             fontSize: 24,
             fontWeight: FontWeight.w800,
-            color: AppTheme.primaryColor,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
         const SizedBox(height: 48),
@@ -791,7 +767,7 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
             style: GoogleFonts.spaceGrotesk(
               fontSize: 48,
               fontWeight: FontWeight.w800,
-              color: AppTheme.primaryColor,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
         ),
@@ -801,8 +777,8 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
           max: 10,
           divisions: 10,
           label: '${data.sleepWakings}x',
-          activeColor: AppTheme.accentColor,
-          inactiveColor: AppTheme.lightBackgroundColor,
+          activeColor: Theme.of(context).colorScheme.secondary,
+          inactiveColor: Theme.of(context).colorScheme.surfaceContainerHighest,
           onChanged: (value) {
             ref
                 .read(healthFormProvider.notifier)
@@ -887,7 +863,7 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
           style: GoogleFonts.spaceGrotesk(
             fontSize: 24,
             fontWeight: FontWeight.w800,
-            color: AppTheme.primaryColor,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
         const SizedBox(height: 24),
@@ -908,7 +884,7 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
             style: GoogleFonts.spaceGrotesk(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: AppTheme.primaryColor,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const SizedBox(height: 16),
@@ -918,7 +894,7 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
               style: GoogleFonts.spaceGrotesk(
                 fontSize: 48,
                 fontWeight: FontWeight.w800,
-                color: AppTheme.primaryColor,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
           ),
@@ -928,8 +904,8 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
             max: 180,
             divisions: 35,
             label: '${data.activityMinutes} min',
-            activeColor: AppTheme.accentColor,
-            inactiveColor: AppTheme.lightBackgroundColor,
+            activeColor: Theme.of(context).colorScheme.secondary,
+            inactiveColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             onChanged: (value) {
               ref
                   .read(healthFormProvider.notifier)
@@ -1002,7 +978,7 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
           style: GoogleFonts.spaceGrotesk(
             fontSize: 24,
             fontWeight: FontWeight.w800,
-            color: AppTheme.primaryColor,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
         const SizedBox(height: 24),
@@ -1046,19 +1022,19 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
                         },
                         style: GoogleFonts.inter(
                           fontSize: 16,
-                          color: AppTheme.primaryColor,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                         decoration: InputDecoration(
                           labelText: 'Inne ${index + 1}',
                           hintText: 'Wpisz inne',
                           hintStyle: GoogleFonts.inter(
                             fontSize: 16,
-                            color: AppTheme.primaryColor.withOpacity(0.5),
+                            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
                           ),
                           labelStyle: GoogleFonts.inter(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: AppTheme.primaryColor,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                           filled: true,
                           fillColor: Colors.white,
@@ -1066,21 +1042,21 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
                             borderSide: BorderSide(
-                              color: AppTheme.lightBackgroundColor,
+                              color: Theme.of(context).colorScheme.surfaceContainerHighest,
                               width: 2,
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
                             borderSide: BorderSide(
-                              color: AppTheme.lightBackgroundColor,
+                              color: Theme.of(context).colorScheme.surfaceContainerHighest,
                               width: 2,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
                             borderSide: BorderSide(
-                              color: AppTheme.accentColor,
+                              color: Theme.of(context).colorScheme.secondary,
                               width: 2,
                             ),
                           ),
@@ -1109,7 +1085,7 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
                 ],
               ),
             );
-          }).toList(),
+          }),
           const SizedBox(height: 8),
           ElevatedButton.icon(
             onPressed: () {
@@ -1128,8 +1104,8 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
               ),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.accentColor,
-              foregroundColor: AppTheme.primaryColor,
+              backgroundColor: Theme.of(context).colorScheme.secondary,
+              foregroundColor: Theme.of(context).colorScheme.primary,
               minimumSize: const Size(double.infinity, 56),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
@@ -1155,7 +1131,7 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
           style: GoogleFonts.inter(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: AppTheme.primaryColor,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
         const SizedBox(height: 8),
@@ -1163,7 +1139,7 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
           controller: controller,
           maxLines: maxLines,
           onChanged: onChanged,
-          style: GoogleFonts.inter(fontSize: 16, color: AppTheme.primaryColor),
+          style: GoogleFonts.inter(fontSize: 16, color: Theme.of(context).colorScheme.primary),
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.white,
@@ -1171,20 +1147,20 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24),
               borderSide: BorderSide(
-                color: AppTheme.lightBackgroundColor,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 width: 2,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24),
               borderSide: BorderSide(
-                color: AppTheme.lightBackgroundColor,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 width: 2,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24),
-              borderSide: BorderSide(color: AppTheme.accentColor, width: 2),
+              borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary, width: 2),
             ),
           ),
         ),
@@ -1200,12 +1176,12 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
         height: 56,
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.accentColor : Colors.white,
+          color: isSelected ? Theme.of(context).colorScheme.secondary : Colors.white,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: isSelected
-                ? AppTheme.accentColor
-                : AppTheme.lightBackgroundColor,
+                ? Theme.of(context).colorScheme.secondary
+                : Theme.of(context).colorScheme.surfaceContainerHighest,
             width: 2,
           ),
         ),
@@ -1216,7 +1192,7 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
             style: GoogleFonts.inter(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: isSelected ? AppTheme.primaryColor : AppTheme.primaryColor,
+              color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.primary,
             ),
           ),
         ),
@@ -1237,12 +1213,12 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
         height: 56,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.accentColor : Colors.white,
+          color: isSelected ? Theme.of(context).colorScheme.secondary : Colors.white,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: isSelected
-                ? AppTheme.accentColor
-                : AppTheme.lightBackgroundColor,
+                ? Theme.of(context).colorScheme.secondary
+                : Theme.of(context).colorScheme.surfaceContainerHighest,
             width: 2,
           ),
         ),
@@ -1250,7 +1226,7 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
           children: [
             Icon(
               icon,
-              color: isSelected ? AppTheme.primaryColor : AppTheme.primaryColor,
+              color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.primary,
               size: 32,
             ),
             const SizedBox(width: 16),
@@ -1260,8 +1236,8 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: isSelected
-                    ? AppTheme.primaryColor
-                    : AppTheme.primaryColor,
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.primary,
               ),
             ),
           ],
@@ -1282,12 +1258,12 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
         height: 56,
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.accentColor : Colors.white,
+          color: isSelected ? Theme.of(context).colorScheme.secondary : Colors.white,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: isSelected
-                ? AppTheme.accentColor
-                : AppTheme.lightBackgroundColor,
+                ? Theme.of(context).colorScheme.secondary
+                : Theme.of(context).colorScheme.surfaceContainerHighest,
             width: 2,
           ),
         ),
@@ -1295,7 +1271,7 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
           children: [
             Icon(
               isSelected ? Icons.check_box : Icons.check_box_outline_blank,
-              color: isSelected ? AppTheme.primaryColor : AppTheme.primaryColor,
+              color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.primary,
             ),
             const SizedBox(width: 12),
             Text(
@@ -1304,8 +1280,8 @@ class _HealthModuleScreenState extends ConsumerState<HealthModuleScreen> {
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: isSelected
-                    ? AppTheme.primaryColor
-                    : AppTheme.primaryColor,
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.primary,
               ),
             ),
           ],

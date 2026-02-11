@@ -228,7 +228,7 @@ class GamesScreen extends StatelessWidget {
 
   void printWrapped(String text) {
     final pattern = RegExp('.{1,800}');
-    pattern.allMatches(text).forEach((match) => print(match.group(0)));
+    pattern.allMatches(text).forEach((match) => debugPrint(match.group(0)));
   }
 
   void _showResults(BuildContext context, RPTaskResult result) {
@@ -237,9 +237,9 @@ class GamesScreen extends StatelessWidget {
     const JsonEncoder encoder = JsonEncoder.withIndent('  ');
     final String jsonString = encoder.convert(jsonMap);
 
-    print("================ RESULT START ================");
+    debugPrint("================ RESULT START ================");
     printWrapped(jsonString);
-    print("================ RESULT END ================");
+    debugPrint("================ RESULT END ================");
 
     final activityResults = result.results.values.whereType<RPActivityResult>();
 
@@ -320,7 +320,7 @@ class _GameCard extends StatelessWidget {
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: color, size: 30),

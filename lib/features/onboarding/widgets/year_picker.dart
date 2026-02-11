@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../core/theme/app_theme.dart';
+
 
 class YearPicker extends StatelessWidget {
   final String value;
@@ -10,13 +9,13 @@ class YearPicker extends StatelessWidget {
   final int defaultYear;
 
   const YearPicker({
-    Key? key,
+    super.key,
     required this.value,
     required this.onChange,
     this.minYear = 1925,
     required this.maxYear,
     this.defaultYear = 1990,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +26,7 @@ class YearPicker extends StatelessWidget {
 
     final initialIndex = years.indexOf(value);
 
-    return Container(
+    return SizedBox(
       height: 200,
       width: 150,
       child: ListWheelScrollView.useDelegate(
@@ -45,13 +44,18 @@ class YearPicker extends StatelessWidget {
             final year = years[index];
             final isSelected = year == value;
             
-            return Center(
-              child: Text(
-                year,
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: isSelected ? 32 : 24,
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  color: isSelected ? AppTheme.primaryColor : AppTheme.primaryColor.withOpacity(0.5),
+            return SizedBox(
+              width: double.infinity,
+              child: Center(
+                child: Text(
+                  year,
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    fontSize: isSelected ? 32 : 24,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    color: isSelected 
+                      ? Theme.of(context).colorScheme.primary 
+                      : Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                  ),
                 ),
               ),
             );

@@ -9,7 +9,7 @@ import 'package:braves_cog/features/onboarding/presentation/screens/final_screen
 class OnboardingScreen extends ConsumerWidget {
   final VoidCallback onComplete;
 
-  const OnboardingScreen({Key? key, required this.onComplete}) : super(key: key);
+  const OnboardingScreen({super.key, required this.onComplete});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -74,7 +74,7 @@ class _LogoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F6F0), // AppTheme.backgroundColor
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       body: Center(
         child: Image.asset(
           'assets/images/braves_logo.png',

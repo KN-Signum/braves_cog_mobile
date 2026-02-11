@@ -43,6 +43,7 @@ dependencies:
   equatable: ^2.0.8
   dartz: ^0.10.1
   intl: ^0.20.2
+  research_package: ^2.3.0
 
 dev_dependencies:
   flutter_test:

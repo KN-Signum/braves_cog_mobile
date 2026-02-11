@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:braves_cog/core/theme/app_theme.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback onUserProfileClick;
@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -92,8 +92,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       title: 'Testy jednorazowe',
                       description:
                           'Badanie jednorazowe oceniające aktualny stan',
-                      color: AppTheme.accentColor.withOpacity(0.1),
-                      iconColor: AppTheme.accentColor,
+                      color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
+                      iconColor: Theme.of(context).colorScheme.secondary,
                       icon: Icons.psychology,
                     ),
                     SizedBox(height: AppTheme.spacingMd),
@@ -101,8 +101,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     _buildTestCard(
                       title: 'Testy wielokrotne',
                       description: 'Monitorowanie postępów w czasie',
-                      color: AppTheme.lightBackgroundColor,
-                      iconColor: AppTheme.primaryColor,
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      iconColor: Theme.of(context).colorScheme.primary,
                       icon: Icons.assignment,
                     ),
                   ],
@@ -124,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Container(
         padding: EdgeInsets.all(AppTheme.spacingLg),
         decoration: BoxDecoration(
-          color: AppTheme.accentColor,
+          color: Theme.of(context).colorScheme.secondary,
           borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
         ),
         child: Row(
@@ -136,14 +136,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     'Wypełnij ankietę',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: AppTheme.primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   SizedBox(height: AppTheme.spacingSm),
                   Text(
                     'Sprawdź swoje zdrowie i samopoczucie',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppTheme.primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ],
@@ -153,13 +153,13 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 70,
               height: 70,
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor,
+                color: Theme.of(context).colorScheme.primary,
                 borderRadius: BorderRadius.circular(AppTheme.borderRadiusLarge),
               ),
               child: Icon(
                 Icons.fitness_center,
                 size: 40,
-                color: AppTheme.accentColor,
+                color: Theme.of(context).colorScheme.secondary,
               ),
             ),
           ],
@@ -182,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
-          border: Border.all(color: iconColor.withOpacity(0.2), width: 1),
+          border: Border.all(color: iconColor.withValues(alpha: 0.2), width: 1),
         ),
         child: Row(
           children: [
@@ -193,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     title,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: AppTheme.primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   SizedBox(height: AppTheme.spacingSm),
@@ -227,9 +227,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildBottomNavigation() {
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.backgroundColor,
+        color: Theme.of(context).scaffoldBackgroundColor,
         border: Border(
-          top: BorderSide(color: AppTheme.lightBackgroundColor, width: 1),
+          top: BorderSide(color: Theme.of(context).colorScheme.surfaceContainerHighest, width: 1),
         ),
       ),
       child: SafeArea(
@@ -276,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         decoration: BoxDecoration(
           color: isActive
-              ? AppTheme.accentColor.withOpacity(0.1)
+              ? Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(AppTheme.borderRadiusMedium),
         ),
@@ -286,8 +286,8 @@ class _HomeScreenState extends State<HomeScreen> {
             Icon(
               icon,
               color: isActive
-                  ? AppTheme.accentColor
-                  : AppTheme.primaryColor.withOpacity(0.5),
+                  ? Theme.of(context).colorScheme.secondary
+                  : Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
               size: 24,
             ),
             SizedBox(height: AppTheme.spacingXs),
@@ -296,8 +296,8 @@ class _HomeScreenState extends State<HomeScreen> {
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
                 color: isActive
-                    ? AppTheme.accentColor
-                    : AppTheme.primaryColor.withOpacity(0.5),
+                    ? Theme.of(context).colorScheme.secondary
+                    : Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
               ),
             ),
           ],

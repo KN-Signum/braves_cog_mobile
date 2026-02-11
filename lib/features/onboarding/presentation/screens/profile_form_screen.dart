@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:braves_cog/core/theme/app_theme.dart';
+
 import 'package:braves_cog/features/onboarding/presentation/providers/onboarding_provider.dart';
 import 'package:braves_cog/features/profile/domain/entities/user_profile_entity.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
@@ -102,7 +101,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
     final profile = profileState.profile;
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           Positioned(
@@ -113,10 +112,10 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
               children: [
                 IconButton(
                   onPressed: _currentStep == 0 ? null : _handleBack,
-                  icon: Icon(Icons.chevron_left, size: 24, color: AppTheme.primaryColor),
+                  icon: Icon(Icons.chevron_left, size: 24, color: Theme.of(context).colorScheme.primary),
                   style: IconButton.styleFrom(
                     shape: const CircleBorder(),
-                    side: BorderSide(color: AppTheme.primaryColor, width: 2),
+                    side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
                     minimumSize: const Size(44, 44),
                   ),
                 ),
@@ -129,20 +128,16 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                         children: [
                           Text(
                             'Profil',
-                            style: GoogleFonts.spaceGrotesk(
-                              fontSize: 20,
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.w800,
-                              color: AppTheme.primaryColor,
                               letterSpacing: -0.1,
                             ),
                           ),
                           const Spacer(),
                           Text(
                             '${((_currentStep + 1) / _totalSteps * 100).round()}%',
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
+                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: AppTheme.primaryColor,
                             ),
                           ),
                         ],
@@ -152,8 +147,8 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                         borderRadius: BorderRadius.circular(10),
                         child: LinearProgressIndicator(
                           value: (_currentStep + 1) / _totalSteps,
-                          backgroundColor: AppTheme.lightBackgroundColor,
-                          valueColor: AlwaysStoppedAnimation<Color>(AppTheme.accentColor),
+                          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                          valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.secondary),
                           minHeight: 6,
                         ),
                       ),
@@ -174,10 +169,8 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                   Text(
                     _stepTitles[_currentStep],
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 30,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w800,
-                      color: AppTheme.primaryColor,
                       letterSpacing: -0.3,
                     ),
                   ),
@@ -195,8 +188,8 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
             child: ElevatedButton(
               onPressed: _canProceed(profile) ? () => _handleNext(profile) : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryColor,
-                disabledBackgroundColor: AppTheme.primaryColor.withOpacity(0.5),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                disabledBackgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
                 minimumSize: const Size(double.infinity, 56),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(1000),
@@ -207,15 +200,14 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                 children: [
                   Text(
                     _currentStep == _totalSteps - 1 ? 'Dalej' : 'Kontynuuj',
-                    style: GoogleFonts.inter(
-                      fontSize: 18,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: AppTheme.inverseTextColor,
+                      color: Theme.of(context).colorScheme.onPrimary,
                       letterSpacing: -0.072,
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Icon(Icons.chevron_right, color: AppTheme.inverseTextColor),
+                  Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.onPrimary),
                 ],
               ),
             ),
@@ -231,7 +223,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                 width: 134,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor,
+                  color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(100),
                 ),
               ),
@@ -252,13 +244,13 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
         );
       case 1:
         return HeightPicker(
-          value: profile.height,
-          onChange: (value) => _updateProfile(profile.copyWith(height: value)),
+          height: profile.height,
+          onHeightChanged: (value) => _updateProfile(profile.copyWith(height: value)),
         );
       case 2:
         return WeightPicker(
-          value: profile.weight,
-          onChange: (value) => _updateProfile(profile.copyWith(weight: value)),
+          weight: profile.weight,
+          onWeightChanged: (value) => _updateProfile(profile.copyWith(weight: value)),
         );
       case 3:
         return Column(
@@ -370,7 +362,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                   ],
                 ),
               );
-            }).toList(),
+            }),
             const SizedBox(height: 8),
             ElevatedButton.icon(
               onPressed: () {
@@ -381,11 +373,14 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
               icon: const Icon(Icons.add),
               label: Text(
                 profile.medications.isEmpty ? 'Dodaj lek' : 'Dodaj kolejny lek',
-                style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.accentColor,
-                foregroundColor: AppTheme.primaryColor,
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                foregroundColor: Theme.of(context).colorScheme.primary,
                 minimumSize: const Size(343, 56),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                  elevation: 0,
@@ -397,9 +392,8 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                 child: Text(
                   'Możesz pominąć ten krok jeśli nie przyjmujesz leków na stałe',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    color: AppTheme.primaryColor.withOpacity(0.6),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                   ),
                 ),
               ),
@@ -500,18 +494,22 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
         controller: TextEditingController(text: value)
           ..selection = TextSelection.fromPosition(TextPosition(offset: value.length)),
         onChanged: onChanged,
-        style: GoogleFonts.inter(fontSize: 16, color: AppTheme.primaryColor),
+        style: Theme.of(context).textTheme.bodyMedium,
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
-          hintStyle: GoogleFonts.inter(fontSize: 16, color: AppTheme.primaryColor.withOpacity(0.5)),
-          labelStyle: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.primaryColor),
+          hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+          ),
+          labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: Theme.of(context).scaffoldBackgroundColor,
           contentPadding: const EdgeInsets.all(16),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide(color: AppTheme.lightBackgroundColor, width: 2)),
-          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide(color: AppTheme.lightBackgroundColor, width: 2)),
-          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide(color: AppTheme.accentColor, width: 2)),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide(color: Theme.of(context).colorScheme.surfaceContainerHighest, width: 2)),
+          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide(color: Theme.of(context).colorScheme.surfaceContainerHighest, width: 2)),
+          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary, width: 2)),
         ),
       ),
     );
@@ -531,13 +529,20 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
             children: [
               Text(
                 title,
-                style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600, color: AppTheme.primaryColor),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const Spacer(),
               Switch(
                 value: value,
                 onChanged: onChanged,
-                activeColor: AppTheme.accentColor,
+                thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {
+                  if (states.contains(WidgetState.selected)) {
+                    return Theme.of(context).colorScheme.secondary;
+                  }
+                  return null;
+                }),
               ),
             ],
           ),
@@ -565,13 +570,20 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
             children: [
               Text(
                 title,
-                style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600, color: AppTheme.primaryColor),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const Spacer(),
               Switch(
                 value: value,
                 onChanged: onChanged,
-                activeColor: AppTheme.accentColor,
+                thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {
+                  if (states.contains(WidgetState.selected)) {
+                    return Theme.of(context).colorScheme.secondary;
+                  }
+                  return null;
+                }),
               ),
             ],
           ),
@@ -630,7 +642,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
               ],
             ),
           );
-        }).toList(),
+        }),
         const SizedBox(height: 8),
         ElevatedButton.icon(
           onPressed: () {
@@ -641,11 +653,13 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
           icon: const Icon(Icons.add),
           label: Text(
             items.isEmpty ? addItemLabel : 'Dodaj kolejną',
-            style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
           ),
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.accentColor,
-            foregroundColor: AppTheme.primaryColor,
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+            foregroundColor: Theme.of(context).colorScheme.primary,
             minimumSize: const Size(343, 56),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
             elevation: 0,
@@ -657,9 +671,8 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                 child: Text(
                   'Możesz pominąć ten krok jeśli nie dotyczy',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    color: AppTheme.primaryColor.withOpacity(0.6),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                   ),
                 ),
               ),

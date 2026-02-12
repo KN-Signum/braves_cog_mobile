@@ -59,6 +59,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       // Update UI state for returning user
       final prefs = ref.read(sharedPreferencesProvider);
       await prefs.setBool('user-registered', true);
+      await prefs.setBool('just-registered', true); // Flag for onboarding
 
       widget.onLogin();
     } catch (e) {
@@ -215,7 +216,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 ?.copyWith(
                                   color: Theme.of(
                                     context,
-                                  ).colorScheme.secondary,
+                                  ).colorScheme.onSurface,
                                 ),
                             textAlign: TextAlign.center,
                           ),
@@ -319,12 +320,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             }
                           },
                           child: Text(
-                            'Polityka Prywatności | Regulamin',
+                            'Polityka Prywatności',
                             style: Theme.of(context).textTheme.bodySmall
                                 ?.copyWith(
                                   color: Theme.of(
                                     context,
-                                  ).colorScheme.secondary,
+                                  ).colorScheme.onSurface,
                                 ),
                             textAlign: TextAlign.center,
                           ),
@@ -347,6 +348,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     required String placeholder,
     bool isPassword = false,
   }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final fillColor = isDarkMode
+        ? Theme.of(context).colorScheme.surfaceContainerHighest
+        : Colors.white;
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
+    final hintColor = isDarkMode
+        ? const Color(0xFFB0B8C1)
+        : const Color(0xFF6B7280);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -355,11 +365,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         TextField(
           controller: controller,
           obscureText: isPassword,
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: textColor),
           decoration: InputDecoration(
             hintText: placeholder,
             filled: true,
-            fillColor: Colors.white,
+            fillColor: fillColor,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 16,
@@ -385,7 +397,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 width: 2,
               ),
             ),
-            hintStyle: const TextStyle(color: Color(0xFF6B7280), fontSize: 16),
+            hintStyle: TextStyle(color: hintColor, fontSize: 16),
           ),
         ),
       ],

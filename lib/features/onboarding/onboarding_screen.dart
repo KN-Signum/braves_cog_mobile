@@ -8,8 +8,13 @@ import 'package:braves_cog/features/onboarding/presentation/screens/final_screen
 
 class OnboardingScreen extends ConsumerWidget {
   final VoidCallback onComplete;
+  final VoidCallback? onBackToLogin;
 
-  const OnboardingScreen({super.key, required this.onComplete});
+  const OnboardingScreen({
+    super.key,
+    required this.onComplete,
+    this.onBackToLogin,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,10 +27,7 @@ class OnboardingScreen extends ConsumerWidget {
       }
       if (next.error != null && (previous?.error != next.error)) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(next.error!),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(next.error!), backgroundColor: Colors.red),
         );
       }
     });
@@ -34,27 +36,29 @@ class OnboardingScreen extends ConsumerWidget {
       case OnboardingStage.logo:
         // Trigger auto advance for logo
         Future.microtask(() {
-           Future.delayed(const Duration(seconds: 2), () {
-             ref.read(onboardingProvider.notifier).setStage(OnboardingStage.welcome);
-           });
+          Future.delayed(const Duration(seconds: 2), () {
+            ref
+                .read(onboardingProvider.notifier)
+                .setStage(OnboardingStage.welcome);
+          });
         });
         return const _LogoScreen();
-      
+
       case OnboardingStage.welcome:
         return const WelcomeScreen();
-      
+
       case OnboardingStage.intro:
         return const IntroScreen();
-      
+
       case OnboardingStage.profile:
-        return const ProfileFormScreen();
-      
+        return ProfileFormScreen(onBackToLogin: onBackToLogin);
+
       case OnboardingStage.consentsIntro:
-        return const ConsentsIntroScreen();
-      
+        return ConsentsIntroScreen(onBackToLogin: onBackToLogin);
+
       case OnboardingStage.consents:
-        return const ConsentsScreen();
-      
+        return ConsentsScreen(onBackToLogin: onBackToLogin);
+
       case OnboardingStage.final_:
         return FinalScreen(
           onAnimationComplete: () {
@@ -63,7 +67,9 @@ class OnboardingScreen extends ConsumerWidget {
         );
 
       case OnboardingStage.completed:
-        return const Scaffold(body: Center(child: CircularProgressIndicator())); // Should navigate away
+        return const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        ); // Should navigate away
     }
   }
 }
@@ -74,7 +80,7 @@ class _LogoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: Image.asset(
           'assets/images/braves_logo.png',

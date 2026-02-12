@@ -10,6 +10,23 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
       birthYear: '1990',
       height: '175',
       weight: '70',
+      currentIllness: 'None',
+      chronicDiseases: 'Hypertension',
+      smokingCigarettes: false,
+      smokingFrequency: '',
+      drinkingAlcohol: true,
+      alcoholFrequency: 'Occasionally',
+      otherSubstances: false,
+      otherSubstancesName: '',
+      otherSubstancesFrequency: '',
+      allergies: ['Peanuts', 'Penicillin'],
+      medications: ['Lisinopril'],
+      biologicalSex: 'Male',
+      genderIdentity: 'Man',
+      genderIdentityOther: '',
+      education: 'Bachelor\'s Degree',
+      educationOther: '',
+      disability: 'None',
     );
   }
 

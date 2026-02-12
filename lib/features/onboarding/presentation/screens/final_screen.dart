@@ -4,10 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:braves_cog/features/onboarding/presentation/providers/onboarding_provider.dart';
 
 class ConsentsIntroScreen extends ConsumerStatefulWidget {
-  const ConsentsIntroScreen({super.key});
+  final VoidCallback? onBackToLogin;
+
+  const ConsentsIntroScreen({super.key, this.onBackToLogin});
 
   @override
-  ConsumerState<ConsentsIntroScreen> createState() => _ConsentsIntroScreenState();
+  ConsumerState<ConsentsIntroScreen> createState() =>
+      _ConsentsIntroScreenState();
 }
 
 class _ConsentsIntroScreenState extends ConsumerState<ConsentsIntroScreen> {
@@ -20,7 +23,9 @@ class _ConsentsIntroScreenState extends ConsumerState<ConsentsIntroScreen> {
   void _startAnimation() {
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
-        ref.read(onboardingProvider.notifier).setStage(OnboardingStage.consents);
+        ref
+            .read(onboardingProvider.notifier)
+            .setStage(OnboardingStage.consents);
       }
     });
   }

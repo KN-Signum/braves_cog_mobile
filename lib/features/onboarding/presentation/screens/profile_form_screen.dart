@@ -4,14 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:braves_cog/features/onboarding/presentation/providers/onboarding_provider.dart';
 import 'package:braves_cog/features/profile/domain/entities/user_profile_entity.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
-import 'package:braves_cog/features/onboarding/widgets/year_picker.dart' as custom_pickers;
+import 'package:braves_cog/features/onboarding/widgets/year_picker.dart'
+    as custom_pickers;
 import 'package:braves_cog/features/onboarding/widgets/height_picker.dart';
 import 'package:braves_cog/features/onboarding/widgets/weight_picker.dart';
 import 'package:braves_cog/features/onboarding/widgets/icon_option_grid.dart';
 import 'package:braves_cog/features/onboarding/widgets/medication_autocomplete.dart';
 
 class ProfileFormScreen extends ConsumerStatefulWidget {
-  const ProfileFormScreen({super.key});
+  final VoidCallback? onBackToLogin;
+
+  const ProfileFormScreen({super.key, this.onBackToLogin});
 
   @override
   ConsumerState<ProfileFormScreen> createState() => _ProfileFormScreenState();
@@ -32,7 +35,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
     'Płeć biologiczna',
     'Tożsamość płciowa',
     'Wykształcenie',
-    'Niepełnosprawność'
+    'Niepełnosprawność',
   ];
 
   @override
@@ -82,16 +85,21 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
     if (_currentStep < _totalSteps - 1) {
       setState(() => _currentStep++);
     } else {
-      // Save profile implicitly handled by provider state update, 
+      // Save profile implicitly handled by provider state update,
       // actual persistence happens at end of onboarding or we can save now.
       ref.read(profileProvider.notifier).updateProfile(profile);
-      ref.read(onboardingProvider.notifier).setStage(OnboardingStage.consentsIntro);
+      ref
+          .read(onboardingProvider.notifier)
+          .setStage(OnboardingStage.consentsIntro);
     }
   }
 
   void _handleBack() {
     if (_currentStep > 0) {
       setState(() => _currentStep--);
+    } else {
+      // On first step, go back to login if callback provided
+      widget.onBackToLogin?.call();
     }
   }
 
@@ -111,48 +119,64 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
             child: Row(
               children: [
                 IconButton(
-                  onPressed: _currentStep == 0 ? null : _handleBack,
-                  icon: Icon(Icons.chevron_left, size: 24, color: Theme.of(context).colorScheme.primary),
+                  onPressed: _handleBack,
+                  icon: Icon(
+                    Icons.chevron_left,
+                    size: 24,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   style: IconButton.styleFrom(
                     shape: const CircleBorder(),
-                    side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
-                    minimumSize: const Size(44, 44),
+                    side: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                      width: 2,
+                    ),
+                    minimumSize: const Size(40, 40),
                   ),
                 ),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Profil',
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: -0.1,
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            '${((_currentStep + 1) / _totalSteps * 100).round()}%',
-                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: LinearProgressIndicator(
-                          value: (_currentStep + 1) / _totalSteps,
-                          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                          valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.secondary),
-                          minHeight: 6,
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Profil',
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.1,
+                              ),
                         ),
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          width: 300,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: LinearProgressIndicator(
+                              value: (_currentStep + 1) / _totalSteps,
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Theme.of(context).colorScheme.primary,
+                              ),
+                              minHeight: 6,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 44,
+                  child: Center(
+                    child: Text(
+                      '${((_currentStep + 1) / _totalSteps * 100).round()}%',
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ],
@@ -186,10 +210,14 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
             left: 16,
             right: 16,
             child: ElevatedButton(
-              onPressed: _canProceed(profile) ? () => _handleNext(profile) : null,
+              onPressed: _canProceed(profile)
+                  ? () => _handleNext(profile)
+                  : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
-                disabledBackgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+                disabledBackgroundColor: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.5),
                 minimumSize: const Size(double.infinity, 56),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(1000),
@@ -207,12 +235,15 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.onPrimary),
+                  Icon(
+                    Icons.chevron_right,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
                 ],
               ),
             ),
           ),
-          
+
           // Progress Dots
           Positioned(
             bottom: 8,
@@ -239,18 +270,21 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
       case 0:
         return custom_pickers.YearPicker(
           value: profile.birthYear,
-          onChange: (value) => _updateProfile(profile.copyWith(birthYear: value)),
+          onChange: (value) =>
+              _updateProfile(profile.copyWith(birthYear: value)),
           maxYear: DateTime.now().year,
         );
       case 1:
         return HeightPicker(
           height: profile.height,
-          onHeightChanged: (value) => _updateProfile(profile.copyWith(height: value)),
+          onHeightChanged: (value) =>
+              _updateProfile(profile.copyWith(height: value)),
         );
       case 2:
         return WeightPicker(
           weight: profile.weight,
-          onWeightChanged: (value) => _updateProfile(profile.copyWith(weight: value)),
+          onWeightChanged: (value) =>
+              _updateProfile(profile.copyWith(weight: value)),
         );
       case 3:
         return Column(
@@ -259,55 +293,73 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
               label: 'Choroba obecna',
               hint: 'Opisz swoją obecną chorobę (opcjonalne)',
               value: profile.currentIllness,
-              onChanged: (value) => _updateProfile(profile.copyWith(currentIllness: value)),
+              onChanged: (value) =>
+                  _updateProfile(profile.copyWith(currentIllness: value)),
             ),
             const SizedBox(height: 16),
             _buildTextField(
               label: 'Choroby przewlekłe',
-              hint: 'Opisz swoje choroby przewlekłe, przyjmowane leki (opcjonalne)',
+              hint:
+                  'Opisz swoje choroby przewlekłe, przyjmowane leki (opcjonalne)',
               value: profile.chronicDiseases,
-              onChanged: (value) => _updateProfile(profile.copyWith(chronicDiseases: value)),
+              onChanged: (value) =>
+                  _updateProfile(profile.copyWith(chronicDiseases: value)),
             ),
           ],
         );
       case 4:
-         return Column(
+        return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSubstanceSection(
               title: 'Papierosy',
               value: profile.smokingCigarettes,
-              onChanged: (value) => _updateProfile(profile.copyWith(
-                smokingCigarettes: value,
-                smokingFrequency: !value ? '' : profile.smokingFrequency,
-              )),
+              onChanged: (value) => _updateProfile(
+                profile.copyWith(
+                  smokingCigarettes: value,
+                  smokingFrequency: !value ? '' : profile.smokingFrequency,
+                ),
+              ),
               frequency: profile.smokingFrequency,
-              onFrequencyChanged: (value) => _updateProfile(profile.copyWith(smokingFrequency: value)),
+              onFrequencyChanged: (value) =>
+                  _updateProfile(profile.copyWith(smokingFrequency: value)),
             ),
             const SizedBox(height: 24),
             _buildSubstanceSection(
               title: 'Alkohol',
               value: profile.drinkingAlcohol,
-              onChanged: (value) => _updateProfile(profile.copyWith(
-                drinkingAlcohol: value,
-                alcoholFrequency: !value ? '' : profile.alcoholFrequency,
-              )),
+              onChanged: (value) => _updateProfile(
+                profile.copyWith(
+                  drinkingAlcohol: value,
+                  alcoholFrequency: !value ? '' : profile.alcoholFrequency,
+                ),
+              ),
               frequency: profile.alcoholFrequency,
-              onFrequencyChanged: (value) => _updateProfile(profile.copyWith(alcoholFrequency: value)),
+              onFrequencyChanged: (value) =>
+                  _updateProfile(profile.copyWith(alcoholFrequency: value)),
             ),
             const SizedBox(height: 24),
             _buildSubstanceSectionWithName(
               title: 'Inne używki',
               value: profile.otherSubstances,
-              onChanged: (value) => _updateProfile(profile.copyWith(
-                otherSubstances: value,
-                otherSubstancesName: !value ? '' : profile.otherSubstancesName,
-                otherSubstancesFrequency: !value ? '' : profile.otherSubstancesFrequency,
-              )),
+              onChanged: (value) => _updateProfile(
+                profile.copyWith(
+                  otherSubstances: value,
+                  otherSubstancesName: !value
+                      ? ''
+                      : profile.otherSubstancesName,
+                  otherSubstancesFrequency: !value
+                      ? ''
+                      : profile.otherSubstancesFrequency,
+                ),
+              ),
               substanceName: profile.otherSubstancesName,
-              onNameChanged: (value) => _updateProfile(profile.copyWith(otherSubstancesName: value)),
+              onNameChanged: (value) =>
+                  _updateProfile(profile.copyWith(otherSubstancesName: value)),
               frequency: profile.otherSubstancesFrequency,
-              onFrequencyChanged: (value) => _updateProfile(profile.copyWith(otherSubstancesFrequency: value)),
+              onFrequencyChanged: (value) => _updateProfile(
+                profile.copyWith(otherSubstancesFrequency: value),
+              ),
             ),
           ],
         );
@@ -316,7 +368,8 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
         return _buildDynamicListSpec(
           title: 'Alergie',
           items: profile.allergies,
-          onChanged: (items) => _updateProfile(profile.copyWith(allergies: items)),
+          onChanged: (items) =>
+              _updateProfile(profile.copyWith(allergies: items)),
           addItemLabel: 'Dodaj alergię',
           hintText: 'Wpisz alergię',
         );
@@ -337,9 +390,13 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                       child: MedicationAutocomplete(
                         initialValue: medication,
                         onChanged: (value) {
-                           final newItems = List<String>.from(profile.medications);
-                           newItems[index] = value;
-                           _updateProfile(profile.copyWith(medications: newItems));
+                          final newItems = List<String>.from(
+                            profile.medications,
+                          );
+                          newItems[index] = value;
+                          _updateProfile(
+                            profile.copyWith(medications: newItems),
+                          );
                         },
                         label: 'Lek ${index + 1}',
                         hint: 'Wpisz nazwę leku',
@@ -349,9 +406,13 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                       const SizedBox(width: 8),
                       IconButton(
                         onPressed: () {
-                          final newItems = List<String>.from(profile.medications);
+                          final newItems = List<String>.from(
+                            profile.medications,
+                          );
                           newItems.removeAt(index);
-                          _updateProfile(profile.copyWith(medications: newItems));
+                          _updateProfile(
+                            profile.copyWith(medications: newItems),
+                          );
                         },
                         icon: Icon(Icons.remove_circle, color: Colors.red[400]),
                         style: IconButton.styleFrom(
@@ -382,18 +443,22 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                 backgroundColor: Theme.of(context).colorScheme.secondary,
                 foregroundColor: Theme.of(context).colorScheme.primary,
                 minimumSize: const Size(343, 56),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                 elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                elevation: 0,
               ),
             ),
-             if (profile.medications.isEmpty)
+            if (profile.medications.isEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 16),
                 child: Text(
                   'Możesz pominąć ten krok jeśli nie przyjmujesz leków na stałe',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.6),
                   ),
                 ),
               ),
@@ -406,72 +471,111 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
             IconOption(value: 'female', label: 'Kobieta', icon: Icons.female),
           ],
           value: profile.biologicalSex,
-          onChange: (value) => _updateProfile(profile.copyWith(biologicalSex: value)),
+          onChange: (value) =>
+              _updateProfile(profile.copyWith(biologicalSex: value)),
         );
       case 8:
-         final options = [
-            IconOption(value: 'male', label: 'Mężczyzna', icon: Icons.male),
-            IconOption(value: 'female', label: 'Kobieta', icon: Icons.female),
-            IconOption(value: 'non_binary', label: 'Niebinarna', icon: Icons.transgender),
-            IconOption(value: 'other', label: 'Inna', icon: Icons.person_outline),
-            IconOption(value: 'prefer_not_to_say', label: 'Wolę nie mówić', icon: Icons.block),
-          ];
-         return Column(
-           children: [
-             IconOptionGrid(
+        final options = [
+          IconOption(value: 'male', label: 'Mężczyzna', icon: Icons.male),
+          IconOption(value: 'female', label: 'Kobieta', icon: Icons.female),
+          IconOption(
+            value: 'non_binary',
+            label: 'Niebinarna',
+            icon: Icons.transgender,
+          ),
+          IconOption(value: 'other', label: 'Inna', icon: Icons.person_outline),
+          IconOption(
+            value: 'prefer_not_to_say',
+            label: 'Wolę nie mówić',
+            icon: Icons.block,
+          ),
+        ];
+        return Column(
+          children: [
+            IconOptionGrid(
               options: options,
               value: profile.genderIdentity,
-              onChange: (value) => _updateProfile(profile.copyWith(genderIdentity: value)),
+              onChange: (value) =>
+                  _updateProfile(profile.copyWith(genderIdentity: value)),
             ),
-             if (profile.genderIdentity == 'other') ...[
+            if (profile.genderIdentity == 'other') ...[
               const SizedBox(height: 16),
               _buildTextField(
                 label: 'Inna tożsamość',
                 hint: 'Wpisz tożsamość',
                 value: profile.genderIdentityOther,
-                onChanged: (value) => _updateProfile(profile.copyWith(genderIdentityOther: value)),
-              ),
-            ],
-           ],
-         );
-      case 9:
-         // Education
-          final eduOptions = [
-            IconOption(value: 'primary', label: 'Podstawowe', icon: Icons.school_outlined),
-            IconOption(value: 'vocational', label: 'Zawodowe', icon: Icons.build_outlined),
-            IconOption(value: 'secondary', label: 'Średnie', icon: Icons.menu_book),
-            IconOption(value: 'higher', label: 'Wyższe', icon: Icons.school),
-            IconOption(value: 'other', label: 'Inne', icon: Icons.more_horiz),
-          ];
-
-          return Column(
-            children: [
-               IconOptionGrid(
-                options: eduOptions,
-                value: profile.education,
-                onChange: (value) => _updateProfile(profile.copyWith(education: value)),
-              ),
-               if (profile.education == 'other') ...[
-                const SizedBox(height: 16),
-                _buildTextField(
-                  label: 'Inne wykształcenie',
-                  hint: 'Wpisz wykształcenie',
-                  value: profile.educationOther,
-                  onChanged: (value) => _updateProfile(profile.copyWith(educationOther: value)),
+                onChanged: (value) => _updateProfile(
+                  profile.copyWith(genderIdentityOther: value),
                 ),
-              ],
+              ),
             ],
-          );
+          ],
+        );
+      case 9:
+        // Education
+        final eduOptions = [
+          IconOption(
+            value: 'primary',
+            label: 'Podstawowe',
+            icon: Icons.school_outlined,
+          ),
+          IconOption(
+            value: 'vocational',
+            label: 'Zawodowe',
+            icon: Icons.build_outlined,
+          ),
+          IconOption(
+            value: 'secondary',
+            label: 'Średnie',
+            icon: Icons.menu_book,
+          ),
+          IconOption(value: 'higher', label: 'Wyższe', icon: Icons.school),
+          IconOption(value: 'other', label: 'Inne', icon: Icons.more_horiz),
+        ];
+
+        return Column(
+          children: [
+            IconOptionGrid(
+              options: eduOptions,
+              value: profile.education,
+              onChange: (value) =>
+                  _updateProfile(profile.copyWith(education: value)),
+            ),
+            if (profile.education == 'other') ...[
+              const SizedBox(height: 16),
+              _buildTextField(
+                label: 'Inne wykształcenie',
+                hint: 'Wpisz wykształcenie',
+                value: profile.educationOther,
+                onChanged: (value) =>
+                    _updateProfile(profile.copyWith(educationOther: value)),
+              ),
+            ],
+          ],
+        );
       case 10:
         return IconOptionGrid(
           options: [
-            IconOption(value: 'none', label: 'Brak', icon: Icons.accessibility_new),
+            IconOption(
+              value: 'none',
+              label: 'Brak',
+              icon: Icons.accessibility_new,
+            ),
             IconOption(value: 'mild', label: 'Lekka', icon: Icons.accessible),
-            IconOption(value: 'moderate', label: 'Umiarkowana', icon: Icons.accessible_forward),
-            IconOption(value: 'severe', label: 'Znaczna', icon: Icons.wheelchair_pickup),
+            IconOption(
+              value: 'moderate',
+              label: 'Umiarkowana',
+              icon: Icons.accessible_forward,
+            ),
+            IconOption(
+              value: 'severe',
+              label: 'Znaczna',
+              icon: Icons.wheelchair_pickup,
+            ),
           ],
           value: profile.disability,
-          onChange: (value) => _updateProfile(profile.copyWith(disability: value)),
+          onChange: (value) =>
+              _updateProfile(profile.copyWith(disability: value)),
         );
       default:
         return Container();
@@ -483,16 +587,18 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
   }
 
   Widget _buildTextField({
-    required String label, 
-    required String hint, 
-    required String value, 
-    required Function(String) onChanged
+    required String label,
+    required String hint,
+    required String value,
+    required Function(String) onChanged,
   }) {
     return Container(
       constraints: const BoxConstraints(maxWidth: 343),
       child: TextField(
         controller: TextEditingController(text: value)
-          ..selection = TextSelection.fromPosition(TextPosition(offset: value.length)),
+          ..selection = TextSelection.fromPosition(
+            TextPosition(offset: value.length),
+          ),
         onChanged: onChanged,
         style: Theme.of(context).textTheme.bodyMedium,
         decoration: InputDecoration(
@@ -501,101 +607,134 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
           hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
           ),
-          labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          labelStyle: Theme.of(
+            context,
+          ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
           filled: true,
           fillColor: Theme.of(context).scaffoldBackgroundColor,
           contentPadding: const EdgeInsets.all(16),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide(color: Theme.of(context).colorScheme.surfaceContainerHighest, width: 2)),
-          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide(color: Theme.of(context).colorScheme.surfaceContainerHighest, width: 2)),
-          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary, width: 2)),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(24),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              width: 2,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(24),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              width: 2,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(24),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.secondary,
+              width: 2,
+            ),
+          ),
         ),
       ),
     );
   }
 
   Widget _buildSubstanceSection({
-      required String title,
-      required bool value,
-      required Function(bool) onChanged,
-      required String frequency,
-      required Function(String) onFrequencyChanged,
-    }) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Spacer(),
-              Switch(
-                value: value,
-                onChanged: onChanged,
-                thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {
-                  if (states.contains(WidgetState.selected)) {
-                    return Theme.of(context).colorScheme.secondary;
-                  }
-                  return null;
-                }),
-              ),
-            ],
-          ),
-          if (value) ...[
-            const SizedBox(height: 16),
-            _buildTextField(label: 'Częstotliwość', hint: 'Np. codziennie, okazjonalnie', value: frequency, onChanged: onFrequencyChanged),
+    required String title,
+    required bool value,
+    required Function(bool) onChanged,
+    required String frequency,
+    required Function(String) onFrequencyChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              title,
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const Spacer(),
+            Switch(
+              value: value,
+              onChanged: onChanged,
+              thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return Theme.of(context).colorScheme.secondary;
+                }
+                return null;
+              }),
+            ),
           ],
-        ],
-      );
-    }
-    
-    Widget _buildSubstanceSectionWithName({
-      required String title,
-      required bool value,
-      required Function(bool) onChanged,
-      required String substanceName,
-      required Function(String) onNameChanged,
-      required String frequency,
-      required Function(String) onFrequencyChanged,
-    }) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Spacer(),
-              Switch(
-                value: value,
-                onChanged: onChanged,
-                thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {
-                  if (states.contains(WidgetState.selected)) {
-                    return Theme.of(context).colorScheme.secondary;
-                  }
-                  return null;
-                }),
-              ),
-            ],
+        ),
+        if (value) ...[
+          const SizedBox(height: 16),
+          _buildTextField(
+            label: 'Częstotliwość',
+            hint: 'Np. codziennie, okazjonalnie',
+            value: frequency,
+            onChanged: onFrequencyChanged,
           ),
-          if (value) ...[
-            const SizedBox(height: 16),
-            _buildTextField(label: 'Nazwa używki', hint: 'Np. marihuana', value: substanceName, onChanged: onNameChanged),
-            const SizedBox(height: 16),
-            _buildTextField(label: 'Częstotliwość', hint: 'Np. codziennie, okazjonalnie', value: frequency, onChanged: onFrequencyChanged),
-          ],
         ],
-      );
-    }
+      ],
+    );
+  }
+
+  Widget _buildSubstanceSectionWithName({
+    required String title,
+    required bool value,
+    required Function(bool) onChanged,
+    required String substanceName,
+    required Function(String) onNameChanged,
+    required String frequency,
+    required Function(String) onFrequencyChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              title,
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const Spacer(),
+            Switch(
+              value: value,
+              onChanged: onChanged,
+              thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return Theme.of(context).colorScheme.secondary;
+                }
+                return null;
+              }),
+            ),
+          ],
+        ),
+        if (value) ...[
+          const SizedBox(height: 16),
+          _buildTextField(
+            label: 'Nazwa używki',
+            hint: 'Np. marihuana',
+            value: substanceName,
+            onChanged: onNameChanged,
+          ),
+          const SizedBox(height: 16),
+          _buildTextField(
+            label: 'Częstotliwość',
+            hint: 'Np. codziennie, okazjonalnie',
+            value: frequency,
+            onChanged: onFrequencyChanged,
+          ),
+        ],
+      ],
+    );
+  }
 
   Widget _buildDynamicListSpec({
     required String title,
@@ -653,29 +792,33 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
           icon: const Icon(Icons.add),
           label: Text(
             items.isEmpty ? addItemLabel : 'Dodaj kolejną',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.secondary,
             foregroundColor: Theme.of(context).colorScheme.primary,
             minimumSize: const Size(343, 56),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
             elevation: 0,
           ),
         ),
-         if (items.isEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: Text(
-                  'Możesz pominąć ten krok jeśli nie dotyczy',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
-                  ),
-                ),
+        if (items.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: Text(
+              'Możesz pominąć ten krok jeśli nie dotyczy',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.6),
               ),
+            ),
+          ),
       ],
     );
   }

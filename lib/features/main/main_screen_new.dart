@@ -48,8 +48,25 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
     });
   }
 
-  void _handleLoginComplete() {
-    setState(() => _currentView = 'onboarding');
+  void _handleLoginComplete() async {
+    final prefs = await SharedPreferences.getInstance();
+    final justRegistered = prefs.getBool('just-registered') ?? false;
+
+    if (justRegistered) {
+      // New user - show onboarding
+      await prefs.setBool('just-registered', false); // Clear flag
+      setState(() => _currentView = 'onboarding');
+    } else {
+      // Returning user - skip onboarding and go to home
+      setState(() {
+        _currentView = 'home';
+        _currentIndex = 0;
+      });
+    }
+  }
+
+  void _handleBackFromOnboarding() {
+    setState(() => _currentView = 'login');
   }
 
   void _handleOnboardingComplete() {
@@ -125,7 +142,10 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
     }
 
     if (_currentView == 'onboarding') {
-      return OnboardingScreen(onComplete: _handleOnboardingComplete);
+      return OnboardingScreen(
+        onComplete: _handleOnboardingComplete,
+        onBackToLogin: _handleBackFromOnboarding,
+      );
     }
 
     // Check if we should show bottom nav.

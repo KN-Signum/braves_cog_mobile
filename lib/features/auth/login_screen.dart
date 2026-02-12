@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:braves_cog/core/theme/app_theme.dart';
 import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
 import 'package:braves_cog/core/providers/shared_preferences_provider.dart';
@@ -131,16 +132,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: SingleChildScrollView(
           padding: EdgeInsets.all(AppTheme.spacingLg),
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 440),
+            constraints: const BoxConstraints(maxWidth: 400),
             child: Column(
               children: [
-                SizedBox(height: AppTheme.spacing2Xl),
-                Text(
-                  'BRAVES COG',
-                  style: Theme.of(context).textTheme.displaySmall,
-                  textAlign: TextAlign.center,
+                SizedBox(height: AppTheme.spacingXl),
+                Image.asset(
+                  'assets/images/braves-title.png',
+                  height: 120,
+                  fit: BoxFit.contain,
                 ),
-                SizedBox(height: AppTheme.spacing2Xl),
+                SizedBox(height: AppTheme.spacingXl),
                 Container(
                   padding: EdgeInsets.all(AppTheme.spacingXl),
                   decoration: BoxDecoration(
@@ -185,7 +186,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           child: const Text('Zarejestruj się'),
                         ),
                       ),
-                      SizedBox(height: AppTheme.spacingMd),
+                      SizedBox(height: AppTheme.spacingXs),
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
@@ -199,13 +200,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       SizedBox(height: AppTheme.spacingMd),
                       Center(
-                        child: Text(
-                          'Polityka Prywatności | Regulamin',
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                          textAlign: TextAlign.center,
+                        child: TextButton(
+                          onPressed: () async {
+                            final Uri url = Uri.parse(
+                              'https://bravescog.pwr.edu.pl/polityka-prywatnosci/',
+                            );
+                            if (await canLaunchUrl(url)) {
+                              await launchUrl(url);
+                            }
+                          },
+                          child: Text(
+                            'Polityka Prywatności',
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.secondary,
+                                ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
                     ],
@@ -230,10 +243,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: Column(
               children: [
                 SizedBox(height: AppTheme.spacing2Xl),
-                Text(
-                  'BRAVES COG',
-                  style: Theme.of(context).textTheme.displaySmall,
-                  textAlign: TextAlign.center,
+                Image.asset(
+                  'assets/images/braves-title.png',
+                  height: 120,
+                  fit: BoxFit.contain,
                 ),
                 SizedBox(height: AppTheme.spacing2Xl),
                 Container(
@@ -296,13 +309,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       SizedBox(height: AppTheme.spacingMd),
                       Center(
-                        child: Text(
-                          'Polityka Prywatności | Regulamin',
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                          textAlign: TextAlign.center,
+                        child: TextButton(
+                          onPressed: () async {
+                            final Uri url = Uri.parse(
+                              'https://bravescog.pwr.edu.pl/polityka-prywatnosci/',
+                            );
+                            if (await canLaunchUrl(url)) {
+                              await launchUrl(url);
+                            }
+                          },
+                          child: Text(
+                            'Polityka Prywatności | Regulamin',
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.secondary,
+                                ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
                     ],
@@ -331,7 +356,37 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           controller: controller,
           obscureText: isPassword,
           style: Theme.of(context).textTheme.bodyMedium,
-          decoration: InputDecoration(hintText: placeholder),
+          decoration: InputDecoration(
+            hintText: placeholder,
+            filled: true,
+            fillColor: Colors.white,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(
+                color: Color(0xFF9CA3AF),
+                width: 1.5,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(
+                color: Color(0xFF9CA3AF),
+                width: 1.5,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.secondary,
+                width: 2,
+              ),
+            ),
+            hintStyle: const TextStyle(color: Color(0xFF6B7280), fontSize: 16),
+          ),
         ),
       ],
     );

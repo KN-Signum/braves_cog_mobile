@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:braves_cog/core/widgets/app_bottom_nav_bar.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
+import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
 import '../auth/login_screen.dart';
 import '../onboarding/onboarding_screen.dart';
 import '../home/home_screen.dart';
@@ -53,8 +54,13 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
     final prefs = await SharedPreferences.getInstance();
     final justRegistered = prefs.getBool('just-registered') ?? false;
 
-    // Load profile data for the authenticated user
-    await ref.read(profileProvider.notifier).loadProfile();
+    // Get user email from auth provider and load profile data
+    final authState = ref.read(authProvider);
+    if (authState.user?.email != null) {
+      await ref
+          .read(profileProvider.notifier)
+          .loadProfile(email: authState.user!.email);
+    }
 
     if (justRegistered) {
       // New user - show onboarding

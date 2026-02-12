@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:braves_cog/core/theme/app_theme.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerWidget {
   final VoidCallback onHealthClick;
   final VoidCallback onTestsClick;
 
@@ -13,28 +14,10 @@ class HomeScreen extends StatefulWidget {
   });
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profileState = ref.watch(profileProvider);
+    final userType = profileState.profile.type.value;
 
-class _HomeScreenState extends State<HomeScreen> {
-  String _userName = 'Użytkowniku';
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUserName();
-  }
-
-  Future<void> _loadUserName() async {
-    final prefs = await SharedPreferences.getInstance();
-    final credentials = prefs.getString('user-credentials');
-    if (credentials != null) {
-      setState(() => _userName = 'Agata');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -53,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           const TextSpan(text: 'Witaj z powrotem,\n'),
                           TextSpan(
-                            text: _userName,
+                            text: userType,
                             style: Theme.of(context).textTheme.displaySmall
                                 ?.copyWith(fontWeight: FontWeight.w900),
                           ),
@@ -71,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(height: AppTheme.spacingMd),
 
                     // Health Survey Button
-                    _buildHealthSurveyCard(),
+                    _buildHealthSurveyCard(context),
                     SizedBox(height: AppTheme.spacingXl),
 
                     // Psychological Tests Section
@@ -82,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(height: AppTheme.spacingMd),
 
                     _buildTestCard(
+                      context,
                       title: 'Testy jednorazowe',
                       description:
                           'Badanie jednorazowe oceniające aktualny stan',
@@ -100,6 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(height: AppTheme.spacingMd),
 
                     _buildTestCard(
+                      context,
                       title: 'Testy wielokrotne',
                       description: 'Monitorowanie postępów w czasie',
                       color: Theme.of(
@@ -118,9 +103,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHealthSurveyCard() {
+  Widget _buildHealthSurveyCard(BuildContext context) {
     return GestureDetector(
-      onTap: widget.onHealthClick,
+      onTap: onHealthClick,
       child: Container(
         padding: EdgeInsets.all(AppTheme.spacingLg),
         decoration: BoxDecoration(
@@ -168,7 +153,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildTestCard({
+  Widget _buildTestCard(
+    BuildContext context, {
     required String title,
     required String description,
     required Color color,
@@ -176,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
     required IconData icon,
   }) {
     return GestureDetector(
-      onTap: widget.onTestsClick,
+      onTap: onTestsClick,
       child: Container(
         padding: EdgeInsets.all(AppTheme.spacingLg),
         decoration: BoxDecoration(

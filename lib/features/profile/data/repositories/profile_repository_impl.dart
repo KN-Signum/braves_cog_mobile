@@ -16,7 +16,9 @@ class ProfileRepositoryImpl implements ProfileRepository {
   });
 
   @override
-  Future<Either<Failure, UserProfileEntity>> getUserProfile() async {
+  Future<Either<Failure, UserProfileEntity>> getUserProfile({
+    String? email,
+  }) async {
     // Try to get from local storage first (offline-first approach or cache)
     try {
       final localProfile = await localDataSource.getLastUserProfile();
@@ -28,17 +30,21 @@ class ProfileRepositoryImpl implements ProfileRepository {
     }
 
     if (EnvConfig.useMockData) {
-       try {
-        final remoteProfile = await remoteDataSource.getUserProfile();
+      try {
+        final remoteProfile = await remoteDataSource.getUserProfile(
+          email: email,
+        );
         await localDataSource.cacheUserProfile(remoteProfile);
         return Right(remoteProfile);
       } catch (e) {
         return Left(ServerFailure());
       }
     } else {
-        // TODO: Implement real remote call check
-         try {
-        final remoteProfile = await remoteDataSource.getUserProfile();
+      // TODO: Implement real remote call check
+      try {
+        final remoteProfile = await remoteDataSource.getUserProfile(
+          email: email,
+        );
         await localDataSource.cacheUserProfile(remoteProfile);
         return Right(remoteProfile);
       } catch (e) {
@@ -48,15 +54,17 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> saveUserProfile(UserProfileEntity profile) async {
+  Future<Either<Failure, Unit>> saveUserProfile(
+    UserProfileEntity profile,
+  ) async {
     try {
       await localDataSource.cacheUserProfile(profile);
-      
+
       if (EnvConfig.useMockData) {
-         await remoteDataSource.updateUserProfile(profile);
+        await remoteDataSource.updateUserProfile(profile);
       } else {
-         // TODO: Implement real remote call
-         await remoteDataSource.updateUserProfile(profile);
+        // TODO: Implement real remote call
+        await remoteDataSource.updateUserProfile(profile);
       }
       return const Right(unit);
     } catch (e) {

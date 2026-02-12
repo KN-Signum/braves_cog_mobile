@@ -1,4 +1,5 @@
 import 'package:braves_cog/features/profile/domain/entities/user_profile_entity.dart';
+import 'package:braves_cog/features/profile/domain/entities/user_type.dart';
 
 class UserProfileModel extends UserProfileEntity {
   const UserProfileModel({
@@ -22,6 +23,7 @@ class UserProfileModel extends UserProfileEntity {
     super.education,
     super.educationOther,
     super.disability,
+    super.type,
   });
 
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
@@ -46,6 +48,7 @@ class UserProfileModel extends UserProfileEntity {
       education: json['education'] ?? '',
       educationOther: json['educationOther'] ?? '',
       disability: json['disability'] ?? '',
+      type: UserType.fromString(json['type'] ?? 'NORMAL'),
     );
   }
 
@@ -71,6 +74,7 @@ class UserProfileModel extends UserProfileEntity {
       'education': education,
       'educationOther': educationOther,
       'disability': disability,
+      'type': type.value,
       'lastUpdate': DateTime.now().toIso8601String(),
     };
   }

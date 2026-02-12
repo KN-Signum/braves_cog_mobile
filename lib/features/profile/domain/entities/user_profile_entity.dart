@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'user_type.dart';
 
 class UserProfileEntity extends Equatable {
   final String birthYear;
@@ -21,6 +22,7 @@ class UserProfileEntity extends Equatable {
   final String education;
   final String educationOther;
   final String disability;
+  final UserType type;
 
   const UserProfileEntity({
     this.birthYear = '1990',
@@ -43,6 +45,7 @@ class UserProfileEntity extends Equatable {
     this.education = '',
     this.educationOther = '',
     this.disability = '',
+    this.type = UserType.normal,
   });
 
   UserProfileEntity copyWith({
@@ -66,6 +69,7 @@ class UserProfileEntity extends Equatable {
     String? education,
     String? educationOther,
     String? disability,
+    UserType? type,
   }) {
     return UserProfileEntity(
       birthYear: birthYear ?? this.birthYear,
@@ -79,7 +83,8 @@ class UserProfileEntity extends Equatable {
       alcoholFrequency: alcoholFrequency ?? this.alcoholFrequency,
       otherSubstances: otherSubstances ?? this.otherSubstances,
       otherSubstancesName: otherSubstancesName ?? this.otherSubstancesName,
-      otherSubstancesFrequency: otherSubstancesFrequency ?? this.otherSubstancesFrequency,
+      otherSubstancesFrequency:
+          otherSubstancesFrequency ?? this.otherSubstancesFrequency,
       allergies: allergies ?? this.allergies,
       medications: medications ?? this.medications,
       biologicalSex: biologicalSex ?? this.biologicalSex,
@@ -88,30 +93,32 @@ class UserProfileEntity extends Equatable {
       education: education ?? this.education,
       educationOther: educationOther ?? this.educationOther,
       disability: disability ?? this.disability,
+      type: type ?? this.type,
     );
   }
 
   @override
   List<Object?> get props => [
-        birthYear,
-        height,
-        weight,
-        currentIllness,
-        chronicDiseases,
-        smokingCigarettes,
-        smokingFrequency,
-        drinkingAlcohol,
-        alcoholFrequency,
-        otherSubstances,
-        otherSubstancesName,
-        otherSubstancesFrequency,
-        allergies,
-        medications,
-        biologicalSex,
-        genderIdentity,
-        genderIdentityOther,
-        education,
-        educationOther,
-        disability,
-      ];
+    birthYear,
+    height,
+    weight,
+    currentIllness,
+    chronicDiseases,
+    smokingCigarettes,
+    smokingFrequency,
+    drinkingAlcohol,
+    alcoholFrequency,
+    otherSubstances,
+    otherSubstancesName,
+    otherSubstancesFrequency,
+    allergies,
+    medications,
+    biologicalSex,
+    genderIdentity,
+    genderIdentityOther,
+    education,
+    educationOther,
+    disability,
+    type,
+  ];
 }

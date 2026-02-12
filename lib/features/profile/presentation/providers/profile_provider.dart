@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:braves_cog/core/providers/shared_preferences_provider.dart';
-import 'package:braves_cog/core/usecases/usecase.dart';
 import 'package:braves_cog/features/profile/data/datasources/profile_local_data_source.dart';
 import 'package:braves_cog/features/profile/data/datasources/profile_mock_data_source.dart';
 import 'package:braves_cog/features/profile/data/datasources/profile_remote_data_source.dart';
@@ -16,9 +15,11 @@ final profileLocalDataSourceProvider = Provider<ProfileLocalDataSource>((ref) {
   return ProfileLocalDataSourceImpl(prefs);
 });
 
-final profileRemoteDataSourceProvider = Provider<ProfileRemoteDataSource>((ref) {
+final profileRemoteDataSourceProvider = Provider<ProfileRemoteDataSource>((
+  ref,
+) {
   // Logic to switch between mock and real
-  return ProfileMockDataSource(); 
+  return ProfileMockDataSource();
 });
 
 // Repository
@@ -74,16 +75,15 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   final GetUserProfileUseCase _getUserProfileUseCase;
   final SaveUserProfileUseCase _saveUserProfileUseCase;
 
-  ProfileNotifier(
-    this._getUserProfileUseCase,
-    this._saveUserProfileUseCase,
-  ) : super(const ProfileState());
+  ProfileNotifier(this._getUserProfileUseCase, this._saveUserProfileUseCase)
+    : super(const ProfileState());
 
-  Future<void> loadProfile() async {
+  Future<void> loadProfile({String? email}) async {
     state = state.copyWith(isLoading: true, error: null);
-    final result = await _getUserProfileUseCase(NoParams());
+    final result = await _getUserProfileUseCase(EmailParams(email: email));
     result.fold(
-      (failure) => state = state.copyWith(isLoading: false, error: failure.message),
+      (failure) =>
+          state = state.copyWith(isLoading: false, error: failure.message),
       (profile) => state = state.copyWith(isLoading: false, profile: profile),
     );
   }
@@ -96,13 +96,16 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     state = state.copyWith(isLoading: true, error: null);
     final result = await _saveUserProfileUseCase(state.profile);
     result.fold(
-      (failure) => state = state.copyWith(isLoading: false, error: failure.message),
+      (failure) =>
+          state = state.copyWith(isLoading: false, error: failure.message),
       (_) => state = state.copyWith(isLoading: false, isSaved: true),
     );
   }
 }
 
-final profileProvider = StateNotifierProvider<ProfileNotifier, ProfileState>((ref) {
+final profileProvider = StateNotifierProvider<ProfileNotifier, ProfileState>((
+  ref,
+) {
   final getUseCase = ref.watch(getUserProfileUseCaseProvider);
   final saveUseCase = ref.watch(saveUserProfileUseCaseProvider);
   return ProfileNotifier(getUseCase, saveUseCase);

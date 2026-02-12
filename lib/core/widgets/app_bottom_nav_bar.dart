@@ -47,6 +47,16 @@ class AppBottomNavigationBar extends StatelessWidget {
     int index,
   ) {
     final isActive = currentIndex == index;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    // In light theme: active = cyan (secondary), inactive = navy (primary)
+    // In dark theme: active = cyan (primary), inactive = white
+    final activeColor = isDarkMode
+        ? Theme.of(context).colorScheme.primary
+        : Theme.of(context).colorScheme.secondary;
+    final inactiveColor = isDarkMode
+        ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)
+        : Theme.of(context).colorScheme.primary.withValues(alpha: 0.5);
 
     return GestureDetector(
       onTap: () => onTap(index),
@@ -55,32 +65,20 @@ class AppBottomNavigationBar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isActive
-              ? Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1)
+              ? activeColor.withValues(alpha: 0.1)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              color: isActive
-                  ? Theme.of(context).colorScheme.secondary
-                  : Theme.of(
-                      context,
-                    ).colorScheme.primary.withValues(alpha: 0.5),
-              size: 24,
-            ),
+            Icon(icon, color: isActive ? activeColor : inactiveColor, size: 24),
             const SizedBox(height: 4),
             Text(
               label,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                color: isActive
-                    ? Theme.of(context).colorScheme.secondary
-                    : Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: 0.5),
+                color: isActive ? activeColor : inactiveColor,
               ),
             ),
           ],

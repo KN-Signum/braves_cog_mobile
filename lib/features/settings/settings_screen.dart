@@ -94,6 +94,11 @@ class SettingsScreen extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
     final isDarkMode = themeMode == ThemeMode.dark;
 
+    // In dark theme: use cyan, in light theme: use cyan
+    final accentColor = isDarkMode
+        ? Theme.of(context).colorScheme.primary
+        : Theme.of(context).colorScheme.secondary;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -112,14 +117,12 @@ class SettingsScreen extends ConsumerWidget {
           height: 44,
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Theme.of(
-              context,
-            ).colorScheme.secondary.withValues(alpha: 0.15),
+            color: accentColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
             isDarkMode ? Icons.dark_mode : Icons.light_mode,
-            color: Theme.of(context).colorScheme.secondary,
+            color: accentColor,
             size: 24,
           ),
         ),
@@ -133,7 +136,7 @@ class SettingsScreen extends ConsumerWidget {
           isDarkMode ? 'Ciemny' : 'Jasny',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w500,
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
+            color: accentColor.withValues(alpha: 0.7),
           ),
         ),
         trailing: Switch(
@@ -141,7 +144,7 @@ class SettingsScreen extends ConsumerWidget {
           onChanged: (value) {
             ref.read(themeModeProvider.notifier).toggleTheme();
           },
-          activeTrackColor: Theme.of(context).colorScheme.secondary,
+          activeTrackColor: accentColor,
         ),
       ),
     );
@@ -154,6 +157,12 @@ class SettingsScreen extends ConsumerWidget {
     required String subtitle,
     required VoidCallback onTap,
   }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final accentColor = isDarkMode
+        ? Theme.of(context).colorScheme.primary
+        : Theme.of(context).colorScheme.secondary;
+    final textColor = Theme.of(context).colorScheme.onSurface;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -172,16 +181,10 @@ class SettingsScreen extends ConsumerWidget {
           height: 44,
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Theme.of(
-              context,
-            ).colorScheme.secondary.withValues(alpha: 0.15),
+            color: accentColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(
-            icon,
-            color: Theme.of(context).colorScheme.secondary,
-            size: 24,
-          ),
+          child: Icon(icon, color: accentColor, size: 24),
         ),
         title: Text(
           title,
@@ -193,12 +196,12 @@ class SettingsScreen extends ConsumerWidget {
           subtitle,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w500,
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
+            color: accentColor.withValues(alpha: 0.7),
           ),
         ),
         trailing: Icon(
           Icons.chevron_right,
-          color: Theme.of(context).colorScheme.primary,
+          color: textColor.withValues(alpha: 0.5),
           size: 24,
         ),
         onTap: onTap,

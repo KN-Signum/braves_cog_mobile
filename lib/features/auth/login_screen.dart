@@ -6,11 +6,8 @@ import 'package:braves_cog/core/providers/shared_preferences_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   final VoidCallback onLogin;
-  
-  const LoginScreen({
-    super.key,
-    required this.onLogin,
-  });
+
+  const LoginScreen({super.key, required this.onLogin});
 
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
@@ -19,7 +16,7 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _showSplash = true;
   bool _isReturningUser = false;
-  
+
   final _authCodeController = TextEditingController();
   final _loginController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -54,24 +51,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _handleRegister() async {
-    if (_authCodeController.text.isEmpty || 
-        _loginController.text.isEmpty || 
+    if (_authCodeController.text.isEmpty ||
+        _loginController.text.isEmpty ||
         _passwordController.text.isEmpty) {
       _showAlert('Proszę wypełnić wszystkie pola');
       return;
     }
 
     try {
-      await ref.read(authProvider.notifier).register(
-        _loginController.text, 
-        _passwordController.text, 
-        'User', // Name placeholder
-      );
-      
+      await ref
+          .read(authProvider.notifier)
+          .register(
+            _loginController.text,
+            _passwordController.text,
+            'User', // Name placeholder
+          );
+
       // Update UI state for returning user
       final prefs = ref.read(sharedPreferencesProvider);
       await prefs.setBool('user-registered', true);
-      
+
       widget.onLogin();
     } catch (e) {
       _showAlert('Błąd rejestracji: ${e.toString()}');
@@ -85,10 +84,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
 
     try {
-       await ref.read(authProvider.notifier).login(
-        _loginController.text, 
-        _passwordController.text,
-      );
+      await ref
+          .read(authProvider.notifier)
+          .login(_loginController.text, _passwordController.text);
       widget.onLogin();
     } catch (e) {
       _showAlert('Błąd logowania: ${e.toString()}');
@@ -128,17 +126,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     // Stack to show loading overlay
     return Stack(
       children: [
-        if (!_isReturningUser) 
+        if (!_isReturningUser)
           _buildRegistrationScreen()
-        else 
+        else
           _buildLoginScreen(),
-          
+
         if (authState.isLoading)
           Container(
             color: Colors.black.withValues(alpha: 0.5),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
+            child: const Center(child: CircularProgressIndicator()),
           ),
       ],
     );
@@ -159,7 +155,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 height: 250,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primary,
-                  borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
+                  // borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
                 ),
                 child: Icon(
                   Icons.psychology,
@@ -199,8 +195,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Container(
                   padding: EdgeInsets.all(AppTheme.spacingXl),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
+                    // borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -227,7 +225,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         controller: _passwordController,
                         placeholder: 'Twoje hasło',
                         isPassword: true,
-                        // Note: To truly match design, we'd style TextField via InputDeco theme in AppTheme, 
+                        // Note: To truly match design, we'd style TextField via InputDeco theme in AppTheme,
                         // but here passing isPassword affects obscureText only.
                       ),
                       SizedBox(height: AppTheme.spacingXl),
@@ -254,9 +252,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Center(
                         child: Text(
                           'Polityka Prywatności | Regulamin',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -291,8 +290,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Container(
                   padding: EdgeInsets.all(AppTheme.spacingXl),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
+                    // borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -305,7 +306,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Text(
                         'Zaloguj się, by rozwijać swój mózg',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.7),
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -346,9 +349,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Center(
                         child: Text(
                           'Polityka Prywatności | Regulamin',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -372,18 +376,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: Theme.of(context).textTheme.labelLarge,
-        ),
+        Text(label, style: Theme.of(context).textTheme.labelLarge),
         SizedBox(height: AppTheme.spacingSm),
         TextField(
           controller: controller,
           obscureText: isPassword,
           style: Theme.of(context).textTheme.bodyMedium,
-          decoration: InputDecoration(
-            hintText: placeholder,
-          ),
+          decoration: InputDecoration(hintText: placeholder),
         ),
       ],
     );

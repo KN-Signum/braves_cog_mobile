@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:braves_cog/core/theme/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class HomeScreen extends StatefulWidget {
   final VoidCallback onHealthClick;
   final VoidCallback onTestsClick;
@@ -86,8 +85,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       title: 'Testy jednorazowe',
                       description:
                           'Badanie jednorazowe oceniające aktualny stan',
-                      color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
-                      iconColor: Theme.of(context).colorScheme.secondary,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Theme.of(
+                              context,
+                            ).colorScheme.primary.withValues(alpha: 0.15)
+                          : Theme.of(
+                              context,
+                            ).colorScheme.secondary.withValues(alpha: 0.1),
+                      iconColor: Theme.of(context).brightness == Brightness.dark
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.secondary,
                       icon: Icons.psychology,
                     ),
                     SizedBox(height: AppTheme.spacingMd),
@@ -95,7 +102,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     _buildTestCard(
                       title: 'Testy wielokrotne',
                       description: 'Monitorowanie postępów w czasie',
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       iconColor: Theme.of(context).colorScheme.primary,
                       icon: Icons.assignment,
                     ),
@@ -116,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.all(AppTheme.spacingLg),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.secondary,
-          borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
+          // borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
         ),
         child: Row(
           children: [
@@ -145,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 70,
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primary,
-                borderRadius: BorderRadius.circular(AppTheme.borderRadiusLarge),
+                // borderRadius: BorderRadius.circular(AppTheme.borderRadiusLarge),
               ),
               child: Icon(
                 Icons.fitness_center,
@@ -172,7 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.all(AppTheme.spacingLg),
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
+          // borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
           border: Border.all(color: iconColor.withValues(alpha: 0.2), width: 1),
         ),
         child: Row(
@@ -214,6 +223,4 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-
 }

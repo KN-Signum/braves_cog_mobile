@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 import 'package:braves_cog/core/widgets/app_bottom_nav_bar.dart';
 import '../auth/login_screen.dart';
 import '../onboarding/onboarding_screen.dart';
@@ -74,7 +73,7 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
           _currentView = 'games';
           break;
         case 3:
-          _currentView = 'profile'; // Profile is index 3
+          _currentView = 'profile';
           break;
         case 4:
           _currentView = 'settings';
@@ -82,7 +81,7 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
       }
     });
   }
-  
+
   void _navigateToHome() {
     setState(() {
       _currentView = 'home';
@@ -103,7 +102,7 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
     // Keeping current index might be confusing if we show nav bar.
     // Let's assume Tests is a sub-screen of Home or standalone.
   }
-  
+
   // Handlers for specific back navigations if needed, but generic to home is usually fine
   // for top level items, but if we are deep in stack...
   // Here we are doing flat navigation mostly.
@@ -128,17 +127,23 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
     if (_currentView == 'onboarding') {
       return OnboardingScreen(onComplete: _handleOnboardingComplete);
     }
-    
+
     // Check if we should show bottom nav.
     // We show it for: home, health, games, profile, settings.
     // What about tests? If tests is a full screen flow, maybe hide it?
     // User asked for bottom nav to be accessed from main health, home, games and settings.
     // Let's show it for all these "main" views.
-    final bool showBottomNav = ['home', 'health', 'games', 'profile', 'settings'].contains(_currentView);
+    final bool showBottomNav = [
+      'home',
+      'health',
+      'games',
+      'profile',
+      'settings',
+    ].contains(_currentView);
 
     return Scaffold(
       body: _buildBody(),
-      bottomNavigationBar: showBottomNav 
+      bottomNavigationBar: showBottomNav
           ? AppBottomNavigationBar(
               currentIndex: _currentIndex,
               onTap: _onBottomNavTap,

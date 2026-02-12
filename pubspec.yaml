@@ -50,6 +50,7 @@ dev_dependencies:
     sdk: flutter
   
   flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -114,5 +115,25 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/images/braves_logo.png"
-  adaptive_icon_background: "#0F2847"  # Navy Blue z styling guide
+  adaptive_icon_background: "#0F2847" 
   adaptive_icon_foreground: "assets/images/braves_logo.png"
+
+# Flutter Native Splash configuration
+flutter_native_splash:
+  color: "#FFFFFF"  
+  
+
+  color_dark: "#0F2847"  
+  
+  image: "assets/images/braves_logo.png"
+  android: true
+  ios: true
+  web: false
+  
+  android_12:
+    color: "#FFFFFF"
+    color_dark: "#0F2847"
+    image: "assets/images/braves_logo.png"
+    icon_background_color: "#0F2847"
+    icon_background_color_dark: "#0F2847"
+

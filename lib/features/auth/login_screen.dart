@@ -14,7 +14,6 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  bool _showSplash = true;
   bool _isReturningUser = false;
 
   final _authCodeController = TextEditingController();
@@ -28,7 +27,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkReturningUser();
     });
-    _showSplashScreen();
   }
 
   Future<void> _checkReturningUser() async {
@@ -37,16 +35,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final hasRegistered = prefs.getBool('user-registered') ?? false;
     setState(() {
       _isReturningUser = hasRegistered;
-    });
-  }
-
-  void _showSplashScreen() {
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        setState(() {
-          _showSplash = false;
-        });
-      }
     });
   }
 
@@ -119,10 +107,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
 
-    if (_showSplash) {
-      return _buildSplashScreen();
-    }
-
     // Stack to show loading overlay
     return Stack(
       children: [
@@ -137,41 +121,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: const Center(child: CircularProgressIndicator()),
           ),
       ],
-    );
-  }
-
-  Widget _buildSplashScreen() {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-      body: Center(
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 440),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Logo placeholder
-              Container(
-                width: 250,
-                height: 250,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  // borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
-                ),
-                child: Icon(
-                  Icons.psychology,
-                  size: 120,
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-              ),
-              SizedBox(height: AppTheme.spacingLg),
-              Text(
-                'BRAVES COG',
-                style: Theme.of(context).textTheme.displaySmall,
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 

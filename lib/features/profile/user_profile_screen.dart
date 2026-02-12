@@ -1,49 +1,64 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 
-import 'dart:convert';
-
-class UserProfileScreen extends StatefulWidget {
+class UserProfileScreen extends ConsumerWidget {
   final VoidCallback onBack;
 
   const UserProfileScreen({super.key, required this.onBack});
 
   @override
-  State<UserProfileScreen> createState() => _UserProfileScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profileState = ref.watch(profileProvider);
+    final profile = profileState.profile;
 
-class _UserProfileScreenState extends State<UserProfileScreen> {
-  Map<String, dynamic> _profileData = {};
-  bool _isLoading = true;
-  bool _showWeightReminder = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadProfileData();
-  }
-
-  Future<void> _loadProfileData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final stored = prefs.getString('user-profile');
-
-    if (stored != null) {
-      final data = jsonDecode(stored);
-      setState(() {
-        _profileData = data;
-        _isLoading = false;
-      });
-
-      if (data['lastWeightUpdate'] != null) {
-        final lastUpdate = DateTime.parse(data['lastWeightUpdate']);
-        final daysSinceUpdate = DateTime.now().difference(lastUpdate).inDays;
-        if (daysSinceUpdate >= 180) {
-          setState(() => _showWeightReminder = true);
-        }
-      }
-    } else {
-      setState(() => _isLoading = false);
+    if (profileState.isLoading) {
+      return Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: Center(
+          child: CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.secondary,
+            strokeWidth: 3,
+          ),
+        ),
+      );
     }
+
+    final age = _calculateAge(profile.birthYear);
+    final bmi = _calculateBMI(profile.height, profile.weight);
+
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(
+            Icons.chevron_left,
+            color: Theme.of(context).colorScheme.primary,
+            size: 28,
+          ),
+          onPressed: onBack,
+        ),
+        title: Text(
+          'Twój profil',
+          style: Theme.of(context).appBarTheme.titleTextStyle,
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            _buildBasicInfo(context, age, bmi, profile),
+            const SizedBox(height: 16),
+            _buildHealthInfo(context, profile),
+            const SizedBox(height: 16),
+            _buildPersonalInfo(context, profile),
+          ],
+        ),
+      ),
+    );
   }
 
   int _calculateAge(String? birthYear) {
@@ -67,93 +82,19 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     return 'Otyłość';
   }
 
-  Color _getBMIColor(double bmi) {
+  Color _getBMIColor(BuildContext context, double bmi) {
     if (bmi < 18.5) return Theme.of(context).colorScheme.secondary;
     if (bmi < 25) return const Color(0xFF4CAF50); // green
     if (bmi < 30) return const Color(0xFFFFA726); // orange
     return const Color(0xFFEF5350); // red
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: Center(
-          child: CircularProgressIndicator(
-            color: Theme.of(context).colorScheme.secondary,
-            strokeWidth: 3,
-          ),
-        ),
-      );
-    }
-
-    final age = _calculateAge(_profileData['birthYear']);
-    final bmi = _calculateBMI(_profileData['height'], _profileData['weight']);
-
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(
-            Icons.chevron_left,
-            color: Theme.of(context).colorScheme.primary,
-            size: 28,
-          ),
-          onPressed: widget.onBack,
-        ),
-        title: Text(
-          'Twój profil',
-          style: Theme.of(context).appBarTheme.titleTextStyle,
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            if (_showWeightReminder) _buildWeightReminder(),
-            _buildBasicInfo(age, bmi),
-            const SizedBox(height: 16),
-            _buildHealthInfo(),
-            const SizedBox(height: 16),
-            _buildPersonalInfo(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildWeightReminder() {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFA726).withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFFFA726), width: 2),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.info_outline, color: Color(0xFFFFA726), size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              'Minęło już 6 miesięcy od ostatniej aktualizacji wagi. Zaktualizuj swoje dane!',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBasicInfo(int age, double bmi) {
+  Widget _buildBasicInfo(
+    BuildContext context,
+    int age,
+    double bmi,
+    dynamic profile,
+  ) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -177,24 +118,34 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildStatItem(
+                context,
                 Icons.height,
-                '${_profileData['height'] ?? '--'} cm',
+                '${profile.height ?? '--'} cm',
                 'Wzrost',
               ),
               _buildStatItem(
+                context,
                 Icons.monitor_weight,
-                '${_profileData['weight'] ?? '--'} kg',
+                '${profile.weight ?? '--'} kg',
                 'Waga',
               ),
             ],
           ),
-          if (bmi > 0) ...[const SizedBox(height: 24), _buildBMIIndicator(bmi)],
+          if (bmi > 0) ...[
+            const SizedBox(height: 24),
+            _buildBMIIndicator(context, bmi),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildStatItem(IconData icon, String value, String label) {
+  Widget _buildStatItem(
+    BuildContext context,
+    IconData icon,
+    String value,
+    String label,
+  ) {
     return Column(
       children: [
         Icon(icon, size: 32, color: Theme.of(context).colorScheme.secondary),
@@ -210,13 +161,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 
-  Widget _buildBMIIndicator(double bmi) {
+  Widget _buildBMIIndicator(BuildContext context, double bmi) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _getBMIColor(bmi).withValues(alpha: 0.15),
+        color: _getBMIColor(context, bmi).withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: _getBMIColor(bmi), width: 2),
+        border: Border.all(color: _getBMIColor(context, bmi), width: 2),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -234,7 +185,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 bmi.toStringAsFixed(1),
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: _getBMIColor(bmi),
+                  color: _getBMIColor(context, bmi),
                 ),
               ),
             ],
@@ -243,7 +194,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             height: 44,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              color: _getBMIColor(bmi),
+              color: _getBMIColor(context, bmi),
               borderRadius: BorderRadius.circular(24),
             ),
             child: Center(
@@ -261,57 +212,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 
-  Widget _buildHealthInfo() {
-    String smokingInfo = 'Nie';
-    if (_profileData['smokingCigarettes'] == true) {
-      smokingInfo = 'Tak';
-      if (_profileData['smokingFrequency']?.isNotEmpty ?? false) {
-        smokingInfo += ' (${_profileData['smokingFrequency']})';
-      }
-    }
-
-    String alcoholInfo = 'Nie';
-    if (_profileData['drinkingAlcohol'] == true) {
-      alcoholInfo = 'Tak';
-      if (_profileData['alcoholFrequency']?.isNotEmpty ?? false) {
-        alcoholInfo += ' (${_profileData['alcoholFrequency']})';
-      }
-    }
-
-    String otherSubstancesInfo = 'Nie';
-    if (_profileData['otherSubstances'] == true) {
-      otherSubstancesInfo = 'Tak';
-      if (_profileData['otherSubstancesName']?.isNotEmpty ?? false) {
-        otherSubstancesInfo += ' - ${_profileData['otherSubstancesName']}';
-        if (_profileData['otherSubstancesFrequency']?.isNotEmpty ?? false) {
-          otherSubstancesInfo +=
-              ' (${_profileData['otherSubstancesFrequency']})';
-        }
-      }
-    }
-
-    String allergiesInfo = 'Brak';
-    if (_profileData['allergies'] != null &&
-        (_profileData['allergies'] as List).isNotEmpty) {
-      final allergiesList = (_profileData['allergies'] as List)
-          .where((a) => a?.toString().isNotEmpty ?? false)
-          .toList();
-      if (allergiesList.isNotEmpty) {
-        allergiesInfo = allergiesList.join(', ');
-      }
-    }
-
-    String medicationsInfo = 'Brak';
-    if (_profileData['medications'] != null &&
-        (_profileData['medications'] as List).isNotEmpty) {
-      final medicationsList = (_profileData['medications'] as List)
-          .where((m) => m?.toString().isNotEmpty ?? false)
-          .toList();
-      if (medicationsList.isNotEmpty) {
-        medicationsInfo = medicationsList.join(', ');
-      }
-    }
-
+  Widget _buildHealthInfo(BuildContext context, dynamic profile) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -332,39 +233,31 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 16),
-
-          if (_profileData['currentIllness']?.isNotEmpty ?? false) ...[
-            _buildInfoRow('Choroba obecna', _profileData['currentIllness']),
-            const SizedBox(height: 12),
-          ],
-
-          if (_profileData['chronicDiseases']?.isNotEmpty ?? false) ...[
-            _buildInfoRow(
-              'Choroby przewlekłe',
-              _profileData['chronicDiseases'],
-            ),
-            const SizedBox(height: 12),
-          ],
-
-          _buildInfoRow('Papierosy', smokingInfo),
+          _buildInfoRow(
+            context,
+            'Papierosy',
+            profile.smokingCigarettes ?? false ? 'Tak' : 'Nie',
+          ),
           const SizedBox(height: 12),
-
-          _buildInfoRow('Alkohol', alcoholInfo),
+          _buildInfoRow(
+            context,
+            'Alkohol',
+            profile.drinkingAlcohol ?? false ? 'Tak' : 'Nie',
+          ),
           const SizedBox(height: 12),
-
-          _buildInfoRow('Inne używki', otherSubstancesInfo),
-
+          _buildInfoRow(
+            context,
+            'Inne używki',
+            profile.otherSubstances ?? false ? 'Tak' : 'Nie',
+          ),
           const SizedBox(height: 12),
-          _buildInfoRow('Alergie', allergiesInfo),
-
-          const SizedBox(height: 12),
-          _buildInfoRow('Leki na stałe', medicationsInfo, isLast: true),
+          _buildInfoRow(context, 'Alergie', 'Brak', isLast: true),
         ],
       ),
     );
   }
 
-  Widget _buildPersonalInfo() {
+  Widget _buildPersonalInfo(BuildContext context, dynamic profile) {
     final sexLabels = {
       'female': 'Kobieta',
       'male': 'Mężczyzna',
@@ -372,19 +265,18 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     };
 
     final educationLabels = {
-      'podstawowe': 'Podstawowe',
-      'zawodowe': 'Zawodowe',
-      'srednie': 'Średnie',
-      'wyzsze-licencjat': 'Licencjat',
-      'wyzsze-magister': 'Magister',
-      'wyzsze-doktor': 'Doktor',
+      'primary': 'Podstawowe',
+      'vocational': 'Zawodowe',
+      'secondary': 'Średnie',
+      'higher': 'Wyższe',
+      'other': 'Inne',
     };
 
     final disabilityLabels = {
       'none': 'Brak',
-      'lekki': 'Lekki',
-      'umiarkowany': 'Umiarkowany',
-      'znaczny': 'Znaczny',
+      'light': 'Lekki',
+      'moderate': 'Umiarkowany',
+      'significant': 'Znaczny',
       'prefer-not-to-say': 'Wolę nie mówić',
     };
 
@@ -409,24 +301,26 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           ),
           const SizedBox(height: 16),
           _buildInfoRow(
+            context,
             'Płeć\nbiologiczna',
-            sexLabels[_profileData['biologicalSex']] ?? 'Nie podano',
+            sexLabels[profile.biologicalSex] ?? 'Nie podano',
           ),
           _buildInfoRow(
+            context,
             'Tożsamość\npłciowa',
-            sexLabels[_profileData['genderIdentity']] ??
-                _profileData['genderIdentityOther'] ??
-                'Nie podano',
+            sexLabels[profile.genderIdentity] ?? 'Nie podano',
           ),
           _buildInfoRow(
+            context,
             'Wykształcenie',
-            educationLabels[_profileData['education']] ??
-                _profileData['educationOther'] ??
+            educationLabels[profile.education] ??
+                profile.education ??
                 'Nie podano',
           ),
           _buildInfoRow(
+            context,
             'Niepełno\nsprawność',
-            disabilityLabels[_profileData['disability']] ?? 'Nie podano',
+            disabilityLabels[profile.disability] ?? 'Nie podano',
             isLast: true,
           ),
         ],
@@ -434,7 +328,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 
-  Widget _buildInfoRow(String label, String value, {bool isLast = false}) {
+  Widget _buildInfoRow(
+    BuildContext context,
+    String label,
+    String value, {
+    bool isLast = false,
+  }) {
     return Column(
       children: [
         Row(

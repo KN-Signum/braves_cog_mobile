@@ -21,12 +21,12 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
       otherSubstancesFrequency: '',
       allergies: ['Peanuts', 'Penicillin'],
       medications: ['Lisinopril'],
-      biologicalSex: 'Male',
-      genderIdentity: 'Man',
+      biologicalSex: 'male',
+      genderIdentity: 'male',
       genderIdentityOther: '',
-      education: 'Bachelor\'s Degree',
+      education: 'higher',
       educationOther: '',
-      disability: 'None',
+      disability: 'none',
     );
   }
 

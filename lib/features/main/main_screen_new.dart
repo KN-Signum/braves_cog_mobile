@@ -54,12 +54,14 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
     final prefs = await SharedPreferences.getInstance();
     final justRegistered = prefs.getBool('just-registered') ?? false;
 
-    // Get user email from auth provider and load profile data
-    final authState = ref.read(authProvider);
-    if (authState.user?.email != null) {
-      await ref
-          .read(profileProvider.notifier)
-          .loadProfile(email: authState.user!.email);
+    // Only load profile data for returning users
+    if (!justRegistered) {
+      final authState = ref.read(authProvider);
+      if (authState.user?.email != null) {
+        await ref
+            .read(profileProvider.notifier)
+            .loadProfile(email: authState.user!.email);
+      }
     }
 
     if (justRegistered) {

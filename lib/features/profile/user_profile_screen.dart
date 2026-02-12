@@ -26,7 +26,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Future<void> _loadProfileData() async {
     final prefs = await SharedPreferences.getInstance();
     final stored = prefs.getString('user-profile');
-    
+
     if (stored != null) {
       final data = jsonDecode(stored);
       setState(() {
@@ -80,20 +80,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/braves_logo.png',
-                width: 150,
-                height: 150,
-              ),
-              const SizedBox(height: 32),
-              CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.secondary,
-                strokeWidth: 3,
-              ),
-            ],
+          child: CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.secondary,
+            strokeWidth: 3,
           ),
         ),
       );
@@ -107,8 +96,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
+        centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.chevron_left, color: Theme.of(context).colorScheme.primary, size: 28),
+          icon: Icon(
+            Icons.chevron_left,
+            color: Theme.of(context).colorScheme.primary,
+            size: 28,
+          ),
           onPressed: widget.onBack,
         ),
         title: Text(
@@ -174,7 +168,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         children: [
           Text(
             '$age lat',
-            style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 28),
+            style: Theme.of(
+              context,
+            ).textTheme.displaySmall?.copyWith(fontSize: 28),
           ),
           const SizedBox(height: 24),
           Row(
@@ -192,10 +188,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               ),
             ],
           ),
-          if (bmi > 0) ...[
-            const SizedBox(height: 24),
-            _buildBMIIndicator(bmi),
-          ],
+          if (bmi > 0) ...[const SizedBox(height: 24), _buildBMIIndicator(bmi)],
         ],
       ),
     );
@@ -206,10 +199,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       children: [
         Icon(icon, size: 32, color: Theme.of(context).colorScheme.secondary),
         const SizedBox(height: 8),
-        Text(
-          value,
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
+        Text(value, style: Theme.of(context).textTheme.headlineSmall),
         Text(
           label,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -236,9 +226,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             children: [
               Text(
                 'BMI',
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
               Text(
                 bmi.toStringAsFixed(1),
@@ -294,13 +284,15 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       if (_profileData['otherSubstancesName']?.isNotEmpty ?? false) {
         otherSubstancesInfo += ' - ${_profileData['otherSubstancesName']}';
         if (_profileData['otherSubstancesFrequency']?.isNotEmpty ?? false) {
-          otherSubstancesInfo += ' (${_profileData['otherSubstancesFrequency']})';
+          otherSubstancesInfo +=
+              ' (${_profileData['otherSubstancesFrequency']})';
         }
       }
     }
 
     String allergiesInfo = 'Brak';
-    if (_profileData['allergies'] != null && (_profileData['allergies'] as List).isNotEmpty) {
+    if (_profileData['allergies'] != null &&
+        (_profileData['allergies'] as List).isNotEmpty) {
       final allergiesList = (_profileData['allergies'] as List)
           .where((a) => a?.toString().isNotEmpty ?? false)
           .toList();
@@ -310,7 +302,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     }
 
     String medicationsInfo = 'Brak';
-    if (_profileData['medications'] != null && (_profileData['medications'] as List).isNotEmpty) {
+    if (_profileData['medications'] != null &&
+        (_profileData['medications'] as List).isNotEmpty) {
       final medicationsList = (_profileData['medications'] as List)
           .where((m) => m?.toString().isNotEmpty ?? false)
           .toList();
@@ -334,20 +327,17 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         children: [
           Text(
             'Informacje zdrowotne',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 16),
-          
+
           if (_profileData['currentIllness']?.isNotEmpty ?? false) ...[
-            _buildInfoRow(
-              'Choroba obecna',
-              _profileData['currentIllness'],
-            ),
+            _buildInfoRow('Choroba obecna', _profileData['currentIllness']),
             const SizedBox(height: 12),
           ],
-          
+
           if (_profileData['chronicDiseases']?.isNotEmpty ?? false) ...[
             _buildInfoRow(
               'Choroby przewlekłe',
@@ -355,37 +345,20 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             ),
             const SizedBox(height: 12),
           ],
-          
+
           _buildInfoRow('Papierosy', smokingInfo),
           const SizedBox(height: 12),
-          
+
           _buildInfoRow('Alkohol', alcoholInfo),
           const SizedBox(height: 12),
-          
+
           _buildInfoRow('Inne używki', otherSubstancesInfo),
-          
+
           const SizedBox(height: 12),
           _buildInfoRow('Alergie', allergiesInfo),
-          
+
           const SizedBox(height: 12),
-          _buildInfoRow('Leki na stałe', medicationsInfo),
-          
-          if ((_profileData['currentIllness']?.isEmpty ?? true) &&
-              (_profileData['chronicDiseases']?.isEmpty ?? true) &&
-              !(_profileData['smokingCigarettes'] ?? false) &&
-              !(_profileData['drinkingAlcohol'] ?? false) &&
-              !(_profileData['otherSubstances'] ?? false) &&
-              (_profileData['allergies']?.isEmpty ?? true) &&
-              (_profileData['medications']?.isEmpty ?? true)) ...[
-            const SizedBox(height: 8),
-            Text(
-              'Brak danych zdrowotnych z onboardingu',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontStyle: FontStyle.italic,
-                    color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
-              ),
-            ),
-          ],
+          _buildInfoRow('Leki na stałe', medicationsInfo, isLast: true),
         ],
       ),
     );
@@ -430,29 +403,29 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         children: [
           Text(
             'Informacje osobiste',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 16),
           _buildInfoRow(
-            'Płeć biologiczna',
+            'Płeć\nbiologiczna',
             sexLabels[_profileData['biologicalSex']] ?? 'Nie podano',
           ),
           _buildInfoRow(
-            'Tożsamość płciowa',
-            sexLabels[_profileData['genderIdentity']] ?? 
-                _profileData['genderIdentityOther'] ?? 
+            'Tożsamość\npłciowa',
+            sexLabels[_profileData['genderIdentity']] ??
+                _profileData['genderIdentityOther'] ??
                 'Nie podano',
           ),
           _buildInfoRow(
             'Wykształcenie',
-            educationLabels[_profileData['education']] ?? 
-                _profileData['educationOther'] ?? 
+            educationLabels[_profileData['education']] ??
+                _profileData['educationOther'] ??
                 'Nie podano',
           ),
           _buildInfoRow(
-            'Niepełnosprawność',
+            'Niepełno\nsprawność',
             disabilityLabels[_profileData['disability']] ?? 'Nie podano',
             isLast: true,
           ),
@@ -473,7 +446,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 label,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w500,
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.6),
                 ),
               ),
             ),
@@ -481,20 +456,22 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               flex: 3,
               child: Text(
                 value,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
             ),
           ],
         ),
         if (!isLast) ...[
           const SizedBox(height: 12),
-          Divider(color: Theme.of(context).colorScheme.surfaceContainerHighest, thickness: 2),
+          Divider(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            thickness: 2,
+          ),
           const SizedBox(height: 12),
         ],
       ],
     );
   }
 }
-

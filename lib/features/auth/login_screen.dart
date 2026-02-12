@@ -77,7 +77,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       await ref
           .read(authProvider.notifier)
           .login(_loginController.text, _passwordController.text);
-      widget.onLogin();
+
+      // Check if login was successful
+      final authState = ref.read(authProvider);
+      if (authState.error != null) {
+        _showAlert(authState.error ?? 'Błąd logowania');
+        return;
+      }
+
+      if (authState.isAuthenticated) {
+        widget.onLogin();
+      }
     } catch (e) {
       _showAlert('Błąd logowania: ${e.toString()}');
     }
@@ -157,6 +167,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Text(
                         'Rejestracja',
                         style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      SizedBox(height: AppTheme.spacingSm),
+                      Text(
+                        'Test: test@test.pl / password',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.secondary,
+                          fontSize: 12,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                       SizedBox(height: AppTheme.spacingLg),
                       _buildTextField(
@@ -272,6 +291,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           color: Theme.of(
                             context,
                           ).colorScheme.primary.withValues(alpha: 0.7),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: AppTheme.spacingSm),
+                      Text(
+                        'Test: test@test.pl / password',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.secondary,
+                          fontSize: 12,
                         ),
                         textAlign: TextAlign.center,
                       ),

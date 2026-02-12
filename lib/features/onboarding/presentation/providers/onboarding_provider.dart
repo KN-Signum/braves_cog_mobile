@@ -20,13 +20,18 @@ final saveConsentsUseCaseProvider = Provider<SaveConsentsUseCase>((ref) {
   return SaveConsentsUseCase(ref.watch(onboardingRepositoryProvider));
 });
 
-final completeOnboardingUseCaseProvider = Provider<CompleteOnboardingUseCase>((ref) {
+final completeOnboardingUseCaseProvider = Provider<CompleteOnboardingUseCase>((
+  ref,
+) {
   return CompleteOnboardingUseCase(ref.watch(onboardingRepositoryProvider));
 });
 
-final checkOnboardingCompletionUseCaseProvider = Provider<CheckOnboardingCompletionUseCase>((ref) {
-  return CheckOnboardingCompletionUseCase(ref.watch(onboardingRepositoryProvider));
-});
+final checkOnboardingCompletionUseCaseProvider =
+    Provider<CheckOnboardingCompletionUseCase>((ref) {
+      return CheckOnboardingCompletionUseCase(
+        ref.watch(onboardingRepositoryProvider),
+      );
+    });
 
 // State
 enum OnboardingStage {
@@ -92,38 +97,63 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
 
   Future<void> completeOnboarding() async {
     state = state.copyWith(isLoading: true, error: null);
-    
-    // 1. Save Profile (via ProfileNotifier)
-    final profileNotifier = ref.read(profileProvider.notifier);
-    await profileNotifier.saveProfile();
-    final profileState = ref.read(profileProvider);
 
-    if (profileState.error != null) {
-      state = state.copyWith(isLoading: false, error: "Failed to save profile: ${profileState.error}");
-      return;
-    }
+    try {
+      // 1. Save Profile (via ProfileNotifier)
+      final profileNotifier = ref.read(profileProvider.notifier);
+      await profileNotifier.saveProfile();
+      final profileState = ref.read(profileProvider);
 
-    // 2. Save Consents
-    final consentsResult = await _saveConsentsUseCase(state.consents);
-    
-    consentsResult.fold(
-      (failure) => state = state.copyWith(isLoading: false, error: failure.message),
-      (_) async {
-        // 3. Mark Completed
-        final completeResult = await _completeOnboardingUseCase(NoParams());
-        completeResult.fold(
-           (failure) => state = state.copyWith(isLoading: false, error: failure.message),
-           (_) => state = state.copyWith(isLoading: false, stage: OnboardingStage.completed),
+      if (profileState.error != null) {
+        state = state.copyWith(
+          isLoading: false,
+          error: "Błąd zapisania profilu: ${profileState.error}",
         );
-      },
-    );
+        return;
+      }
+
+      // 2. Save Consents
+      final consentsResult = await _saveConsentsUseCase(state.consents);
+
+      final consentsError = consentsResult.fold<String?>(
+        (failure) => failure.message,
+        (_) => null,
+      );
+
+      if (consentsError != null) {
+        state = state.copyWith(isLoading: false, error: consentsError);
+        return;
+      }
+
+      // 3. Mark Completed
+      final completeResult = await _completeOnboardingUseCase(NoParams());
+
+      completeResult.fold(
+        (failure) =>
+            state = state.copyWith(isLoading: false, error: failure.message),
+        (_) => state = state.copyWith(
+          isLoading: false,
+          stage: OnboardingStage.completed,
+        ),
+      );
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: "Nieoczekiwany błąd: $e");
+    }
   }
 }
 
-final onboardingProvider = StateNotifierProvider<OnboardingNotifier, OnboardingState>((ref) {
-  final saveConsents = ref.watch(saveConsentsUseCaseProvider);
-  final completeOnboarding = ref.watch(completeOnboardingUseCaseProvider);
-  final checkCompletion = ref.watch(checkOnboardingCompletionUseCaseProvider);
-  
-  return OnboardingNotifier(saveConsents, completeOnboarding, checkCompletion, ref);
-});
+final onboardingProvider =
+    StateNotifierProvider<OnboardingNotifier, OnboardingState>((ref) {
+      final saveConsents = ref.watch(saveConsentsUseCaseProvider);
+      final completeOnboarding = ref.watch(completeOnboardingUseCaseProvider);
+      final checkCompletion = ref.watch(
+        checkOnboardingCompletionUseCaseProvider,
+      );
+
+      return OnboardingNotifier(
+        saveConsents,
+        completeOnboarding,
+        checkCompletion,
+        ref,
+      );
+    });

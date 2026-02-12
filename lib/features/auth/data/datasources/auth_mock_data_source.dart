@@ -3,17 +3,21 @@ import 'package:braves_cog/features/auth/data/datasources/auth_remote_data_sourc
 import 'package:braves_cog/features/auth/data/models/user_model.dart';
 
 class AuthMockDataSource implements AuthRemoteDataSource {
+  static const String _testEmail = 'test@test.pl';
+  static const String _testPassword = 'password';
+
   @override
   Future<UserModel> login(String email, String password) async {
     await Future.delayed(const Duration(seconds: 1)); // Simulate latency
-    
-    if (email == 'error@test.com') {
+
+    // Only allow the specific test credentials
+    if (email != _testEmail || password != _testPassword) {
       throw const ServerFailure('Invalid credentials');
     }
-    
+
     return const UserModel(
       id: 'mock_user_123',
-      email: 'test@example.com',
+      email: _testEmail,
       name: 'Test User',
     );
   }
@@ -27,15 +31,15 @@ class AuthMockDataSource implements AuthRemoteDataSource {
       name: name,
     );
   }
-  
+
   @override
   Future<UserModel> getCurrentUser() async {
-    // In a real mock, we might check a local flag or token, 
+    // In a real mock, we might check a local flag or token,
     // but here we just return a user if "logged in" logic was handled elsewhere
     await Future.delayed(const Duration(milliseconds: 500));
     return const UserModel(
       id: 'mock_user_123',
-      email: 'test@example.com', 
+      email: _testEmail,
       name: 'Test User',
     );
   }

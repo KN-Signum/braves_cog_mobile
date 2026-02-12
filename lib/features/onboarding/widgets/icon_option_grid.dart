@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 
-
 class IconOption {
   final String value;
   final String label;
   final IconData icon;
 
-  IconOption({
-    required this.value,
-    required this.label,
-    required this.icon,
-  });
+  IconOption({required this.value, required this.label, required this.icon});
 }
 
 class IconOptionGrid extends StatelessWidget {
@@ -37,27 +32,24 @@ class IconOptionGrid extends StatelessWidget {
         return GestureDetector(
           onTap: () => onChange(option.value),
           child: Container(
-            width: (MediaQuery.of(context).size.width - 64 - (12 * (columns - 1))) / columns,
+            width:
+                (MediaQuery.of(context).size.width -
+                    64 -
+                    (12 * (columns - 1))) /
+                columns,
             height: 100,
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
             decoration: BoxDecoration(
-              color: isSelected ? Theme.of(context).colorScheme.secondary : Theme.of(context).scaffoldBackgroundColor,
+              color: isSelected
+                  ? Theme.of(context).colorScheme.secondary
+                  : Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: isSelected 
-                  ? Theme.of(context).colorScheme.secondary 
-                  : Theme.of(context).colorScheme.surfaceContainerHighest,
+                color: isSelected
+                    ? Theme.of(context).colorScheme.secondary
+                    : Theme.of(context).colorScheme.surfaceContainerHighest,
                 width: 2,
               ),
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
-                        blurRadius: 0,
-                        spreadRadius: 4,
-                      ),
-                    ]
-                  : [],
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -84,4 +76,3 @@ class IconOptionGrid extends StatelessWidget {
     );
   }
 }
-

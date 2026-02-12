@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class WeightPicker extends StatelessWidget {
   final String weight;
   final Function(String) onWeightChanged;
@@ -17,7 +16,7 @@ class WeightPicker extends StatelessWidget {
     final initialIndex = weights.indexOf(weight);
 
     return SizedBox(
-      height: 200,
+      height: 300,
       width: double.infinity,
       child: ListWheelScrollView.useDelegate(
         itemExtent: 50,
@@ -33,16 +32,16 @@ class WeightPicker extends StatelessWidget {
             if (index < 0 || index >= weights.length) return null;
             final itemWeight = weights[index];
             final isSelected = itemWeight == weight;
-            
+
             return Center(
               child: Text(
                 '$itemWeight kg',
                 style: Theme.of(context).textTheme.displaySmall?.copyWith(
                   fontSize: isSelected ? 32 : 24,
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  color: isSelected 
-                    ? Theme.of(context).colorScheme.primary 
-                    : Theme.of(context).colorScheme.primary.withAlpha((255 * 0.1).round()),
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.primary.withAlpha(128),
                 ),
               ),
             );
@@ -53,4 +52,3 @@ class WeightPicker extends StatelessWidget {
     );
   }
 }
-

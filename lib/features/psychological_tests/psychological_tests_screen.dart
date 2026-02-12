@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class PsychologicalTestsScreen extends StatelessWidget {
   final VoidCallback onBack;
 
@@ -16,6 +15,7 @@ class PsychologicalTestsScreen extends StatelessWidget {
           onPressed: onBack,
         ),
         title: const Text('Testy psychologiczne'),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -158,33 +158,34 @@ class PsychologicalTestsScreen extends StatelessWidget {
               'Test osobowości',
               'Skala satysfakcji z życia',
               'Inwentarz objawów przedmiotowych',
-            ].map((test) => Padding(
-                  padding: const EdgeInsets.only(left: 16, top: 4),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 6,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF4F3422).withValues(alpha: 0.3),
-                          shape: BoxShape.circle,
-                        ),
+            ].map(
+              (test) => Padding(
+                padding: const EdgeInsets.only(left: 16, top: 4),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF4F3422).withValues(alpha: 0.3),
+                        shape: BoxShape.circle,
                       ),
-                      const SizedBox(width: 12),
-                      Text(
-                        test,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: const Color(0xFF4F3422).withValues(alpha: 0.6),
-                        ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      test,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: const Color(0xFF4F3422).withValues(alpha: 0.6),
                       ),
-                    ],
-                  ),
-                )),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ],
       ),
     );
   }
 }
-

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
-
 class HeightPicker extends StatelessWidget {
   final String height;
   final Function(String) onHeightChanged;
 
-  const HeightPicker({super.key, required this.height, required this.onHeightChanged});
+  const HeightPicker({
+    super.key,
+    required this.height,
+    required this.onHeightChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,13 +16,15 @@ class HeightPicker extends StatelessWidget {
     final initialIndex = heights.indexOf(height);
 
     return SizedBox(
-      height: 200,
+      height: 300,
       width: double.infinity,
       child: ListWheelScrollView.useDelegate(
         itemExtent: 50,
         diameterRatio: 1.5,
         controller: FixedExtentScrollController(
-          initialItem: initialIndex >= 0 ? initialIndex : heights.indexOf('170'),
+          initialItem: initialIndex >= 0
+              ? initialIndex
+              : heights.indexOf('170'),
         ),
         onSelectedItemChanged: (index) {
           onHeightChanged(heights[index]);
@@ -29,16 +34,16 @@ class HeightPicker extends StatelessWidget {
             if (index < 0 || index >= heights.length) return null;
             final currentHeight = heights[index];
             final isSelected = currentHeight == height;
-            
+
             return Center(
               child: Text(
                 '$currentHeight cm',
                 style: Theme.of(context).textTheme.displaySmall?.copyWith(
                   fontSize: isSelected ? 32 : 24,
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  color: isSelected 
-                    ? Theme.of(context).colorScheme.primary 
-                    : Theme.of(context).colorScheme.primary.withAlpha(128), // withAlpha(128) is equivalent to withOpacity(0.5)
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.primary.withAlpha(128),
                 ),
               ),
             );
@@ -49,4 +54,3 @@ class HeightPicker extends StatelessWidget {
     );
   }
 }
-

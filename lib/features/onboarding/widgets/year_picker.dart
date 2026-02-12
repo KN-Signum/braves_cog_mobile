@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class YearPicker extends StatelessWidget {
   final String value;
   final Function(String) onChange;
@@ -27,13 +26,15 @@ class YearPicker extends StatelessWidget {
     final initialIndex = years.indexOf(value);
 
     return SizedBox(
-      height: 200,
-      width: 150,
+      height: 300,
+      width: double.infinity,
       child: ListWheelScrollView.useDelegate(
         itemExtent: 50,
         diameterRatio: 1.5,
         controller: FixedExtentScrollController(
-          initialItem: initialIndex >= 0 ? initialIndex : years.indexOf(defaultYear.toString()),
+          initialItem: initialIndex >= 0
+              ? initialIndex
+              : years.indexOf(defaultYear.toString()),
         ),
         onSelectedItemChanged: (index) {
           onChange(years[index]);
@@ -43,7 +44,7 @@ class YearPicker extends StatelessWidget {
             if (index < 0 || index >= years.length) return null;
             final year = years[index];
             final isSelected = year == value;
-            
+
             return SizedBox(
               width: double.infinity,
               child: Center(
@@ -52,9 +53,9 @@ class YearPicker extends StatelessWidget {
                   style: Theme.of(context).textTheme.displaySmall?.copyWith(
                     fontSize: isSelected ? 32 : 24,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected 
-                      ? Theme.of(context).colorScheme.primary 
-                      : Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                    color: isSelected
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.primary.withAlpha(128),
                   ),
                 ),
               ),
@@ -66,4 +67,3 @@ class YearPicker extends StatelessWidget {
     );
   }
 }
-

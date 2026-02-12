@@ -21,6 +21,7 @@ class SettingsScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
+        centerTitle: true,
         leading: IconButton(
           icon: Icon(
             Icons.chevron_left,

@@ -125,14 +125,6 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                     size: 24,
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                  style: IconButton.styleFrom(
-                    shape: const CircleBorder(),
-                    side: BorderSide(
-                      color: Theme.of(context).colorScheme.primary,
-                      width: 2,
-                    ),
-                    minimumSize: const Size(40, 40),
-                  ),
                 ),
                 Expanded(
                   child: Center(
@@ -173,7 +165,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                   child: Center(
                     child: Text(
                       '${((_currentStep + 1) / _totalSteps * 100).round()}%',
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),

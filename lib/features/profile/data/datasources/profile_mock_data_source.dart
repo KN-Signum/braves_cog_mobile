@@ -13,28 +13,40 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
     if (email != null) {
       userType = _getUserTypeFromEmail(email);
     } else {
-      userType = UserType.normal;
+      userType = UserType.normalCog;
     }
 
     // Return different profiles based on user type
     return switch (userType) {
-      UserType.adhd => _buildADHDProfile(),
-      UserType.covid => _buildCOVIDProfile(),
-      UserType.hypertension => _buildHypertensionProfile(),
-      UserType.normal => _buildNormalProfile(),
+      UserType.neuroCog => _buildNeuroCogProfile(),
+      UserType.covidCog => _buildCovidCogProfile(),
+      UserType.vasCog => _buildVasCogProfile(),
+      UserType.sccCog => _buildSccCogProfile(),
+      UserType.normalCog => _buildNormalCogProfile(),
     };
   }
 
   UserType _getUserTypeFromEmail(String email) {
     return switch (email) {
-      'adhd@test.pl' => UserType.adhd,
-      'covid@test.pl' => UserType.covid,
-      'hypertension@test.pl' => UserType.hypertension,
-      _ => UserType.normal,
+      // New study group emails
+      'vascog@test.pl' => UserType.vasCog,
+      'neurocog@test.pl' => UserType.neuroCog,
+      'covidcog@test.pl' => UserType.covidCog,
+      'scccog@test.pl' => UserType.sccCog,
+      'normalcog@test.pl' => UserType.normalCog,
+
+      // Backward-compatible aliases
+      'hypertension@test.pl' => UserType.vasCog,
+      'adhd@test.pl' => UserType.neuroCog,
+      'covid@test.pl' => UserType.covidCog,
+      'scc@test.pl' => UserType.sccCog,
+      'normal@test.pl' => UserType.normalCog,
+
+      _ => UserType.normalCog,
     };
   }
 
-  UserProfileModel _buildADHDProfile() {
+  UserProfileModel _buildNeuroCogProfile() {
     return const UserProfileModel(
       birthYear: '1995',
       height: '175',
@@ -56,11 +68,11 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
       education: 'higher',
       educationOther: '',
       disability: 'none',
-      type: UserType.adhd,
+      type: UserType.neuroCog,
     );
   }
 
-  UserProfileModel _buildCOVIDProfile() {
+  UserProfileModel _buildCovidCogProfile() {
     return const UserProfileModel(
       birthYear: '1988',
       height: '170',
@@ -82,11 +94,11 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
       education: 'higher',
       educationOther: '',
       disability: 'none',
-      type: UserType.covid,
+      type: UserType.covidCog,
     );
   }
 
-  UserProfileModel _buildHypertensionProfile() {
+  UserProfileModel _buildVasCogProfile() {
     return const UserProfileModel(
       birthYear: '1965',
       height: '180',
@@ -108,11 +120,37 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
       education: 'secondary',
       educationOther: '',
       disability: 'none',
-      type: UserType.hypertension,
+      type: UserType.vasCog,
     );
   }
 
-  UserProfileModel _buildNormalProfile() {
+  UserProfileModel _buildSccCogProfile() {
+    return const UserProfileModel(
+      birthYear: '1992',
+      height: '172',
+      weight: '68',
+      currentIllness: 'None',
+      chronicDiseases: 'None',
+      smokingCigarettes: false,
+      smokingFrequency: '',
+      drinkingAlcohol: true,
+      alcoholFrequency: 'Occasionally',
+      otherSubstances: false,
+      otherSubstancesName: '',
+      otherSubstancesFrequency: '',
+      allergies: [],
+      medications: [],
+      biologicalSex: 'female',
+      genderIdentity: 'female',
+      genderIdentityOther: '',
+      education: 'higher',
+      educationOther: '',
+      disability: 'none',
+      type: UserType.sccCog,
+    );
+  }
+
+  UserProfileModel _buildNormalCogProfile() {
     return const UserProfileModel(
       birthYear: '1990',
       height: '175',
@@ -134,7 +172,7 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
       education: 'higher',
       educationOther: '',
       disability: 'none',
-      type: UserType.normal,
+      type: UserType.normalCog,
     );
   }
 

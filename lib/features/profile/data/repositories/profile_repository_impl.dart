@@ -21,7 +21,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }) async {
     // Try to get from local storage first (offline-first approach or cache)
     try {
-      final localProfile = await localDataSource.getLastUserProfile();
+      final localProfile = await localDataSource.getLastUserProfile(email: email);
       if (localProfile != null) {
         return Right(localProfile);
       }
@@ -34,7 +34,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
         final remoteProfile = await remoteDataSource.getUserProfile(
           email: email,
         );
-        await localDataSource.cacheUserProfile(remoteProfile);
+        await localDataSource.cacheUserProfile(remoteProfile, email: email);
         return Right(remoteProfile);
       } catch (e) {
         return Left(ServerFailure());
@@ -45,7 +45,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
         final remoteProfile = await remoteDataSource.getUserProfile(
           email: email,
         );
-        await localDataSource.cacheUserProfile(remoteProfile);
+        await localDataSource.cacheUserProfile(remoteProfile, email: email);
         return Right(remoteProfile);
       } catch (e) {
         return Left(ServerFailure());

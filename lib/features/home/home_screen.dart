@@ -4,12 +4,14 @@ import 'package:braves_cog/core/theme/app_theme.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 
 class HomeScreen extends ConsumerWidget {
-  final VoidCallback onHealthClick;
+  final VoidCallback onMonitoringClick;
+  final VoidCallback onScreeningClick;
   final VoidCallback onTestsClick;
 
   const HomeScreen({
     super.key,
-    required this.onHealthClick,
+    required this.onMonitoringClick,
+    required this.onScreeningClick,
     required this.onTestsClick,
   });
 
@@ -30,69 +32,17 @@ class HomeScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Header
-                    RichText(
-                      text: TextSpan(
-                        style: Theme.of(context).textTheme.displaySmall,
-                        children: [
-                          const TextSpan(text: 'Witaj z powrotem,\n'),
-                          TextSpan(
-                            text: userType,
-                            style: Theme.of(context).textTheme.displaySmall
-                                ?.copyWith(fontWeight: FontWeight.w900),
-                          ),
-                          const TextSpan(text: '!'),
-                        ],
+                    Text(
+                      'Witaj, jak się dzisiaj masz?',
+                      style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                     SizedBox(height: AppTheme.spacingXl),
-
-                    // Feeling Section
-                    Text(
-                      'Jak się dzisiaj czujesz?',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
+                    _buildMonitoringCard(context),
                     SizedBox(height: AppTheme.spacingMd),
-
-                    // Health Survey Button
-                    _buildHealthSurveyCard(context),
-                    SizedBox(height: AppTheme.spacingXl),
-
-                    // Psychological Tests Section
-                    Text(
-                      'Testy psychologiczne',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    SizedBox(height: AppTheme.spacingMd),
-
-                    _buildTestCard(
-                      context,
-                      title: 'Testy jednorazowe',
-                      description:
-                          'Badanie jednorazowe oceniające aktualny stan',
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Theme.of(
-                              context,
-                            ).colorScheme.primary.withValues(alpha: 0.15)
-                          : Theme.of(
-                              context,
-                            ).colorScheme.secondary.withValues(alpha: 0.1),
-                      iconColor: Theme.of(context).brightness == Brightness.dark
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.secondary,
-                      icon: Icons.psychology,
-                    ),
-                    SizedBox(height: AppTheme.spacingMd),
-
-                    _buildTestCard(
-                      context,
-                      title: 'Testy wielokrotne',
-                      description: 'Monitorowanie postępów w czasie',
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerHighest,
-                      iconColor: Theme.of(context).colorScheme.primary,
-                      icon: Icons.assignment,
-                    ),
+                    _buildScreeningCard(context),
+                    SizedBox(height: AppTheme.spacingXl)
                   ],
                 ),
               ),
@@ -103,14 +53,13 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHealthSurveyCard(BuildContext context) {
+  Widget _buildMonitoringCard(BuildContext context) {
     return GestureDetector(
-      onTap: onHealthClick,
+      onTap: onMonitoringClick,
       child: Container(
         padding: EdgeInsets.all(AppTheme.spacingLg),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.secondary,
-          // borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
         ),
         child: Row(
           children: [
@@ -119,14 +68,14 @@ class HomeScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Wypełnij ankietę',
+                    'Monitoring',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   SizedBox(height: AppTheme.spacingSm),
                   Text(
-                    'Sprawdź swoje zdrowie i samopoczucie',
+                    'Codzienne sprawdzanie samopoczucia i stanu zdrowia',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.primary,
                     ),
@@ -139,13 +88,57 @@ class HomeScreen extends ConsumerWidget {
               height: 70,
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primary,
-                // borderRadius: BorderRadius.circular(AppTheme.borderRadiusLarge),
               ),
               child: Icon(
-                Icons.fitness_center,
+                Icons.monitor_heart,
                 size: 40,
                 color: Theme.of(context).colorScheme.secondary,
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScreeningCard(BuildContext context) {
+    return GestureDetector(
+      onTap: onScreeningClick,
+      child: Container(
+        padding: EdgeInsets.all(AppTheme.spacingLg),
+        decoration: BoxDecoration(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.15)
+              : Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Screening',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  SizedBox(height: AppTheme.spacingSm),
+                  Text(
+                    'Szczegółowa ocena zdrowia, snu i samopoczucia',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.assessment,
+              size: 60,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ],
         ),

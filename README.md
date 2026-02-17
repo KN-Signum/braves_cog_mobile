@@ -28,16 +28,25 @@ A Flutter application built with **Riverpod** state management, featuring authen
    flutter pub get
    ```
 
-3. **Run the app**:
+3. **Configure environment**:
+   - Copy `env.example` → `.env`
+   - Set `USE_MOCK_DATA=true` to use mock authentication / data sources
+
+4. **Run the app**:
    ```bash
    flutter run
    ```
 
 ### Demo Credentials
 
-For testing the authentication:
-- **Email**: `test@example.com`
-- **Password**: `password123`
+For testing the authentication (mock mode):
+- **Password**: `password`
+- **Emails**:
+  - `normalcog@test.pl`
+  - `vascog@test.pl`
+  - `neurocog@test.pl`
+  - `covidcog@test.pl`
+  - `scccog@test.pl`
 
 
 ## 📂 Project Structure

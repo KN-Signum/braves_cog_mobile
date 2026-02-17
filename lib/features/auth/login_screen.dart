@@ -162,7 +162,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     // borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
                         'Rejestracja',

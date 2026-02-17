@@ -11,6 +11,8 @@ class GamesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Tło ekranów z grami takie jak w "Twój profil"
+      backgroundColor: Theme.of(context).colorScheme.secondary,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.chevron_left),
@@ -307,11 +309,11 @@ class _GameCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 12),
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -321,7 +323,7 @@ class _GameCard extends StatelessWidget {
                 height: 60,
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.zero,
                 ),
                 child: Icon(icon, color: color, size: 30),
               ),
@@ -339,14 +341,17 @@ class _GameCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       description,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: const Color(0xFC515667),
+                          ),
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right, color: Colors.grey[400]),
+              const Icon(
+                Icons.chevron_right,
+                color: Color(0xFC515667),
+              ),
             ],
           ),
         ),

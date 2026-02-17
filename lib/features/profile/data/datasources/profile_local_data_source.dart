@@ -4,8 +4,8 @@ import 'package:braves_cog/features/profile/data/models/user_profile_model.dart'
 import 'package:braves_cog/features/profile/domain/entities/user_profile_entity.dart';
 
 abstract class ProfileLocalDataSource {
-  Future<UserProfileModel?> getLastUserProfile();
-  Future<void> cacheUserProfile(UserProfileEntity profile);
+  Future<UserProfileModel?> getLastUserProfile({String? email});
+  Future<void> cacheUserProfile(UserProfileEntity profile, {String? email});
 }
 
 class ProfileLocalDataSourceImpl implements ProfileLocalDataSource {
@@ -14,9 +14,18 @@ class ProfileLocalDataSourceImpl implements ProfileLocalDataSource {
   ProfileLocalDataSourceImpl(this.sharedPreferences);
 
   static const cachedProfileKey = 'user-profile';
+  static const cachedProfileEmailKey = 'user-profile-email';
 
   @override
-  Future<UserProfileModel?> getLastUserProfile() async {
+  Future<UserProfileModel?> getLastUserProfile({String? email}) async {
+    // If email is provided, only return cache if it belongs to the same user
+    if (email != null) {
+      final cachedEmail = sharedPreferences.getString(cachedProfileEmailKey);
+      if (cachedEmail != null && cachedEmail != email) {
+        return null;
+      }
+    }
+
     final jsonString = sharedPreferences.getString(cachedProfileKey);
     if (jsonString != null) {
       return UserProfileModel.fromJson(json.decode(jsonString));
@@ -25,7 +34,7 @@ class ProfileLocalDataSourceImpl implements ProfileLocalDataSource {
   }
 
   @override
-  Future<void> cacheUserProfile(UserProfileEntity profile) async {
+  Future<void> cacheUserProfile(UserProfileEntity profile, {String? email}) async {
     // Convert entity to model to access toJson
     final model = UserProfileModel(
       birthYear: profile.birthYear,
@@ -48,8 +57,13 @@ class ProfileLocalDataSourceImpl implements ProfileLocalDataSource {
       education: profile.education,
       educationOther: profile.educationOther,
       disability: profile.disability,
+      type: profile.type,
     );
     
+    if (email != null) {
+      await sharedPreferences.setString(cachedProfileEmailKey, email);
+    }
+
     await sharedPreferences.setString(
       cachedProfileKey,
       json.encode(model.toJson()),

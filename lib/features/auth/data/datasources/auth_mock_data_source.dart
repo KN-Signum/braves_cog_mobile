@@ -5,10 +5,19 @@ import 'package:braves_cog/features/auth/data/models/user_model.dart';
 class AuthMockDataSource implements AuthRemoteDataSource {
   static const String _testPassword = 'password';
   static const Map<String, String> _testAccounts = {
-    'adhd@test.pl': 'adhd',
-    'covid@test.pl': 'covid',
-    'hypertension@test.pl': 'hypertension',
-    'normal@test.pl': 'normal',
+    // New study group emails
+    'vascog@test.pl': 'vascog',
+    'neurocog@test.pl': 'neurocog',
+    'covidcog@test.pl': 'covidcog',
+    'scccog@test.pl': 'scccog',
+    'normalcog@test.pl': 'normalcog',
+
+    // Backward-compatible aliases
+    'hypertension@test.pl': 'vascog',
+    'adhd@test.pl': 'neurocog',
+    'covid@test.pl': 'covidcog',
+    'scc@test.pl': 'scccog',
+    'normal@test.pl': 'normalcog',
   };
 
   @override
@@ -44,8 +53,8 @@ class AuthMockDataSource implements AuthRemoteDataSource {
     await Future.delayed(const Duration(milliseconds: 500));
     return const UserModel(
       id: 'mock_user_normal',
-      email: 'normal@test.pl',
-      name: 'normal',
+      email: 'normalcog@test.pl',
+      name: 'normalcog',
     );
   }
 }

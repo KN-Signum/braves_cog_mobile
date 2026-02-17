@@ -10,6 +10,10 @@ import '../onboarding/onboarding_screen.dart';
 import '../home/home_screen.dart';
 import '../health/health_module_screen.dart';
 import '../psychological_tests/psychological_tests_screen.dart';
+import '../surveys/widgets/universal_survey_widget.dart';
+import '../surveys/widgets/screening_flow_widget.dart';
+import '../surveys/data/survey_configs/monitoring_survey_config.dart';
+import '../surveys/data/survey_configs/screening_pa_survey_config.dart';
 import '../profile/user_profile_screen.dart';
 import '../games/games_screen.dart';
 import '../settings/settings_screen.dart';
@@ -132,6 +136,20 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
     // Let's assume Tests is a sub-screen of Home or standalone.
   }
 
+  void _navigateToMonitoring() {
+    setState(() {
+      _currentView = 'monitoring';
+      _currentIndex = 1; // Assuming health is index 1
+    });
+  }
+
+  void _navigateToScreening() {
+    setState(() {
+      _currentView = 'screening';
+      _currentIndex = 1; // Assuming health is index 1
+    });
+  }
+
   // Handlers for specific back navigations if needed, but generic to home is usually fine
   // for top level items, but if we are deep in stack...
   // Here we are doing flat navigation mostly.
@@ -171,6 +189,8 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
       'games',
       'profile',
       'settings',
+      'monitoring',
+      'screening',
     ].contains(_currentView);
 
     return Scaffold(
@@ -188,11 +208,29 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
     switch (_currentView) {
       case 'home':
         return HomeScreen(
-          onHealthClick: _navigateToHealth,
+          onMonitoringClick: _navigateToMonitoring,
+          onScreeningClick: _navigateToScreening,
           onTestsClick: _navigateToTests,
         );
       case 'health':
         return HealthModuleScreen(onBack: _navigateToHome);
+      case 'monitoring':
+        return UniversalSurveyWidget(
+          survey: MonitoringSurveyConfig.getSurvey(),
+          onComplete: (answers) {
+            // TODO: Save answers
+            _navigateToHome();
+          },
+          onBack: _navigateToHome,
+        );
+      case 'screening':
+        return ScreeningFlowWidget(
+          onComplete: (Map<String, dynamic> allAnswers) {
+            // TODO: Save all answers from all screening surveys
+            _navigateToHome();
+          },
+          onBack: _navigateToHome,
+        );
       case 'games':
         return GamesScreen(onBack: _navigateToHome);
       case 'profile':
@@ -212,7 +250,8 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
       default:
         // Fallback to home
         return HomeScreen(
-          onHealthClick: _navigateToHealth,
+          onMonitoringClick: _navigateToMonitoring,
+          onScreeningClick: _navigateToScreening,
           onTestsClick: _navigateToTests,
         );
     }

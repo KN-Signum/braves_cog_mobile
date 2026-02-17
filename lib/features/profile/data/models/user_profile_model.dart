@@ -48,7 +48,8 @@ class UserProfileModel extends UserProfileEntity {
       education: json['education'] ?? '',
       educationOther: json['educationOther'] ?? '',
       disability: json['disability'] ?? '',
-      type: UserType.fromString(json['type'] ?? 'NORMAL'),
+      // Default is NormalCog; fromString keeps backward compatibility with older values
+      type: UserType.fromString(json['type'] ?? 'NormalCog'),
     );
   }
 

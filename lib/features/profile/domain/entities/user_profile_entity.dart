@@ -45,7 +45,7 @@ class UserProfileEntity extends Equatable {
     this.education = '',
     this.educationOther = '',
     this.disability = '',
-    this.type = UserType.normal,
+    this.type = UserType.normalCog,
   });
 
   UserProfileEntity copyWith({

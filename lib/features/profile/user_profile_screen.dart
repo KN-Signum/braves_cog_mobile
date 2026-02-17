@@ -14,7 +14,7 @@ class UserProfileScreen extends ConsumerWidget {
 
     if (profileState.isLoading) {
       return Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         body: Center(
           child: CircularProgressIndicator(
             color: Theme.of(context).colorScheme.secondary,
@@ -28,7 +28,8 @@ class UserProfileScreen extends ConsumerWidget {
     final bmi = _calculateBMI(profile.height, profile.weight);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      // Tło ekranu profilu w kolorze akcentu grupy (jak kafelek Monitoring)
+      backgroundColor: Theme.of(context).colorScheme.secondary,
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
@@ -99,7 +100,8 @@ class UserProfileScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(24),
+        // prostokątne brzegi (bez zaokrągleń)
+        borderRadius: BorderRadius.zero,
         border: Border.all(
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
           width: 2,
@@ -166,7 +168,7 @@ class UserProfileScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: _getBMIColor(context, bmi).withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.zero,
         border: Border.all(color: _getBMIColor(context, bmi), width: 2),
       ),
       child: Row(
@@ -195,7 +197,7 @@ class UserProfileScreen extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
               color: _getBMIColor(context, bmi),
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.zero,
             ),
             child: Center(
               child: Text(
@@ -217,7 +219,7 @@ class UserProfileScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.zero,
         border: Border.all(
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
           width: 2,
@@ -284,7 +286,7 @@ class UserProfileScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.zero,
         border: Border.all(
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
           width: 2,

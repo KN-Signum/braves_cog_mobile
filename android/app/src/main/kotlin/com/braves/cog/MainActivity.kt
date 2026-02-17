@@ -1,4 +1,4 @@
-package com.example.braves_cog
+package com.braves.cog
 
 import io.flutter.embedding.android.FlutterActivity
 

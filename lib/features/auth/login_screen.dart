@@ -167,8 +167,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Text(
                         'Rejestracja',
                         style: Theme.of(context).textTheme.headlineMedium,
-                        textAlign: TextAlign.center,
                       ),
+                      SizedBox(height: AppTheme.spacingSm),
+
                       SizedBox(height: AppTheme.spacingLg),
                       _buildTextField(
                         label: 'Kod autoryzacyjny',
@@ -286,6 +287,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         textAlign: TextAlign.center,
                       ),
+                      SizedBox(height: AppTheme.spacingSm),
+
                       SizedBox(height: AppTheme.spacingLg),
                       _buildTextField(
                         label: 'Login',

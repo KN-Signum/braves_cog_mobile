@@ -47,5 +47,9 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>This app uses microphone access for cognitive tests and assessments that may require audio recording or voice analysis.</string>
+		<key>NSCameraUsageDescription</key>
+		<string>This app uses camera access for cognitive tests that may require visual input or face detection during assessments.</string>
 	</dict>
 </plist>

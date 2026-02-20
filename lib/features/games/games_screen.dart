@@ -277,16 +277,19 @@ class _CognitiveTaskScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: RPUITask(
-        task: task,
-        onSubmit: (result) {
-          // RPUITask automatically pops the route, so we just call the callback
-          onComplete(result);
-        },
-        onCancel: ([result]) {
-          // RPUITask automatically pops on cancel too
-          // No action needed, just let it close
-        },
+      body: Localizations.override(
+        context: context,
+        child: RPUITask(
+          task: task,
+          onSubmit: (result) {
+            // RPUITask automatically pops the route, so we just call the callback
+            onComplete(result);
+          },
+          onCancel: ([result]) {
+            // RPUITask automatically pops on cancel too
+            // No action needed, just let it close
+          },
+        ),
       ),
     );
   }
@@ -342,16 +345,13 @@ class _GameCard extends StatelessWidget {
                     Text(
                       description,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: const Color(0xFC515667),
-                          ),
+                        color: const Color(0xFC515667),
+                      ),
                     ),
                   ],
                 ),
               ),
-              const Icon(
-                Icons.chevron_right,
-                color: Color(0xFC515667),
-              ),
+              const Icon(Icons.chevron_right, color: Color(0xFC515667)),
             ],
           ),
         ),

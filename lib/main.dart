@@ -11,6 +11,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 import 'package:braves_cog/features/profile/domain/entities/user_type.dart';
 
+import 'package:flutter_localizations/flutter_localizations.dart';
+
 Future main() async {
   await EnvConfig.init();
   final prefs = await SharedPreferences.getInstance();
@@ -31,10 +33,7 @@ class MyApp extends ConsumerWidget {
   /// ($2) jasne powierzchnie / ramki (karty, pola).
   (Color accent, Color surface)? _customPaletteFor(UserType type) {
     return switch (type) {
-      UserType.vasCog => (
-        AppTheme.vasCogBackground,
-        AppTheme.vasCogSurface,
-      ),
+      UserType.vasCog => (AppTheme.vasCogBackground, AppTheme.vasCogSurface),
       UserType.neuroCog => (
         AppTheme.neuroCogBackground,
         AppTheme.neuroCogSurface,
@@ -43,10 +42,7 @@ class MyApp extends ConsumerWidget {
         AppTheme.covidCogBackground,
         AppTheme.covidCogSurface,
       ),
-      UserType.sccCog => (
-        AppTheme.sccCogBackground,
-        AppTheme.sccCogSurface,
-      ),
+      UserType.sccCog => (AppTheme.sccCogBackground, AppTheme.sccCogSurface),
       UserType.normalCog => null,
     };
   }
@@ -62,16 +58,17 @@ class MyApp extends ConsumerWidget {
     final palette = _customPaletteFor(userType);
     final ThemeData lightTheme =
         (palette != null && groupVariant == GroupThemeVariant.customized)
-            ? AppTheme.customizedLightTheme(
-                accent: palette.$1,
-                surfaceContainerHighest: palette.$2,
-              )
-            : AppTheme.lightTheme;
+        ? AppTheme.customizedLightTheme(
+            accent: palette.$1,
+            surfaceContainerHighest: palette.$2,
+          )
+        : AppTheme.lightTheme;
 
     // Zgodnie z wymaganiem: grupy (poza NormalCog) mają tylko 2 warianty
     // w motywie jasnym (Standardowy/Dostosowany). Nie pokazujemy trybu ciemnego.
-    final effectiveThemeMode =
-        (userType == UserType.normalCog) ? themeMode : ThemeMode.light;
+    final effectiveThemeMode = (userType == UserType.normalCog)
+        ? themeMode
+        : ThemeMode.light;
 
     return MaterialApp(
       title: 'Braves Cog',
@@ -81,13 +78,16 @@ class MyApp extends ConsumerWidget {
       themeMode: effectiveThemeMode,
       supportedLocales: const [
         Locale('en'),
-        Locale('pl'), // Polish - uses 24-hour format
+        Locale('pl'),
         Locale('da'),
         Locale('fr'),
         Locale('pt'),
       ],
       localizationsDelegates: [
-        RPLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        RPLocalizationsDelegate(loaders: []),
         CPLocalizations.delegate,
       ],
       // Returns a locale which will be used by the app

@@ -11,9 +11,10 @@ class GamesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Tło ekranów z grami takie jak w "Twój profil"
-      backgroundColor: Theme.of(context).colorScheme.secondary,
+      backgroundColor: Theme.of(context).colorScheme.secondary.withAlpha(100),
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.chevron_left),
           onPressed: () {
@@ -24,7 +25,10 @@ class GamesScreen extends StatelessWidget {
             }
           },
         ),
-        title: const Text('Gry Kognitywne'),
+        title: const Text(
+          'Gry Kognitywne',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
       ),
       body: ListView(
@@ -65,7 +69,7 @@ class GamesScreen extends StatelessWidget {
             title: 'Test Stroopa',
             description: 'Trening kontroli uwagi i hamowania impulsów',
             icon: Icons.palette,
-            color: Colors.red,
+            color: ColorScheme.of(context).primary,
             onTap: () => _launchStroopTest(context),
           ),
 
@@ -74,7 +78,7 @@ class GamesScreen extends StatelessWidget {
             title: 'Test Łączenia Punktów',
             description: 'Szybkość przetwarzania i elastyczność poznawcza',
             icon: Icons.timeline,
-            color: Colors.blue,
+            color: ColorScheme.of(context).primary,
             onTap: () => _launchTrailMakingTest(context),
           ),
 
@@ -83,7 +87,7 @@ class GamesScreen extends StatelessWidget {
             title: 'Test Flankera',
             description: 'Uwaga selektywna i kontrola poznawcza',
             icon: Icons.arrow_forward,
-            color: Colors.green,
+            color: ColorScheme.of(context).primary,
             onTap: () => _launchFlankerTest(context),
           ),
 
@@ -92,7 +96,7 @@ class GamesScreen extends StatelessWidget {
             title: 'Szybkie Przetwarzanie Wzrokowe',
             description: 'Uwaga wzrokowa i czujność',
             icon: Icons.visibility,
-            color: Colors.orange,
+            color: ColorScheme.of(context).primary,
             onTap: () => _launchRapidVisualTest(context),
           ),
 
@@ -101,7 +105,7 @@ class GamesScreen extends StatelessWidget {
             title: 'Test Stukania',
             description: 'Koordynacja ruchowa i szybkość reakcji',
             icon: Icons.touch_app,
-            color: Colors.purple,
+            color: ColorScheme.of(context).primary,
             onTap: () => _launchTappingTest(context),
           ),
 
@@ -110,7 +114,7 @@ class GamesScreen extends StatelessWidget {
             title: 'Test Bloków Corsi',
             description: 'Pamięć robocza przestrzenna',
             icon: Icons.grid_4x4,
-            color: Colors.teal,
+            color: ColorScheme.of(context).primary,
             onTap: () => _launchCorsiBlockTest(context),
           ),
 
@@ -119,7 +123,7 @@ class GamesScreen extends StatelessWidget {
             title: 'Test Czasu Reakcji',
             description: 'Szybkość reakcji na bodźce wzrokowe',
             icon: Icons.timer,
-            color: Colors.amber,
+            color: ColorScheme.of(context).primary,
             onTap: () => _launchReactionTimeTest(context),
           ),
 
@@ -314,7 +318,10 @@ class _GameCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      color: Theme.of(context).scaffoldBackgroundColor,
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        border: Border.all(width: 1.0, color: ColorScheme.of(context).primary),
+      ),
       child: InkWell(
         onTap: onTap,
         child: Padding(
@@ -325,10 +332,22 @@ class _GameCard extends StatelessWidget {
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.zero,
+                  border: Border.all(
+                    width: 1.0,
+                    color: ColorScheme.of(context).secondary,
+                  ),
+                  shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: color, size: 30),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 5.0,
+                      color: ColorScheme.of(context).primary.withAlpha(30),
+                    ),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: color, size: 30),
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(

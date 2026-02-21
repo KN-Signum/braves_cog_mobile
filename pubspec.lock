@@ -262,7 +262,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "73d6807293d50bb6c9a4b6efe5325bc5e971ade6"
+      resolved-ref: "4b58905dd16529986d2e44a36a9a8e7982c2763b"
       url: "https://github.com/Adidadi0112/cognition_package.git"
     source: git
     version: "1.7.0"
@@ -825,11 +825,12 @@ packages:
   research_package:
     dependency: "direct main"
     description:
-      name: research_package
-      sha256: "399b3ed901aeb35641039dcf0a9ae3c96288054e30833b6ee4ae4cbbce566a3d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.3.0"
+      path: "."
+      ref: master
+      resolved-ref: a7d647622686f2866aef027ad26c6d54058ebaae
+      url: "https://github.com/Adidadi0112/research.package.git"
+    source: git
+    version: "2.2.0"
   riverpod:
     dependency: transitive
     description:

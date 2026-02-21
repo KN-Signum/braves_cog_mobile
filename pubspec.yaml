@@ -51,7 +51,10 @@ dependencies:
   equatable: ^2.0.8
   dartz: ^0.10.1
   intl: ^0.20.2
-  research_package: ^2.3.0
+  research_package:
+    git: 
+      url: https://github.com/Adidadi0112/research.package.git
+      ref: master
 
 dev_dependencies:
   flutter_test:
@@ -144,3 +147,9 @@ flutter_native_splash:
     # Brak kolorów - użyje systemowego tła
     branding_mode: disabled
 
+
+dependency_overrides:
+  research_package:
+    git: 
+      url: https://github.com/Adidadi0112/research.package.git
+      ref: master

@@ -14,7 +14,7 @@ class AppBottomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
+        color: ColorScheme.of(context).primary,
         border: Border(
           top: BorderSide(
             color: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -47,13 +47,9 @@ class AppBottomNavigationBar extends StatelessWidget {
     int index,
   ) {
     final isActive = currentIndex == index;
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    // Ikony i napisy na dole mają mieć taki sam kolor jak "Witaj"
-    // czyli granat (colorScheme.primary), tylko aktywne są trochę mocniejsze.
     final activeColor = Theme.of(context).colorScheme.primary;
-    final inactiveColor =
-        Theme.of(context).colorScheme.primary.withValues(alpha: 0.5);
+    final inactiveColor = Colors.white;
 
     return GestureDetector(
       onTap: () => onTap(index),
@@ -62,7 +58,7 @@ class AppBottomNavigationBar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isActive
-              ? activeColor.withValues(alpha: 0.08)
+              ? Theme.of(context).colorScheme.secondary
               : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),

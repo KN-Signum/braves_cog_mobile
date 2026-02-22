@@ -1,17 +1,20 @@
+import 'package:braves_cog/features/cognitive_games/data/mappers/rp_result_mapper.dart';
+import 'package:braves_cog/features/cognitive_games/domain/entities/cognitive_game_result.dart';
+import 'package:braves_cog/features/cognitive_games/presentation/providers/cognitive_game_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:research_package/research_package.dart';
-import '../../cognition_config.dart';
-import 'dart:convert';
+import '../../../cognition_config.dart';
 
-class GamesScreen extends StatelessWidget {
+class GamesScreen extends ConsumerWidget {
   final VoidCallback? onBack;
 
   const GamesScreen({super.key, this.onBack});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondary.withAlpha(100),
+      backgroundColor: Theme.of(context).colorScheme.secondary.withAlpha(70),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Colors.white,
@@ -70,7 +73,7 @@ class GamesScreen extends StatelessWidget {
             description: 'Trening kontroli uwagi i hamowania impulsów',
             icon: Icons.palette,
             color: ColorScheme.of(context).primary,
-            onTap: () => _launchStroopTest(context),
+            onTap: () => _launchStroopTest(context, ref),
           ),
 
           // Trail Making Test
@@ -79,7 +82,7 @@ class GamesScreen extends StatelessWidget {
             description: 'Szybkość przetwarzania i elastyczność poznawcza',
             icon: Icons.timeline,
             color: ColorScheme.of(context).primary,
-            onTap: () => _launchTrailMakingTest(context),
+            onTap: () => _launchTrailMakingTest(context, ref),
           ),
 
           // Flanker Test
@@ -88,7 +91,7 @@ class GamesScreen extends StatelessWidget {
             description: 'Uwaga selektywna i kontrola poznawcza',
             icon: Icons.arrow_forward,
             color: ColorScheme.of(context).primary,
-            onTap: () => _launchFlankerTest(context),
+            onTap: () => _launchFlankerTest(context, ref),
           ),
 
           // Rapid Visual Processing
@@ -97,7 +100,7 @@ class GamesScreen extends StatelessWidget {
             description: 'Uwaga wzrokowa i czujność',
             icon: Icons.visibility,
             color: ColorScheme.of(context).primary,
-            onTap: () => _launchRapidVisualTest(context),
+            onTap: () => _launchRapidVisualTest(context, ref),
           ),
 
           // Tapping Test
@@ -106,7 +109,7 @@ class GamesScreen extends StatelessWidget {
             description: 'Koordynacja ruchowa i szybkość reakcji',
             icon: Icons.touch_app,
             color: ColorScheme.of(context).primary,
-            onTap: () => _launchTappingTest(context),
+            onTap: () => _launchTappingTest(context, ref),
           ),
 
           // Corsi Block
@@ -115,7 +118,7 @@ class GamesScreen extends StatelessWidget {
             description: 'Pamięć robocza przestrzenna',
             icon: Icons.grid_4x4,
             color: ColorScheme.of(context).primary,
-            onTap: () => _launchCorsiBlockTest(context),
+            onTap: () => _launchCorsiBlockTest(context, ref),
           ),
 
           // Reaction Time
@@ -124,7 +127,7 @@ class GamesScreen extends StatelessWidget {
             description: 'Szybkość reakcji na bodźce wzrokowe',
             icon: Icons.timer,
             color: ColorScheme.of(context).primary,
-            onTap: () => _launchReactionTimeTest(context),
+            onTap: () => _launchReactionTimeTest(context, ref),
           ),
 
           const SizedBox(height: 16),
@@ -133,42 +136,82 @@ class GamesScreen extends StatelessWidget {
     );
   }
 
-  void _launchStroopTest(BuildContext context) {
-    _launchSingleTest(context, stroopEffect, 'Test Stroopa');
+  void _launchStroopTest(BuildContext context, WidgetRef ref) {
+    _launchSingleTest(
+      context,
+      stroopEffect,
+      'Test Stroopa',
+      ref,
+      CognitiveTestType.stroop,
+    );
   }
 
-  void _launchTrailMakingTest(BuildContext context) {
-    _launchSingleTest(context, trailMaking, 'Test Łączenia Punktów');
+  void _launchTrailMakingTest(BuildContext context, WidgetRef ref) {
+    _launchSingleTest(
+      context,
+      trailMaking,
+      'Test Łączenia Punktów',
+      ref,
+      CognitiveTestType.trailMaking,
+    );
   }
 
-  void _launchFlankerTest(BuildContext context) {
-    _launchSingleTest(context, flanker, 'Test Flankera');
+  void _launchFlankerTest(BuildContext context, WidgetRef ref) {
+    _launchSingleTest(
+      context,
+      flanker,
+      'Test Flankera',
+      ref,
+      CognitiveTestType.flanker,
+    );
   }
 
-  void _launchRapidVisualTest(BuildContext context) {
+  void _launchRapidVisualTest(BuildContext context, WidgetRef ref) {
     _launchSingleTest(
       context,
       rapidVisualInfoProcessing,
       'Szybkie Przetwarzanie Wzrokowe',
+      ref,
+      CognitiveTestType.rvip,
     );
   }
 
-  void _launchTappingTest(BuildContext context) {
-    _launchSingleTest(context, tapping, 'Test Stukania');
+  void _launchTappingTest(BuildContext context, WidgetRef ref) {
+    _launchSingleTest(
+      context,
+      tapping,
+      'Test Stukania',
+      ref,
+      CognitiveTestType.tapping,
+    );
   }
 
-  void _launchCorsiBlockTest(BuildContext context) {
-    _launchSingleTest(context, corsiBlockTapping, 'Test Bloków Corsi');
+  void _launchCorsiBlockTest(BuildContext context, WidgetRef ref) {
+    _launchSingleTest(
+      context,
+      corsiBlockTapping,
+      'Test Bloków Corsi',
+      ref,
+      CognitiveTestType.corsiBlock,
+    );
   }
 
-  void _launchReactionTimeTest(BuildContext context) {
-    _launchSingleTest(context, reactionTime, 'Test Czasu Reakcji');
+  void _launchReactionTimeTest(BuildContext context, WidgetRef ref) {
+    _launchSingleTest(
+      context,
+      reactionTime,
+      'Test Czasu Reakcji',
+      ref,
+      CognitiveTestType.reactionTime,
+    );
   }
 
   void _launchSingleTest(
     BuildContext context,
     RPActivityStep activityStep,
     String title,
+    WidgetRef ref,
+    CognitiveTestType testType,
   ) {
     // Create a task with instruction, activity, and completion steps
     final instructionStep = RPInstructionStep(
@@ -194,7 +237,13 @@ class GamesScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => _CognitiveTaskScreen(
           task: task,
-          onComplete: (result) => _showResults(context, result),
+          onComplete: (result) => _processAndSaveResults(
+            context,
+            ref,
+            result,
+            testType,
+            activityStep.identifier,
+          ),
         ),
       ),
     );
@@ -202,7 +251,7 @@ class GamesScreen extends StatelessWidget {
 
   String _getInstructionText(String identifier) {
     switch (identifier) {
-      case 'stroop_ffect_step':
+      case 'stroop_effect_step':
         return 'Zobaczysz słowa kolorów napisane różnymi kolorami. '
             'Twoim zadaniem jest wybrać KOLOR tekstu, a nie czytać słowo. '
             'Odpowiadaj jak najszybciej i najdokładniej.';
@@ -237,36 +286,79 @@ class GamesScreen extends StatelessWidget {
     pattern.allMatches(text).forEach((match) => debugPrint(match.group(0)));
   }
 
-  void _showResults(BuildContext context, RPTaskResult result) {
-    final Map<String, dynamic> jsonMap = result.toJson();
+  // void _showResults(BuildContext context, RPTaskResult result) {
+  //   final Map<String, dynamic> jsonMap = result.toJson();
 
-    const JsonEncoder encoder = JsonEncoder.withIndent('  ');
-    final String jsonString = encoder.convert(jsonMap);
+  //   const JsonEncoder encoder = JsonEncoder.withIndent('  ');
+  //   final String jsonString = encoder.convert(jsonMap);
 
-    debugPrint("================ RESULT START ================");
-    printWrapped(jsonString);
-    debugPrint("================ RESULT END ================");
+  //   debugPrint("================ RESULT START ================");
+  //   printWrapped(jsonString);
+  //   debugPrint("================ RESULT END ================");
 
-    final activityResults = result.results.values.whereType<RPActivityResult>();
+  //   final activityResults = result.results.values.whereType<RPActivityResult>();
 
-    if (activityResults.isNotEmpty) {
-      final firstResult = activityResults.first;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Test ukończony! ${firstResult.results.length} wyników zapisanych.',
-          ),
-          duration: const Duration(seconds: 3),
-          backgroundColor: Colors.green,
-        ),
+  //   if (activityResults.isNotEmpty) {
+  //     final firstResult = activityResults.first;
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text(
+  //           'Test ukończony! ${firstResult.results.length} wyników zapisanych.',
+  //         ),
+  //         duration: const Duration(seconds: 3),
+  //         backgroundColor: Colors.green,
+  //       ),
+  //     );
+  //   } else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(
+  //         content: Text('Test ukończony!'),
+  //         duration: Duration(seconds: 2),
+  //         backgroundColor: Colors.green,
+  //       ),
+  //     );
+  //   }
+  // }
+  void _processAndSaveResults(
+    BuildContext context,
+    WidgetRef ref,
+    RPTaskResult result,
+    CognitiveTestType testType,
+    String stepIdentifier,
+  ) {
+    try {
+      debugPrint('🎮 [GamesScreen] Rozpoczęcie zapisu wyników...');
+      debugPrint(
+        '🎮 [GamesScreen] Test type: $testType, Step: $stepIdentifier',
       );
-    } else {
+
+      // 1. Zmapuj surowy wynik na czysty obiekt domeny
+      final cleanResult = RPResultMapper.fromRPTaskResult(
+        taskResult: result,
+        userId: 'temp_user_id',
+        testType: testType,
+        stepIdentifier: stepIdentifier,
+      );
+
+      debugPrint('🎮 [GamesScreen] Wynik zmapowany: ${cleanResult.testType}');
+
+      // 2. Wywołaj zapis przez Riverpod
+      debugPrint('🎮 [GamesScreen] Wysyłanie do notifier...');
+      ref.read(cognitiveGamesProvider.notifier).saveResult(cleanResult);
+      debugPrint('🎮 [GamesScreen] Wynik wysłany do notifier!');
+
+      // 3. Pokaż komunikat użytkownikowi
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Test ukończony!'),
-          duration: Duration(seconds: 2),
-          backgroundColor: Colors.green,
+          content: Text('Ukończono! Trwa zapisywanie wyników...'),
+          backgroundColor: Color(0xFF00D4E6), // Cyan
         ),
+      );
+    } catch (e) {
+      debugPrint('❌ [GamesScreen] Błąd mapowania wyników: $e');
+      debugPrint('❌ [GamesScreen] StackTrace: ${StackTrace.current}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Błąd: $e'), backgroundColor: Colors.red),
       );
     }
   }
@@ -317,7 +409,7 @@ class _GameCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         border: Border.all(width: 1.0, color: ColorScheme.of(context).primary),

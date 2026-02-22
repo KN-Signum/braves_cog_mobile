@@ -15,7 +15,7 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  bool _isReturningUser = false;
+  bool _isReturningUser = true;
 
   final _authCodeController = TextEditingController();
   final _loginController = TextEditingController();

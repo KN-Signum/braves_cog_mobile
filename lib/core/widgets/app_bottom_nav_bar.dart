@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class AppBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -29,10 +30,10 @@ class AppBottomNavigationBar extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(context, Icons.home, 'Dom', 0),
-              _buildNavItem(context, Icons.gamepad, 'Gry', 2),
-              _buildNavItem(context, Icons.person, 'Profil', 3),
-              _buildNavItem(context, Icons.settings, 'Ustawienia', 4),
+              _buildNavItem(context, LucideIcons.house, 'Menu', 0),
+              _buildNavItem(context, LucideIcons.gamepad2, 'Gry', 2),
+              _buildNavItem(context, LucideIcons.user, 'Profil', 3),
+              _buildNavItem(context, LucideIcons.settings, 'Ustawienia', 4),
             ],
           ),
         ),

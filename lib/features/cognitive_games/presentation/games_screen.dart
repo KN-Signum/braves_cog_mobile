@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:research_package/research_package.dart';
 import '../../../cognition_config.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class GamesScreen extends ConsumerWidget {
   final VoidCallback? onBack;
@@ -44,7 +45,7 @@ class GamesScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   Icon(
-                    Icons.psychology,
+                    LucideIcons.brain,
                     size: 60,
                     color: Theme.of(context).colorScheme.primary,
                   ),
@@ -71,7 +72,7 @@ class GamesScreen extends ConsumerWidget {
           _GameCard(
             title: 'Test Stroopa',
             description: 'Trening kontroli uwagi i hamowania impulsów',
-            icon: Icons.palette,
+            icon: LucideIcons.palette,
             color: ColorScheme.of(context).primary,
             onTap: () => _launchStroopTest(context, ref),
           ),
@@ -80,7 +81,7 @@ class GamesScreen extends ConsumerWidget {
           _GameCard(
             title: 'Test Łączenia Punktów',
             description: 'Szybkość przetwarzania i elastyczność poznawcza',
-            icon: Icons.timeline,
+            icon: LucideIcons.moveDiagonal2,
             color: ColorScheme.of(context).primary,
             onTap: () => _launchTrailMakingTest(context, ref),
           ),
@@ -89,7 +90,7 @@ class GamesScreen extends ConsumerWidget {
           _GameCard(
             title: 'Test Flankera',
             description: 'Uwaga selektywna i kontrola poznawcza',
-            icon: Icons.arrow_forward,
+            icon: LucideIcons.arrowRight,
             color: ColorScheme.of(context).primary,
             onTap: () => _launchFlankerTest(context, ref),
           ),
@@ -98,7 +99,7 @@ class GamesScreen extends ConsumerWidget {
           _GameCard(
             title: 'Szybkie Przetwarzanie Wzrokowe',
             description: 'Uwaga wzrokowa i czujność',
-            icon: Icons.visibility,
+            icon: LucideIcons.eye,
             color: ColorScheme.of(context).primary,
             onTap: () => _launchRapidVisualTest(context, ref),
           ),
@@ -107,7 +108,7 @@ class GamesScreen extends ConsumerWidget {
           _GameCard(
             title: 'Test Stukania',
             description: 'Koordynacja ruchowa i szybkość reakcji',
-            icon: Icons.touch_app,
+            icon: LucideIcons.hand,
             color: ColorScheme.of(context).primary,
             onTap: () => _launchTappingTest(context, ref),
           ),
@@ -116,7 +117,7 @@ class GamesScreen extends ConsumerWidget {
           _GameCard(
             title: 'Test Bloków Corsi',
             description: 'Pamięć robocza przestrzenna',
-            icon: Icons.grid_4x4,
+            icon: LucideIcons.grid3x3,
             color: ColorScheme.of(context).primary,
             onTap: () => _launchCorsiBlockTest(context, ref),
           ),
@@ -125,7 +126,7 @@ class GamesScreen extends ConsumerWidget {
           _GameCard(
             title: 'Test Czasu Reakcji',
             description: 'Szybkość reakcji na bodźce wzrokowe',
-            icon: Icons.timer,
+            icon: LucideIcons.timer,
             color: ColorScheme.of(context).primary,
             onTap: () => _launchReactionTimeTest(context, ref),
           ),
@@ -462,7 +463,7 @@ class _GameCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: Color(0xFC515667)),
+              const Icon(LucideIcons.chevronRight, color: Color(0xFC515667)),
             ],
           ),
         ),

@@ -48,6 +48,7 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
 
   UserProfileModel _buildNeuroCogProfile() {
     return const UserProfileModel(
+      id: 'neurocog_user',
       birthYear: '1995',
       height: '175',
       weight: '70',
@@ -74,6 +75,7 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
 
   UserProfileModel _buildCovidCogProfile() {
     return const UserProfileModel(
+      id: 'covidcog_user',
       birthYear: '1988',
       height: '170',
       weight: '75',
@@ -100,6 +102,7 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
 
   UserProfileModel _buildVasCogProfile() {
     return const UserProfileModel(
+      id: 'vascog_user',
       birthYear: '1965',
       height: '180',
       weight: '85',
@@ -126,6 +129,7 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
 
   UserProfileModel _buildSccCogProfile() {
     return const UserProfileModel(
+      id: 'scccog_user',
       birthYear: '1992',
       height: '172',
       weight: '68',
@@ -152,6 +156,7 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
 
   UserProfileModel _buildNormalCogProfile() {
     return const UserProfileModel(
+      id: 'normalcog_user',
       birthYear: '1990',
       height: '175',
       weight: '70',

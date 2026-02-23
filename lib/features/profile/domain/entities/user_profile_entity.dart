@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'user_type.dart';
 
 class UserProfileEntity extends Equatable {
+  final String? id;
   final String birthYear;
   final String height;
   final String weight;
@@ -25,6 +26,7 @@ class UserProfileEntity extends Equatable {
   final UserType type;
 
   const UserProfileEntity({
+    this.id,
     this.birthYear = '1990',
     this.height = '170',
     this.weight = '70',
@@ -49,6 +51,7 @@ class UserProfileEntity extends Equatable {
   });
 
   UserProfileEntity copyWith({
+    String? id,
     String? birthYear,
     String? height,
     String? weight,
@@ -72,6 +75,7 @@ class UserProfileEntity extends Equatable {
     UserType? type,
   }) {
     return UserProfileEntity(
+      id: id ?? this.id,
       birthYear: birthYear ?? this.birthYear,
       height: height ?? this.height,
       weight: weight ?? this.weight,
@@ -99,6 +103,7 @@ class UserProfileEntity extends Equatable {
 
   @override
   List<Object?> get props => [
+    id,
     birthYear,
     height,
     weight,

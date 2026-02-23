@@ -1,5 +1,4 @@
 import 'package:braves_cog/features/cognitive_games/domain/entities/cognitive_game_result.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/usecases/save_test_result_usecase.dart';
 
@@ -35,28 +34,46 @@ class CognitiveGamesNotifier extends StateNotifier<CognitiveGamesState> {
   CognitiveGamesNotifier(this._saveTestResultUseCase)
     : super(const CognitiveGamesState());
 
+  /// Metoda do zapisywania pojedynczego wyniku (dla kompatybilności wstecznej)
   Future<void> saveResult(CognitiveTestResult result) async {
-    debugPrint('📊 [CognitiveGamesNotifier] saveResult() Called');
-    debugPrint('📊 [CognitiveGamesNotifier] Test: ${result.testType}');
-
-    // 1. Zaczynamy ładowanie
-    debugPrint('📊 [CognitiveGamesNotifier] Ustawianie isLoading = true');
     state = state.copyWith(isLoading: true, error: null, isSaved: false);
 
-    // 2. Wywołujemy Use Case
-    debugPrint('📊 [CognitiveGamesNotifier] Wysyłanie do Use Case...');
     final response = await _saveTestResultUseCase(result);
 
-    // 3. Rozpakowujemy wynik z Either (Left = błąd, Right = sukces)
     response.fold(
-      (failure) {
-        debugPrint('❌ [CognitiveGamesNotifier] Błąd: ${failure.message}');
-        state = state.copyWith(isLoading: false, error: failure.message);
-      },
-      (_) {
-        debugPrint('✅ [CognitiveGamesNotifier] Sukces! Wynik zapisany');
-        state = state.copyWith(isLoading: false, isSaved: true);
-      },
+      (failure) =>
+          state = state.copyWith(isLoading: false, error: failure.message),
+      (_) => state = state.copyWith(isLoading: false, isSaved: true),
     );
+  }
+
+  Future<void> saveSequenceResults(List<CognitiveTestResult> results) async {
+    // 1. Resetujemy stan i włączamy loader
+    state = state.copyWith(isLoading: true, error: null, isSaved: false);
+
+    try {
+      // 2. Iterujemy przez wszystkie wyniki
+      for (final result in results) {
+        final response = await _saveTestResultUseCase(result);
+
+        // 3. Sprawdzamy czy wystąpił błąd (Left)
+        // Jeśli tak - przerywamy pętlę i zwracamy błąd użytkownikowi
+        if (response.isLeft()) {
+          final errorMessage = response.fold(
+            (failure) => failure.message,
+            (_) => 'Nieznany błąd',
+          );
+
+          state = state.copyWith(isLoading: false, error: errorMessage);
+          return; // Wyjście z funkcji przy pierwszym błędzie
+        }
+      }
+
+      // 4. Jeśli pętla przeszła bez błędów -> Sukces
+      state = state.copyWith(isLoading: false, isSaved: true);
+    } catch (e) {
+      // Zabezpieczenie na wypadek nieoczekiwanych wyjątków spoza Either
+      state = state.copyWith(isLoading: false, error: e.toString());
+    }
   }
 }

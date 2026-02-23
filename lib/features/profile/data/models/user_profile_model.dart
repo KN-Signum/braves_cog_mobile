@@ -3,6 +3,7 @@ import 'package:braves_cog/features/profile/domain/entities/user_type.dart';
 
 class UserProfileModel extends UserProfileEntity {
   const UserProfileModel({
+    super.id,
     super.birthYear,
     super.height,
     super.weight,
@@ -28,6 +29,7 @@ class UserProfileModel extends UserProfileEntity {
 
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
     return UserProfileModel(
+      id: json['id'],
       birthYear: json['birthYear'] ?? '1990',
       height: json['height'] ?? '170',
       weight: json['weight'] ?? '70',
@@ -55,6 +57,7 @@ class UserProfileModel extends UserProfileEntity {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'birthYear': birthYear,
       'height': height,
       'weight': weight,

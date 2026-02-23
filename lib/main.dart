@@ -28,9 +28,6 @@ Future main() async {
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
-  /// Zwraca komplet kolorów dla danej grupy:
-  /// ($1) kolor AKCENTU (kolor grupy),
-  /// ($2) jasne powierzchnie / ramki (karty, pola).
   (Color accent, Color surface)? _customPaletteFor(UserType type) {
     return switch (type) {
       UserType.vasCog => (AppTheme.vasCogBackground, AppTheme.vasCogSurface),

@@ -9,6 +9,7 @@ import 'package:braves_cog/features/auth/data/datasources/auth_remote_data_sourc
 import 'package:braves_cog/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:braves_cog/features/auth/domain/entities/user_entity.dart';
 import 'package:braves_cog/features/auth/domain/repositories/auth_repository.dart';
+import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 
 // --- Dependency Injection ---
 
@@ -44,7 +45,7 @@ class AuthState {
   final String? error;
 
   const AuthState({this.user, this.isLoading = false, this.error});
-  
+
   bool get isAuthenticated => user != null;
 
   AuthState copyWith({UserEntity? user, bool? isLoading, String? error}) {
@@ -58,34 +59,45 @@ class AuthState {
 
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository _repository;
+  final Ref _ref;
 
-  AuthNotifier(this._repository) : super(const AuthState()) {
+  AuthNotifier(this._repository, this._ref) : super(const AuthState()) {
     checkAuthStatus();
   }
 
   Future<void> checkAuthStatus() async {
     final result = await _repository.getCurrentUser();
-    result.fold(
-      (failure) => state = const AuthState(), 
-      (user) => state = AuthState(user: user),
-    );
+    result.fold((failure) => state = const AuthState(), (user) {
+      state = AuthState(user: user);
+      _ref.read(profileProvider.notifier).loadProfile(email: user.email);
+    });
   }
 
   Future<void> login(String email, String password) async {
     state = state.copyWith(isLoading: true, error: null);
     final result = await _repository.login(email, password);
-    state = result.fold(
-      (failure) => state.copyWith(isLoading: false, error: failure.message),
-      (user) => AuthState(user: user),
+    result.fold(
+      (failure) {
+        state = state.copyWith(isLoading: false, error: failure.message);
+      },
+      (user) {
+        state = AuthState(user: user);
+        _ref.read(profileProvider.notifier).loadProfile(email: user.email);
+      },
     );
   }
 
   Future<void> register(String email, String password, String name) async {
     state = state.copyWith(isLoading: true, error: null);
     final result = await _repository.register(email, password, name);
-    state = result.fold(
-      (failure) => state.copyWith(isLoading: false, error: failure.message),
-      (user) => AuthState(user: user),
+    result.fold(
+      (failure) {
+        state = state.copyWith(isLoading: false, error: failure.message);
+      },
+      (user) {
+        state = AuthState(user: user);
+        _ref.read(profileProvider.notifier).loadProfile(email: user.email);
+      },
     );
   }
 
@@ -97,5 +109,5 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final repository = ref.watch(authRepositoryProvider);
-  return AuthNotifier(repository);
+  return AuthNotifier(repository, ref);
 });

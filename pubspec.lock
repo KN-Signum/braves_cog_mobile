@@ -262,7 +262,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "5bb3b2b3cc3c090094b09c4880d3c265daa826d1"
+      resolved-ref: f4639fb62747fa1d4b403520e610b7f4acf9eed9
       url: "https://github.com/Adidadi0112/cognition_package.git"
     source: git
     version: "1.7.0"
@@ -634,10 +634,10 @@ packages:
     dependency: "direct main"
     description:
       name: lucide_icons_flutter
-      sha256: "67bc7cc05c3c03eee3405f88a0ca127efca03561db00e2e93cc0a46019c19a7b"
+      sha256: f9fc191c852901b7f8d0d5739166327bd71a0fc32ae32c1ba07501d16b966a1a
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.9"
+    version: "3.1.10"
   matcher:
     dependency: transitive
     description:
@@ -719,7 +719,7 @@ packages:
     source: hosted
     version: "1.1.0"
   path_provider:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path_provider
       sha256: "50c5dd5b6e1aaf6fb3a78b33f6aa3afca52bf903a8a5298f53101fdaee55bbcd"
@@ -835,7 +835,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: a7d647622686f2866aef027ad26c6d54058ebaae
+      resolved-ref: "4c0e546fd59f83ab9940a7ef8b6803291edcf67c"
       url: "https://github.com/Adidadi0112/research.package.git"
     source: git
     version: "2.2.0"

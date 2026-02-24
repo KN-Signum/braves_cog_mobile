@@ -1,7 +1,9 @@
+import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
 import 'package:braves_cog/features/cognitive_games/data/mappers/rp_result_mapper.dart';
 import 'package:braves_cog/features/cognitive_games/domain/entities/cognitive_game_result.dart';
 import 'package:braves_cog/features/cognitive_games/presentation/providers/cognitive_game_provider.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:research_package/research_package.dart';
@@ -24,6 +26,16 @@ class GamesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final profileState = ref.watch(profileProvider);
+
+    debugPrint(
+      '👤 [GamesScreen] authUser: ${authState.user?.email} | authId: ${authState.user?.id}',
+    );
+    debugPrint(
+      '👤 [GamesScreen] profile.id: ${profileState.profile.id} | isLoading: ${profileState.isLoading}',
+    );
+
     return Scaffold(
       backgroundColor: ColorScheme.of(context).surface,
       appBar: AppBar(
@@ -286,6 +298,7 @@ class _CognitiveTaskScreen extends StatelessWidget {
       body: Localizations.override(
         context: context,
         child: RPUITask(
+          hideNextButton: true,
           task: task,
           onSubmit: (result) {
             onComplete(result);

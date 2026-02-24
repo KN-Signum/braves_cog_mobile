@@ -28,13 +28,18 @@ class RPResultMapper {
     final metrics = _calculateMetrics(testType, rawStepData);
 
     // 4. Zwracamy czysty model
+    // ID = stepIdentifier + ms aby uniknąć kolizji przy wielu krokach w jednej ms
+    final stepEndDate = rawStepData['endDate'] != null
+        ? DateTime.tryParse(rawStepData['endDate'] as String)
+        : null;
+
     return CognitiveTestResult(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: '${stepIdentifier}_${DateTime.now().millisecondsSinceEpoch}',
       userId: userId,
       testType: testType,
-      completedAt: taskResult.endDate ?? DateTime.now(),
+      completedAt: stepEndDate ?? taskResult.endDate ?? DateTime.now(),
       metrics: metrics,
-      rawData: rawStepData, // Teraz to zawiera w 100% pełny log kroku!
+      rawData: rawStepData,
     );
   }
 

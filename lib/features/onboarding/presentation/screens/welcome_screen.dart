@@ -12,34 +12,41 @@ class WelcomeScreen extends ConsumerStatefulWidget {
 
 class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
   @override
-  void initState() {
-    super.initState();
-    _startAnimation();
-  }
-
-  void _startAnimation() {
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        ref.read(onboardingProvider.notifier).setStage(OnboardingStage.intro);
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: Center(
+      body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Text(
-            'Witaj w projekcie\nBRAVES-Cog',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.displaySmall?.copyWith(
-              fontWeight: FontWeight.w800,
-              height: 1.27,
-              letterSpacing: -0.3,
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 24),
+              Center(
+                child: Text(
+                  'Witaj w projekcie\nBRAVES-Cog',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        height: 1.27,
+                        letterSpacing: -0.3,
+                      ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  ref.read(onboardingProvider.notifier).setStage(OnboardingStage.intro);
+                },
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 56),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero,
+                  ),
+                ),
+                child: const Text('Kontynuuj'),
+              ),
+            ],
           ),
         ),
       ),
@@ -56,34 +63,41 @@ class IntroScreen extends ConsumerStatefulWidget {
 
 class _IntroScreenState extends ConsumerState<IntroScreen> {
   @override
-  void initState() {
-    super.initState();
-    _startAnimation();
-  }
-
-  void _startAnimation() {
-    Future.delayed(const Duration(milliseconds: 2500), () {
-      if (mounted) {
-        ref.read(onboardingProvider.notifier).setStage(OnboardingStage.profile);
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: Center(
+      body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Text(
-            'Pozwól, że przeprowadzę cię\nprzez kilka formalności',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-              height: 1.33,
-              letterSpacing: -0.24,
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 24),
+              Center(
+                child: Text(
+                  'Pozwól, że przeprowadzę cię\nprzez kilka formalności',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        height: 1.33,
+                        letterSpacing: -0.24,
+                      ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  ref.read(onboardingProvider.notifier).setStage(OnboardingStage.profile);
+                },
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 56),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero,
+                  ),
+                ),
+                child: const Text('Kontynuuj'),
+              ),
+            ],
           ),
         ),
       ),

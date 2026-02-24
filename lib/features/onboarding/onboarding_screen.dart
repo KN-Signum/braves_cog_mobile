@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:braves_cog/features/onboarding/presentation/providers/onboarding_provider.dart';
 import 'package:braves_cog/features/onboarding/presentation/screens/welcome_screen.dart';
-import 'package:braves_cog/features/onboarding/presentation/screens/profile_form_screen.dart';
+import 'package:braves_cog/features/onboarding/widgets/onboarding_flow_widget.dart';
 import 'package:braves_cog/features/onboarding/presentation/screens/consents_screen.dart';
 import 'package:braves_cog/features/onboarding/presentation/screens/final_screen.dart';
 
@@ -51,7 +51,19 @@ class OnboardingScreen extends ConsumerWidget {
         return const IntroScreen();
 
       case OnboardingStage.profile:
-        return ProfileFormScreen(onBackToLogin: onBackToLogin);
+        return OnboardingFlowWidget(
+          onBack: () {
+            if (onBackToLogin != null) {
+              onBackToLogin!();
+            } else {
+              ref.read(onboardingProvider.notifier).setStage(OnboardingStage.intro);
+            }
+          },
+          onComplete: (data) {
+            ref.read(onboardingProvider.notifier).saveOnboardingData(data);
+            ref.read(onboardingProvider.notifier).setStage(OnboardingStage.consentsIntro);
+          },
+        );
 
       case OnboardingStage.consentsIntro:
         return ConsentsIntroScreen(onBackToLogin: onBackToLogin);

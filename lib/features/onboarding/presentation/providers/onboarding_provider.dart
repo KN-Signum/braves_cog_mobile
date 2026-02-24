@@ -78,12 +78,14 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
   final CompleteOnboardingUseCase _completeOnboardingUseCase;
   // ignore: unused_field
   final CheckOnboardingCompletionUseCase _checkOnboardingCompletionUseCase;
+  final OnboardingRepository _repository;
   final Ref ref;
 
   OnboardingNotifier(
     this._saveConsentsUseCase,
     this._completeOnboardingUseCase,
     this._checkOnboardingCompletionUseCase,
+    this._repository,
     this.ref,
   ) : super(const OnboardingState());
 
@@ -93,6 +95,11 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
 
   void updateConsents(ConsentsEntity consents) {
     state = state.copyWith(consents: consents);
+  }
+
+  Future<void> saveOnboardingData(Map<String, dynamic> data) async {
+    final repository = _repository as OnboardingRepositoryImpl;
+    await repository.saveOnboardingData(data);
   }
 
   Future<void> completeOnboarding() async {
@@ -149,11 +156,13 @@ final onboardingProvider =
       final checkCompletion = ref.watch(
         checkOnboardingCompletionUseCaseProvider,
       );
+      final repository = ref.watch(onboardingRepositoryProvider);
 
       return OnboardingNotifier(
         saveConsents,
         completeOnboarding,
         checkCompletion,
+        repository,
         ref,
       );
     });

@@ -113,6 +113,8 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
       survey: currentSurvey,
       onComplete: _handleSurveyComplete,
       onBack: _handleBack,
+      startAtLastQuestion: false,
+      showFinishLabel: true,
     );
   }
 }

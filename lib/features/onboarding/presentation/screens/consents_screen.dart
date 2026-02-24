@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:braves_cog/core/theme/app_theme.dart';
 import 'package:braves_cog/features/onboarding/presentation/providers/onboarding_provider.dart';
 import 'package:braves_cog/features/onboarding/domain/entities/consents_entity.dart';
 
@@ -153,10 +154,10 @@ class _ConsentsScreenState extends ConsumerState<ConsentsScreen> {
             child: ElevatedButton(
               onPressed: () => _handleNext(consents),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
+                backgroundColor: AppTheme.primaryColor,
                 minimumSize: const Size(double.infinity, 56),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(1000),
+                  borderRadius: BorderRadius.zero,
                 ),
               ),
               child: Row(
@@ -166,14 +167,14 @@ class _ConsentsScreenState extends ConsumerState<ConsentsScreen> {
                     _currentStep == _totalSteps - 1 ? 'Dalej' : 'Kontynuuj',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: AppTheme.inverseTextColor,
                       letterSpacing: -0.072,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Icon(
                     Icons.chevron_right,
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: AppTheme.inverseTextColor,
                   ),
                 ],
               ),

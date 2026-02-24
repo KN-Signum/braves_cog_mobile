@@ -20,21 +20,25 @@ class ScreeningSQSurveyConfig {
         // Q1: Godzina pójścia spać
         SurveyQuestionEntity(
           id: 'sq_bedtime',
-          type: QuestionType.time,
+          type: QuestionType.number,
           question: 'W ciągu ostatniego miesiąca, o której godzinie zazwyczaj kładłeś/-aś się spać w nocy?',
           required: true,
           options: {
-            'label': 'Godzina pójścia spać',
+            'composite': 'hours_minutes',
+            'maxHours': 23,
+            'maxMinutes': 59,
           },
         ),
         // Q2: Godzina wstania
         SurveyQuestionEntity(
           id: 'sq_waketime',
-          type: QuestionType.time,
+          type: QuestionType.number,
           question: 'W ciągu ostatniego miesiąca, o której godzinie zazwyczaj wstawałeś/-aś rano?',
           required: true,
           options: {
-            'label': 'Godzina wstania',
+            'composite': 'hours_minutes',
+            'maxHours': 23,
+            'maxMinutes': 59,
           },
         ),
         // Q3: Czas zaśnięcia (minuty)
@@ -44,10 +48,8 @@ class ScreeningSQSurveyConfig {
           question: 'W ciągu ostatniego miesiąca, ile czasu zazwyczaj zajmowało Ci zaśnięcie każdej nocy?',
           required: true,
           options: {
-            'label': 'Liczba minut',
-            'placeholder': 'Wpisz liczbę minut',
-            'min': 0,
-            'max': 280,
+            'composite': 'single_minutes',
+            'maxMinutes': 280,
           },
         ),
         // Q4: Godziny snu
@@ -57,10 +59,8 @@ class ScreeningSQSurveyConfig {
           question: 'W ciągu ostatniego miesiąca, ile godzin rzeczywistego snu miałeś/-aś każdej nocy?\n(Może to się różnić od liczby godzin spędzonych w łóżku.)',
           required: true,
           options: {
-            'label': 'Liczba godzin snu na noc',
-            'placeholder': 'Wpisz liczbę godzin',
-            'min': 0,
-            'max': 12,
+            'composite': 'single_hours',
+            'maxHours': 12,
           },
         ),
         // Q5: Trudności ze snem

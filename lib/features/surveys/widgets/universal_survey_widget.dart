@@ -11,18 +11,38 @@ import 'package:braves_cog/features/surveys/widgets/question_widgets/time_picker
 import 'package:braves_cog/features/surveys/widgets/question_widgets/slider_widget.dart';
 import 'package:braves_cog/features/surveys/widgets/question_widgets/table_question_widget.dart';
 import 'package:braves_cog/features/surveys/widgets/question_widgets/segment_scale_question_widget.dart';
+import 'package:braves_cog/features/surveys/widgets/question_widgets/hours_minutes_picker_widget.dart';
+import 'package:braves_cog/features/surveys/widgets/question_widgets/single_hours_picker_widget.dart';
+import 'package:braves_cog/features/surveys/widgets/question_widgets/single_minutes_picker_widget.dart';
+import 'package:braves_cog/features/onboarding/widgets/year_picker.dart' as custom_pickers;
+import 'package:braves_cog/features/onboarding/widgets/height_picker.dart';
+import 'package:braves_cog/features/onboarding/widgets/weight_picker.dart';
+import 'package:braves_cog/features/onboarding/widgets/icon_option_grid.dart';
+import 'package:braves_cog/features/surveys/widgets/question_widgets/clickable_question_text_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class UniversalSurveyWidget extends ConsumerStatefulWidget {
   final SurveyEntity survey;
   final Function(Map<String, dynamic>) onComplete;
   final VoidCallback onBack;
+  final bool showHeaderAndProgress;
+  final int? globalStepOffset;
+  final int? globalTotalSteps;
+  final String? headerTitle;
+  final bool startAtLastQuestion;
+  final bool showFinishLabel;
 
   const UniversalSurveyWidget({
     super.key,
     required this.survey,
     required this.onComplete,
     required this.onBack,
+    this.showHeaderAndProgress = true,
+    this.globalStepOffset,
+    this.globalTotalSteps,
+    this.headerTitle,
+    this.startAtLastQuestion = false,
+    this.showFinishLabel = false,
   });
 
   @override
@@ -31,6 +51,7 @@ class UniversalSurveyWidget extends ConsumerStatefulWidget {
 
 class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
   final Map<String, dynamic> _answers = {};
+  final Map<String, List<int>> _hoursMinutesCache = {};
   int _currentStep = 0;
   String? _lastSurveyId;
 
@@ -38,6 +59,19 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
   void initState() {
     super.initState();
     _lastSurveyId = widget.survey.id;
+    _initializeDefaultValues();
+    if (widget.startAtLastQuestion) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          final visibleQuestions = _visibleQuestions;
+          if (visibleQuestions.isNotEmpty) {
+            setState(() {
+              _currentStep = visibleQuestions.length - 1;
+            });
+          }
+        }
+      });
+    }
   }
 
   @override
@@ -47,6 +81,33 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
       _answers.clear();
       _currentStep = 0;
       _lastSurveyId = widget.survey.id;
+      _initializeDefaultValues();
+    }
+  }
+
+  void _initializeDefaultValues() {
+    for (var question in widget.survey.questions) {
+      if (question.options?['picker'] != null && !_answers.containsKey(question.id)) {
+        final pickerType = question.options?['picker'] as String;
+        switch (pickerType) {
+          case 'year':
+            final defaultYear = question.options?['defaultYear'] as int? ?? 1990;
+            _answers[question.id] = defaultYear.toString();
+            break;
+          case 'height':
+            _answers[question.id] = '170';
+            break;
+          case 'weight':
+            _answers[question.id] = '70';
+            break;
+        }
+      }
+      if (question.type == QuestionType.slider && 
+          question.options?['showMarkers'] == true && 
+          !_answers.containsKey(question.id)) {
+        final min = (question.options?['min'] as num?)?.toDouble() ?? 0.0;
+        _answers[question.id] = min;
+      }
     }
   }
 
@@ -61,7 +122,14 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
       final operator = showIf['operator'];
       final value = showIf['value'];
 
-      if (!_answers.containsKey(questionId)) return false;
+      if (!_answers.containsKey(questionId)) {
+        final tableAnswerKey = '${questionId}_$value';
+        if (_answers.containsKey(tableAnswerKey)) {
+          final tableAnswer = _answers[tableAnswerKey];
+          return operator == '==' && tableAnswer == value;
+        }
+        return false;
+      }
 
       final answer = _answers[questionId];
       
@@ -156,6 +224,81 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
       return true;
     }
     
+    if (compositeType == 'substance_use') {
+      final enabledKey = '${question.id}_enabled';
+      final frequencyKey = '${question.id}_frequency';
+      final enabled = _answers[enabledKey] as bool? ?? false;
+      if (!enabled) {
+        // Jeśli użytkownik zaznaczył NIE, traktujemy to jako 0 dni – zawsze OK.
+        return true;
+      }
+      final frequency = _answers[frequencyKey];
+      if (frequency == null) return false;
+      if (frequency.toString().isEmpty) return false;
+      return true;
+    }
+    
+    if (compositeType == 'hours_minutes') {
+      final showDontKnow = question.options?['showDontKnow'] == true;
+      final dontKnowKey = '${question.id}_dont_know';
+      
+      // If "Nie wiem" is selected, validation passes
+      if (showDontKnow) {
+        final dontKnowValue = _answers[dontKnowKey] as bool?;
+        if (dontKnowValue == true) {
+          return true;
+        }
+      }
+      
+      final hours = _answers['${question.id}_hours'];
+      final minutes = _answers['${question.id}_minutes'];
+      // Both hours and minutes should be set (can be 0, which is valid)
+      return hours != null && minutes != null;
+    }
+    
+    if (compositeType == 'single_hours' || compositeType == 'single_minutes') {
+      final value = _answers[question.id];
+      // Value should be set (can be 0, which is valid)
+      return value != null;
+    }
+    
+    if (compositeType == 'somatic_disease') {
+      final enabledKey = '${question.id}_enabled';
+      final dontKnowKey = '${question.id}_dont_know';
+      final subtypesKey = '${question.id}_subtypes';
+      final otherTextKey = '${question.id}_other_text';
+      final rowKey = question.options?['rowKey'] as String?;
+
+      final enabled = _answers[enabledKey] as bool? ?? false;
+      final dontKnow = _answers[dontKnowKey] as bool? ?? false;
+
+      // "Nie wiem" zawsze jest akceptowane.
+      if (dontKnow) return true;
+
+      // Jeśli użytkownik wybrał "Nie" (przełącznik w pozycji wyłączonej),
+      // to traktujemy to jako brak choroby – też OK.
+      if (!enabled) return true;
+
+      // Dla "Innych chorób somatycznych" (rowKey == 'other') wymagamy tylko tekstu.
+      if (rowKey == 'other') {
+        final otherText = _answers[otherTextKey]?.toString().trim() ?? '';
+        if (otherText.isEmpty) return false;
+        return true;
+      }
+
+      // Dla pozostałych chorób: przy "Tak" musi być wybrana co najmniej jedna pod-opcja.
+      final subtypes = _answers[subtypesKey] as List<dynamic>? ?? const [];
+      if (subtypes.isEmpty) return false;
+
+      // Jeśli wśród pod-opcji jest "other", wymagamy wypełnienia pola tekstowego.
+      if (subtypes.contains('other')) {
+        final otherText = _answers[otherTextKey]?.toString().trim() ?? '';
+        if (otherText.isEmpty) return false;
+      }
+
+      return true;
+    }
+    
     return true;
   }
 
@@ -201,8 +344,39 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
     
     if (question.genderForm != null) {
       final profile = ref.read(profileProvider).profile;
-      final genderIdentity = profile.genderIdentity;
+      final genderIdentity = profile.genderIdentity.trim().toLowerCase();
+      
+      if (text.contains('wykonywałeś/-aś')) {
+        String verbForm;
+        if (genderIdentity == 'male') {
+          verbForm = 'wykonywałeś';
+        } else if (genderIdentity == 'female') {
+          verbForm = 'wykonywałaś';
+        } else if (genderIdentity == 'non_binary' || 
+                   genderIdentity == 'other' || 
+                   genderIdentity == 'prefer_not_to_say') {
+          verbForm = 'wykonywano';
+        } else {
+          verbForm = 'wykonywano';
+        }
+        text = text.replaceAll('wykonywałeś/-aś', verbForm);
+      } else if (text.contains('chodziłeś/-aś')) {
+        String verbForm;
+        if (genderIdentity == 'male') {
+          verbForm = 'chodziłeś';
+        } else if (genderIdentity == 'female') {
+          verbForm = 'chodziłaś';
+        } else if (genderIdentity == 'non_binary' || 
+                   genderIdentity == 'other' || 
+                   genderIdentity == 'prefer_not_to_say') {
+          verbForm = 'chodzono';
+        } else {
+          verbForm = 'chodzono';
+        }
+        text = text.replaceAll('chodziłeś/-aś', verbForm);
+      } else {
       text = text.replaceAll('{genderForm}', question.genderForm!);
+      }
     }
     
     return text;
@@ -212,6 +386,25 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
   Widget build(BuildContext context) {
     final visibleQuestions = _visibleQuestions;
     final totalSteps = visibleQuestions.length;
+    final useGlobalProgress = widget.globalStepOffset != null && widget.globalTotalSteps != null;
+    final localProgress = totalSteps > 0 ? (_currentStep + 1) / totalSteps : 0.0;
+    final globalProgress = useGlobalProgress && widget.globalTotalSteps! > 0
+        ? (widget.globalStepOffset! + _currentStep + 1) / widget.globalTotalSteps!
+        : localProgress;
+    final progressValue = globalProgress.clamp(0.0, 1.0);
+    final percent = (progressValue * 100).round();
+    
+    // Ensure current step is valid after conditional logic changes
+    if (_currentStep >= totalSteps && totalSteps > 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() {
+            _currentStep = totalSteps - 1;
+          });
+        }
+      });
+    }
+    
     final currentQuestion = visibleQuestions.isNotEmpty && _currentStep < visibleQuestions.length
         ? visibleQuestions[_currentStep]
         : null;
@@ -226,71 +419,72 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          Icons.chevron_left,
-                          color: Theme.of(context).colorScheme.primary,
-                          size: 28,
-                        ),
-                        onPressed: _handleBack,
-                        style: IconButton.styleFrom(
-                          shape: const CircleBorder(),
-                          side: BorderSide(
+          if (widget.showHeaderAndProgress)
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            Icons.chevron_left,
                             color: Theme.of(context).colorScheme.primary,
-                            width: 2,
+                            size: 28,
                           ),
-                          minimumSize: const Size(44, 44),
+                          onPressed: _handleBack,
+                          style: IconButton.styleFrom(
+                            shape: const CircleBorder(),
+                            side: BorderSide(
+                              color: Theme.of(context).colorScheme.primary,
+                              width: 2,
+                            ),
+                            minimumSize: const Size(44, 44),
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: Text(
-                            widget.survey.title,
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: -0.1,
+                        Expanded(
+                          child: Center(
+                            child: Text(
+                              widget.headerTitle ?? widget.survey.title,
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.1,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        width: 44,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            '${((_currentStep + 1) / totalSteps * 100).round()}%',
-                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
+                        SizedBox(
+                          width: 44,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              '$percent%',
+                              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  ClipRRect(
-                    borderRadius: BorderRadius.zero,
-                    child: LinearProgressIndicator(
-                      value: (_currentStep + 1) / totalSteps,
-                      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Theme.of(context).colorScheme.secondary,
-                      ),
-                      minHeight: 6,
+                      ],
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.zero,
+                      child: LinearProgressIndicator(
+                        value: progressValue,
+                        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Theme.of(context).colorScheme.secondary,
+                        ),
+                        minHeight: 6,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -302,16 +496,10 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
             child: ElevatedButton(
               onPressed: _canProceed ? _handleNext : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                foregroundColor: Theme.of(context).colorScheme.primary,
-                disabledBackgroundColor:
-                    Theme.of(context).colorScheme.surfaceContainerHighest,
-                disabledForegroundColor:
-                    Theme.of(context).colorScheme.primary,
-                side: BorderSide(
-                  color: Theme.of(context).colorScheme.secondary,
-                  width: 2,
-                ),
+                backgroundColor: AppTheme.primaryColor,
+                foregroundColor: AppTheme.inverseTextColor,
+                disabledBackgroundColor: AppTheme.primaryColor,
+                disabledForegroundColor: AppTheme.inverseTextColor,
                 minimumSize: const Size(double.infinity, 56),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.zero,
@@ -321,16 +509,16 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    _currentStep == totalSteps - 1 ? 'Zakończ' : 'Kontynuuj',
+                    (_currentStep == totalSteps - 1 && widget.showFinishLabel) ? 'Zakończ' : 'Kontynuuj',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: AppTheme.inverseTextColor,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Icon(
                     Icons.arrow_forward,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: AppTheme.inverseTextColor,
                   ),
                 ],
               ),
@@ -346,29 +534,65 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
     final isInfoOnly = question.options?['info'] == true;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         if (isInfoOnly) ...[
-          Text(
+          SizedBox(
+            width: double.infinity,
+            child: Text(
             questionText,
+              textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               fontWeight: FontWeight.w400,
               height: 1.5,
-            ),
-          ),
-        ] else ...[
-          Text(
-            questionText,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.w800,
+              ),
             ),
           ),
           if (question.description != null) ...[
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: Text(
+                question.description!,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: const Color(0xFF505968),
+                  fontWeight: FontWeight.w400,
+                  height: 1.5,
+                ),
+              ),
+            ),
+          ],
+        ] else ...[
+          SizedBox(
+            width: double.infinity,
+            child: widget.survey.id == 'MINI_EAT' && question.description != null
+                ? ClickableQuestionTextWidget(
+                    questionText: questionText,
+                    tooltipText: question.description,
+                    textStyle: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                  )
+                : Text(
+                    questionText,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                  ),
+          ),
+          // Don't show description as separate text for MINI EAT (it's in the tooltip)
+          if (question.description != null && widget.survey.id != 'MINI_EAT') ...[
             const SizedBox(height: 8),
-            Text(
-              question.description!,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: const Color(0xFF505968),
+            SizedBox(
+              width: double.infinity,
+              child: Text(
+                question.description!,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: const Color(0xFF505968),
+                    ),
               ),
             ),
           ],
@@ -382,6 +606,22 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
   Widget _buildQuestionInput(SurveyQuestionEntity question) {
     if (question.options?['info'] == true) {
       return const SizedBox.shrink();
+    }
+
+    final pickerType = question.options?['picker'] as String?;
+    if (pickerType != null) {
+      switch (pickerType) {
+        case 'year':
+          return _buildYearPicker(question);
+        case 'height':
+          return _buildHeightPicker(question);
+        case 'weight':
+          return _buildWeightPicker(question);
+        case 'icon_grid':
+          return _buildIconGridQuestion(question);
+        default:
+          break;
+      }
     }
 
     switch (question.type) {
@@ -458,6 +698,167 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
   }
 
   Widget _buildNumberQuestion(SurveyQuestionEntity question) {
+    final compositeType = question.options?['composite'] as String?;
+    
+    // Check if this is a hours_minutes composite picker
+    if (compositeType == 'hours_minutes') {
+      final showDontKnow = question.options?['showDontKnow'] == true;
+      final dontKnowKey = '${question.id}_dont_know';
+      final dontKnowValue = _answers[dontKnowKey] as bool? ?? false;
+      final primary = Theme.of(context).colorScheme.primary;
+      final selectedBg = Color.lerp(primary, Colors.white, 0.5) ?? Theme.of(context).scaffoldBackgroundColor;
+      
+      final maxHours = question.options?['maxHours'] as int? ?? 23;
+      final maxMinutes = question.options?['maxMinutes'] as int? ?? 59;
+      
+      // Get hours and minutes from answers, default to 0 if not set
+      final cached = _hoursMinutesCache[question.id];
+      final hoursValue = _answers['${question.id}_hours'] as int? ?? cached?[0] ?? 0;
+      final minutesValue = _answers['${question.id}_minutes'] as int? ?? cached?[1] ?? 0;
+      
+      // Initialize if not set
+      // Nie inicjalizujemy wartości w _answers jeśli użytkownik zaznaczył "Nie wiem"
+      // (żeby nie wysyłać tych pól w payloadzie).
+      if (!dontKnowValue) {
+        if (!_answers.containsKey('${question.id}_hours')) {
+          _answers['${question.id}_hours'] = 0;
+        }
+        if (!_answers.containsKey('${question.id}_minutes')) {
+          _answers['${question.id}_minutes'] = 0;
+        }
+      }
+      
+      return Column(
+        children: [
+          // Picker (znika, gdy zaznaczone \"Nie wiem\")
+          if (!dontKnowValue)
+            HoursMinutesPickerWidget(
+              hours: hoursValue,
+              minutes: minutesValue,
+              maxHours: maxHours,
+              maxMinutes: maxMinutes,
+              onChanged: (hours, minutes) {
+                setState(() {
+                  final h = hours ?? 0;
+                  final m = minutes ?? 0;
+                  _hoursMinutesCache[question.id] = [h, m];
+                  _answers['${question.id}_hours'] = h;
+                  _answers['${question.id}_minutes'] = m;
+                  // Also store combined value for backward compatibility
+                  _answers[question.id] = h * 60 + m;
+                  // Uncheck "Nie wiem" if user selects time
+                  if (showDontKnow) {
+                    _answers[dontKnowKey] = false;
+                  }
+                });
+              },
+            ),
+          if (!dontKnowValue) const SizedBox(height: 16),
+          // "Nie wiem / Trudno powiedzieć" checkbox (pod pickerem)
+          if (showDontKnow)
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  final newValue = !dontKnowValue;
+                  _answers[dontKnowKey] = newValue;
+
+                  // Cache aktualnego czasu, żeby po odznaczeniu wrócić do poprzedniego wyboru.
+                  _hoursMinutesCache[question.id] = [hoursValue, minutesValue];
+
+                  if (newValue) {
+                    // "Zamrażamy" / wyłączamy edycję – i nie wysyłamy wartości w payloadzie.
+                    _answers.remove('${question.id}_hours');
+                    _answers.remove('${question.id}_minutes');
+                    _answers.remove(question.id);
+                  } else {
+                    // Przywróć wartości z cache
+                    final restored = _hoursMinutesCache[question.id];
+                    final h = restored?[0] ?? 0;
+                    final m = restored?[1] ?? 0;
+                    _answers['${question.id}_hours'] = h;
+                    _answers['${question.id}_minutes'] = m;
+                    _answers[question.id] = h * 60 + m;
+                  }
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: dontKnowValue ? selectedBg : Theme.of(context).scaffoldBackgroundColor,
+                  border: Border.all(
+                    color: primary,
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.zero,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      dontKnowValue ? Icons.check_box : Icons.check_box_outline_blank,
+                      color: primary,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Nie wiem / Trudno powiedzieć',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: primary,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      );
+    }
+    
+    // Check if this is a single hours picker
+    if (compositeType == 'single_hours') {
+      final maxHours = question.options?['maxHours'] as int? ?? 23;
+      final hoursValue = _answers[question.id] as int? ?? 0;
+      
+      // Initialize if not set
+      if (!_answers.containsKey(question.id)) {
+        _answers[question.id] = 0;
+      }
+      
+      return SingleHoursPickerWidget(
+        hours: hoursValue,
+        maxHours: maxHours,
+        onChanged: (hours) {
+          setState(() {
+            _answers[question.id] = hours ?? 0;
+          });
+        },
+      );
+    }
+    
+    // Check if this is a single minutes picker
+    if (compositeType == 'single_minutes') {
+      final maxMinutes = question.options?['maxMinutes'] as int? ?? 59;
+      final minutesValue = _answers[question.id] as int? ?? 0;
+      
+      // Initialize if not set
+      if (!_answers.containsKey(question.id)) {
+        _answers[question.id] = 0;
+      }
+      
+      return SingleMinutesPickerWidget(
+        minutes: minutesValue,
+        maxMinutes: maxMinutes,
+        onChanged: (minutes) {
+          setState(() {
+            _answers[question.id] = minutes ?? 0;
+          });
+        },
+      );
+    }
+    
+    // Regular number input
     final controller = TextEditingController(
       text: _answers[question.id]?.toString() ?? '',
     );
@@ -528,6 +929,14 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
         final optionValue = option is Map ? option['value'] : option;
         final optionLabel = option is Map ? option['label'] : option.toString();
         final isSelected = selectedValue == optionValue;
+        final theme = Theme.of(context);
+        final progressColor = theme.colorScheme.secondary;
+        // Kolor z paska postępu zmieszany w 50% z białym
+        final selectedBackground = Color.lerp(
+          progressColor,
+          Colors.white,
+          0.7,
+        )!;
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
@@ -535,28 +944,80 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
             onTap: () {
               setState(() {
                 _answers[question.id] = optionValue;
+                // Specjalny przypadek: PHQ-9 – aktualizuj znacznik, czy jakikolwiek objaw > 0
+                if (question.id.startsWith('phq9_') && question.id != 'phq9_difficulty') {
+                  final symptomIds = [
+                    'phq9_1',
+                    'phq9_2',
+                    'phq9_3',
+                    'phq9_4',
+                    'phq9_5',
+                    'phq9_6',
+                    'phq9_7',
+                    'phq9_8',
+                    'phq9_9',
+                  ];
+                  bool anyPositive = false;
+                  for (final id in symptomIds) {
+                    final v = _answers[id];
+                    if (v is num && v > 0) {
+                      anyPositive = true;
+                      break;
+                    }
+                  }
+                  _answers['phq9_any_positive'] = anyPositive;
+                }
               });
             },
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? Theme.of(context).colorScheme.secondary
-                    : Theme.of(context).scaffoldBackgroundColor,
+                    ? selectedBackground
+                    : theme.colorScheme.surface,
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.secondary,
+                  color: isSelected
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.surfaceContainerHighest,
                   width: 2,
                 ),
                 borderRadius: BorderRadius.zero,
               ),
-              child: Text(
-                optionLabel,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: isSelected
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.outlineVariant,
+                        width: 2,
+                      ),
+                      color: isSelected ? theme.colorScheme.primary : Colors.transparent,
+                    ),
+                    child: isSelected
+                        ? Icon(
+                            Icons.check,
+                            size: 16,
+                            color: theme.colorScheme.onPrimary,
+                          )
+                        : null,
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      optionLabel,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -703,6 +1164,7 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
     final unit = question.options?['unit'] as String?;
     final currentValue = (_answers[question.id] as num?)?.toDouble() ?? min;
     final segmentScale = question.options?['segmentScale'] == true;
+    final showMarkers = question.options?['showMarkers'] == true;
 
     if (segmentScale) {
       return SegmentScaleQuestionWidget(
@@ -717,6 +1179,9 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
         reversed: question.options?['reversed'] == true,
       );
     }
+
+    final valueLabels = question.options?['valueLabels'] as Map<String, dynamic>?;
+    final valueLabelsMap = valueLabels?.map((key, value) => MapEntry(key.toString(), value.toString()));
 
     return SliderQuestionWidget(
       value: currentValue,
@@ -738,6 +1203,8 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
           : null,
       minLabel: question.options?['minLabel'] as String?,
       maxLabel: question.options?['maxLabel'] as String?,
+      showMarkers: showMarkers,
+      valueLabels: valueLabelsMap,
     );
   }
 
@@ -818,9 +1285,161 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
       return _buildDoctorVisitCompositeQuestion(question);
     } else if (compositeType == 'medications') {
       return _buildMedicationsCompositeQuestion(question);
+    } else if (compositeType == 'substance_use') {
+      return _buildSubstanceUseCompositeQuestion(question);
+    } else if (compositeType == 'somatic_disease') {
+      return _buildSomaticDiseaseCompositeQuestion(question);
     }
     
     return _buildBooleanQuestion(question);
+  }
+
+  Widget _buildSubstanceUseCompositeQuestion(SurveyQuestionEntity question) {
+    final enabledKey = '${question.id}_enabled';
+    final frequencyKey = '${question.id}_frequency';
+    final enabled = (_answers[enabledKey] as bool?) ?? false;
+    final selectedFrequency = _answers[frequencyKey] as String?;
+    final frequencies = (question.options?['frequencies'] as List<dynamic>? ?? [])
+        .map<Map<String, String>>((f) {
+      if (f is Map) {
+        return {
+          'value': f['value'].toString(),
+          'label': f['label'].toString(),
+        };
+      }
+      return {'value': f.toString(), 'label': f.toString()};
+    }).toList();
+
+    final substanceLabel = question.options?['substanceLabel'] as String? ?? question.question;
+    final substanceDescription = question.options?['substanceDescription'] as String?;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.zero,
+        border: Border.all(
+          color: Theme.of(context).colorScheme.secondary,
+          width: 2,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      substanceLabel,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
+                    if (substanceDescription != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        substanceDescription,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: const Color(0xFF505968),
+                            ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    'Nie    Tak',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                  ),
+                  Switch(
+                    value: enabled,
+                    onChanged: (value) {
+                      setState(() {
+                        _answers[enabledKey] = value;
+                        if (!value) {
+                          // Jeśli NIE -> 0 dni
+                          _answers[frequencyKey] = '0';
+                          _answers[question.id] = '0';
+                        } else {
+                          // Jeśli TAK, użytkownik musi wybrać jedną z częstotliwości
+                          _answers[frequencyKey] = null;
+                          _answers[question.id] = null;
+                        }
+                      });
+                    },
+                    thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {
+                      if (states.contains(WidgetState.selected)) {
+                        return Theme.of(context).colorScheme.secondary;
+                      }
+                      return null;
+                    }),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          if (enabled) ...[
+            const SizedBox(height: 16),
+            Text(
+              'Jak często?',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            Column(
+              children: frequencies.map((freq) {
+                final value = freq['value']!;
+                final label = freq['label']!;
+                final isSelected = selectedFrequency == value;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _answers[frequencyKey] = value;
+                        _answers[question.id] = value;
+                      });
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? Theme.of(context).colorScheme.secondary
+                            : Theme.of(context).scaffoldBackgroundColor,
+                        borderRadius: BorderRadius.zero,
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.secondary,
+                          width: 2,
+                        ),
+                      ),
+                      child: Text(
+                        label,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 
   Widget _buildDoctorVisitCompositeQuestion(SurveyQuestionEntity question) {
@@ -1097,6 +1716,576 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
         ],
       ],
     );
+  }
+
+  Widget _buildSomaticDiseaseCompositeQuestion(SurveyQuestionEntity question) {
+    final enabledKey = '${question.id}_enabled';
+    final dontKnowKey = '${question.id}_dont_know';
+    final subtypesKey = '${question.id}_subtypes';
+    final otherTextKey = '${question.id}_other_text';
+
+    final enabled = (_answers[enabledKey] as bool?) ?? false;
+    final dontKnow = (_answers[dontKnowKey] as bool?) ?? false;
+    final selectedSubtypes =
+        List<String>.from(_answers[subtypesKey] as List<dynamic>? ?? const []);
+
+    final subtypes = (question.options?['subtypes'] as List<dynamic>? ?? [])
+        .map<Map<String, dynamic>>((s) {
+      if (s is Map) {
+        return {
+          'value': s['value'].toString(),
+          'label': s['label'].toString(),
+          'allowFreeText': s['allowFreeText'] == true,
+        };
+      }
+      return {'value': s.toString(), 'label': s.toString(), 'allowFreeText': false};
+    }).toList();
+
+    final diseaseLabel =
+        question.options?['diseaseLabel'] as String? ?? question.question;
+    final diseaseDescription =
+        question.options?['diseaseDescription'] as String?;
+    final hasDontKnow = question.options?['hasDontKnow'] == true;
+    final rowKey = question.options?['rowKey'] as String?;
+
+    final primary = Theme.of(context).colorScheme.primary;
+    final secondary = Theme.of(context).colorScheme.secondary;
+    final selectedBg = Color.lerp(secondary, Colors.white, 0.5) ??
+        Theme.of(context).scaffoldBackgroundColor;
+
+    final otherTextInitial = _answers[otherTextKey]?.toString() ?? '';
+    final otherTextController = TextEditingController(text: otherTextInitial);
+
+    // Special case: "Inne choroby somatyczne" - show text field directly when enabled
+    if (rowKey == 'other') {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.zero,
+          border: Border.all(
+            color: primary,
+            width: 2,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    diseaseLabel,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Nie    Tak',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: primary,
+                          ),
+                    ),
+                    Switch(
+                      value: enabled,
+                      onChanged: (value) {
+                        setState(() {
+                          _answers[enabledKey] = value;
+                          if (value) {
+                            // "Tak" – resetuj status "Nie wiem".
+                            _answers[dontKnowKey] = false;
+                            _answers[question.id] = 'yes';
+                            _answers['${question.id}_status'] = 'yes';
+                          } else {
+                            // "Nie" – brak choroby.
+                            _answers[question.id] = 'no';
+                            _answers['${question.id}_status'] = 'no';
+                            _answers[otherTextKey] = '';
+                          }
+                        });
+                      },
+                      thumbColor: WidgetStateProperty.resolveWith<Color?>(
+                          (states) {
+                        return primary;
+                      }),
+                      trackColor: WidgetStateProperty.resolveWith<Color?>(
+                          (states) {
+                        return Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest;
+                      }),
+                      trackOutlineColor:
+                          WidgetStateProperty.resolveWith<Color?>((states) {
+                        return primary;
+                      }),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            if (hasDontKnow) ...[
+              const SizedBox(height: 12),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    final newValue = !dontKnow;
+                    _answers[dontKnowKey] = newValue;
+                    if (newValue) {
+                      _answers[enabledKey] = false;
+                      _answers[question.id] = 'dont_know';
+                      _answers['${question.id}_status'] = 'dont_know';
+                      _answers[otherTextKey] = '';
+                    } else {
+                      _answers[question.id] = null;
+                      _answers['${question.id}_status'] = null;
+                    }
+                  });
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: dontKnow
+                        ? selectedBg
+                        : Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: BorderRadius.zero,
+                    border: Border.all(
+                      color: primary,
+                      width: 2,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        dontKnow
+                            ? Icons.check_box
+                            : Icons.check_box_outline_blank,
+                        color: primary,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Nie wiem',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: primary,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+            if (enabled && !dontKnow) ...[
+              const SizedBox(height: 16),
+              TextField(
+                controller: otherTextController,
+                onChanged: (value) {
+                  setState(() {
+                    _answers[otherTextKey] = value;
+                  });
+                },
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: 'Wpisz jakie...',
+                  filled: true,
+                  fillColor: Theme.of(context).scaffoldBackgroundColor,
+                  contentPadding: const EdgeInsets.all(12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.zero,
+                    borderSide: BorderSide(
+                      color: primary,
+                      width: 2,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.zero,
+                    borderSide: BorderSide(
+                      color: primary,
+                      width: 2,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      );
+    }
+
+    // Regular somatic disease question
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.zero,
+        border: Border.all(
+          color: primary,
+          width: 2,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      diseaseLabel,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
+                    if (diseaseDescription != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        diseaseDescription,
+                        style:
+                            Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: const Color(0xFF505968),
+                                ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    'Nie    Tak',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: primary,
+                        ),
+                  ),
+                  Switch(
+                    value: enabled,
+                    onChanged: (value) {
+                      setState(() {
+                        _answers[enabledKey] = value;
+                        if (value) {
+                          // "Tak" – resetuj status "Nie wiem".
+                          _answers[dontKnowKey] = false;
+                          _answers[question.id] = 'yes';
+                          _answers['${question.id}_status'] = 'yes';
+                        } else {
+                          // "Nie" – brak choroby.
+                          _answers[question.id] = 'no';
+                          _answers['${question.id}_status'] = 'no';
+                          _answers[subtypesKey] = [];
+                        }
+                      });
+                    },
+                    thumbColor: WidgetStateProperty.resolveWith<Color?>(
+                        (states) {
+                      return primary;
+                    }),
+                    trackColor: WidgetStateProperty.resolveWith<Color?>(
+                        (states) {
+                      return Theme.of(context)
+                          .colorScheme
+                          .surfaceContainerHighest;
+                    }),
+                    trackOutlineColor:
+                        WidgetStateProperty.resolveWith<Color?>((states) {
+                      return primary;
+                    }),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          if (hasDontKnow) ...[
+            const SizedBox(height: 12),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  final newValue = !dontKnow;
+                  _answers[dontKnowKey] = newValue;
+                  if (newValue) {
+                    _answers[enabledKey] = false;
+                    _answers[question.id] = 'dont_know';
+                    _answers['${question.id}_status'] = 'dont_know';
+                    _answers[subtypesKey] = [];
+                  } else {
+                    _answers[question.id] = null;
+                    _answers['${question.id}_status'] = null;
+                  }
+                });
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                decoration: BoxDecoration(
+                  color: dontKnow
+                      ? selectedBg
+                      : Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: BorderRadius.zero,
+                  border: Border.all(
+                    color: primary,
+                    width: 2,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      dontKnow
+                          ? Icons.check_box
+                          : Icons.check_box_outline_blank,
+                      color: primary,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Nie wiem',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: primary,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          if (enabled && !dontKnow) ...[
+            const SizedBox(height: 16),
+            Text(
+              'Jakie?',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            Column(
+              children: subtypes.map((subtype) {
+                final value = subtype['value'] as String;
+                final label = subtype['label'] as String;
+                final allowFreeText = subtype['allowFreeText'] as bool;
+                final isSelected = selectedSubtypes.contains(value);
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            final current =
+                                List<String>.from(selectedSubtypes);
+                            if (current.contains(value)) {
+                              current.remove(value);
+                              if (allowFreeText) {
+                                _answers[otherTextKey] = '';
+                              }
+                            } else {
+                              current.add(value);
+                            }
+                            _answers[subtypesKey] = current;
+                          });
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? selectedBg
+                                : Theme.of(context).scaffoldBackgroundColor,
+                            borderRadius: BorderRadius.zero,
+                            border: Border.all(
+                              color: primary,
+                              width: 2,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                isSelected
+                                    ? Icons.check_box
+                                    : Icons.check_box_outline_blank,
+                                color: primary,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  label,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        color: primary,
+                                      ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (allowFreeText && isSelected) ...[
+                        const SizedBox(height: 8),
+                        TextField(
+                          controller: otherTextController,
+                          onChanged: (value) {
+                            setState(() {
+                              _answers[otherTextKey] = value;
+                            });
+                          },
+                          maxLines: 2,
+                          decoration: InputDecoration(
+                            hintText: 'Wpisz jakie...',
+                            filled: true,
+                            fillColor:
+                                Theme.of(context).scaffoldBackgroundColor,
+                            contentPadding: const EdgeInsets.all(12),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.zero,
+                              borderSide: BorderSide(
+                                color: primary,
+                                width: 2,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.zero,
+                              borderSide: BorderSide(
+                                color: primary,
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildYearPicker(SurveyQuestionEntity question) {
+    final currentValue = _answers[question.id]?.toString() ?? '1990';
+    final minYear = question.options?['minYear'] as int? ?? 1925;
+    final maxYear = question.options?['maxYear'] as int? ?? DateTime.now().year;
+    final defaultYear = question.options?['defaultYear'] as int? ?? 1990;
+
+    return custom_pickers.YearPicker(
+      value: currentValue,
+      onChange: (value) {
+        setState(() {
+          _answers[question.id] = value;
+        });
+      },
+      minYear: minYear,
+      maxYear: maxYear,
+      defaultYear: defaultYear,
+    );
+  }
+
+  Widget _buildHeightPicker(SurveyQuestionEntity question) {
+    final currentValue = _answers[question.id]?.toString() ?? '170';
+
+    return HeightPicker(
+      height: currentValue,
+      onHeightChanged: (value) {
+        setState(() {
+          _answers[question.id] = value;
+        });
+      },
+    );
+  }
+
+  Widget _buildWeightPicker(SurveyQuestionEntity question) {
+    final currentValue = _answers[question.id]?.toString() ?? '70';
+
+    return WeightPicker(
+      weight: currentValue,
+      onWeightChanged: (value) {
+        setState(() {
+          _answers[question.id] = value;
+        });
+      },
+    );
+  }
+
+  Widget _buildIconGridQuestion(SurveyQuestionEntity question) {
+    final iconOptions = question.options?['iconOptions'] as List<dynamic>? ?? [];
+    final selectedValue = _answers[question.id]?.toString() ?? '';
+    final columns = question.options?['columns'] as int? ?? 2;
+
+    final options = iconOptions.map((opt) {
+      if (opt is Map) {
+        return IconOption(
+          value: opt['value']?.toString() ?? '',
+          label: opt['label']?.toString() ?? '',
+          icon: _getIconFromString(opt['icon']?.toString() ?? ''),
+        );
+      }
+      return IconOption(value: '', label: '', icon: Icons.help);
+    }).toList();
+
+    return IconOptionGrid(
+      options: options,
+      value: selectedValue,
+      onChange: (value) {
+        setState(() {
+          _answers[question.id] = value;
+        });
+      },
+      columns: columns,
+    );
+  }
+
+  IconData _getIconFromString(String iconName) {
+    switch (iconName) {
+      case 'male':
+        return Icons.male;
+      case 'female':
+        return Icons.female;
+      case 'transgender':
+        return Icons.transgender;
+      case 'person_outline':
+        return Icons.person_outline;
+      case 'block':
+        return Icons.block;
+      case 'school_outlined':
+        return Icons.school_outlined;
+      case 'build_outlined':
+        return Icons.build_outlined;
+      case 'menu_book':
+        return Icons.menu_book;
+      case 'school':
+        return Icons.school;
+      case 'more_horiz':
+        return Icons.more_horiz;
+      case 'accessibility_new':
+        return Icons.accessibility_new;
+      case 'accessible':
+        return Icons.accessible;
+      case 'accessible_forward':
+        return Icons.accessible_forward;
+      case 'wheelchair_pickup':
+        return Icons.wheelchair_pickup;
+      default:
+        return Icons.help;
+    }
   }
 }
 

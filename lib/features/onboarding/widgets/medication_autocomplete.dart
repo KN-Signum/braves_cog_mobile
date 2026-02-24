@@ -120,7 +120,7 @@ class _MedicationAutocompleteState extends State<MedicationAutocomplete> {
                 fillColor: Theme.of(context).scaffoldBackgroundColor,
                 contentPadding: const EdgeInsets.all(16),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.zero,
                   borderSide: BorderSide(
                     color: Theme.of(
                       context,
@@ -129,7 +129,7 @@ class _MedicationAutocompleteState extends State<MedicationAutocomplete> {
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.zero,
                   borderSide: BorderSide(
                     color: Theme.of(
                       context,
@@ -138,7 +138,7 @@ class _MedicationAutocompleteState extends State<MedicationAutocomplete> {
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.zero,
                   borderSide: BorderSide(
                     color: Theme.of(context).colorScheme.secondary,
                     width: 2,

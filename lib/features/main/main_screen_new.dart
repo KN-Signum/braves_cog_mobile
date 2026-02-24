@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:braves_cog/core/widgets/app_bottom_nav_bar.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
-import '../auth/presentation/screens/login_screen.dart';
+import '../auth/login_screen.dart';
 import '../onboarding/onboarding_screen.dart';
 import '../home/home_screen.dart';
 import '../health/health_module_screen.dart';
@@ -13,9 +13,8 @@ import '../psychological_tests/psychological_tests_screen.dart';
 import '../surveys/widgets/universal_survey_widget.dart';
 import '../surveys/widgets/screening_flow_widget.dart';
 import '../surveys/data/survey_configs/monitoring_survey_config.dart';
-import '../surveys/data/survey_configs/screening_pa_survey_config.dart';
 import '../profile/user_profile_screen.dart';
-import '../cognitive_games/presentation/games_screen.dart';
+import '../games/games_screen.dart';
 import '../settings/settings_screen.dart';
 
 class MainScreenNew extends ConsumerStatefulWidget {
@@ -222,6 +221,8 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
             _navigateToHome();
           },
           onBack: _navigateToHome,
+          startAtLastQuestion: false,      
+          showFinishLabel: true,          
         );
       case 'screening':
         return ScreeningFlowWidget(
@@ -231,8 +232,8 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
           },
           onBack: _navigateToHome,
         );
-      case 'games':
-        return GamesScreen(onBack: _navigateToHome);
+      //case 'games':
+      //  return GamesScreen(onBack: _navigateToHome);
       case 'profile':
         return UserProfileScreen(onBack: _navigateToHome);
       case 'settings':

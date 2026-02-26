@@ -10,6 +10,15 @@ class GAD7SurveyConfig {
         SurveyQuestionEntity(
           id: 'gad7_info',
           type: QuestionType.text,
+          question: 'Następne stwierdzenia dotyczą Twoich doświadczeń związanych z odczuwaniem lęku, napięcia oraz zamartwiania się w codziennym życiu. Przeczytaj uważnie każde stwierdzenie i zaznacz, w jakim stopniu odnosi się ono do Ciebie w ostatnim czasie. Odpowiadaj zgodnie z tym, jak rzeczywiście się czujesz — nie ma odpowiedzi dobrych ani złych.',
+          required: false,
+          options: {
+            'info': true,
+          },
+        ),
+        SurveyQuestionEntity(
+          id: 'gad7_info',
+          type: QuestionType.text,
           question: 'Jak często w ciągu ostatnich 2 tygodni dokuczały Panu(i) następujące problemy?',
           required: false,
           options: {

@@ -15,7 +15,7 @@ import 'package:braves_cog/features/surveys/data/survey_configs/phq_9_survey_con
 import 'package:braves_cog/features/surveys/data/survey_configs/somatic_diseases_survey_config.dart';
 import 'package:braves_cog/features/surveys/data/survey_configs/somatic_drugs_survey_config.dart';
 import 'package:braves_cog/features/surveys/data/survey_configs/mental_disorders_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/psychiatric_medications_survey_config.dart';
+import 'package:braves_cog/features/surveys/data/survey_configs/medications_survey_config.dart';
 
 class OnboardingFlowWidget extends ConsumerStatefulWidget {
   final VoidCallback onBack;
@@ -71,22 +71,28 @@ class _OnboardingFlowWidgetState extends ConsumerState<OnboardingFlowWidget> {
       'name': 'Informacje zdrowotne',
       'surveys': [
         {'id': 'Baseline_Somatic_Disease', 'config': SomaticDiseasesSurveyConfig.getSurvey()},
-        {'id': 'Baseline_Somatic_Drugs', 'config': SomaticDrugsSurveyConfig.getSurvey()},
         {'id': 'Baseline_Mental_Health_Disorders', 'config': MentalDisordersSurveyConfig.getSurvey()},
-        {'id': 'Baseline_Mental_Health_Medications', 'config': PsychiatricMedicationsSurveyConfig.getSurvey()},
+        {'id': 'Baseline_Medications', 'config': MedicationsSurveyConfig.getSurvey()},
       ],
     },
   ];
 
-  void _handleSurveyComplete(Map<String, dynamic> answers) {
+  void _handleSurveyComplete(Map<String, dynamic> answers, {bool isBackNavigation = false}) {
     final currentModule = _modules[_currentModuleIndex];
     final currentSurvey = currentModule['surveys'][_currentSurveyIndex];
     final surveyId = currentSurvey['id'];
     
     if (!_allAnswers.containsKey(currentModule['id'])) {
-      _allAnswers[currentModule['id']] = {};
+      _allAnswers[currentModule['id']] = <String, dynamic>{};
     }
-    _allAnswers[currentModule['id']][surveyId] = answers;
+    final moduleMap =
+        _allAnswers[currentModule['id']] as Map<String, dynamic>;
+    moduleMap[surveyId as String] = answers;
+
+    // Jeśli to nawigacja wstecz, tylko zapisz odpowiedzi, nie przechodź dalej
+    if (isBackNavigation) {
+      return;
+    }
 
     if (_currentSurveyIndex < (currentModule['surveys'] as List).length - 1) {
       setState(() {
@@ -129,6 +135,20 @@ class _OnboardingFlowWidgetState extends ConsumerState<OnboardingFlowWidget> {
     final currentModule = _modules[_currentModuleIndex];
     final currentSurvey = currentModule['surveys'][_currentSurveyIndex];
     final survey = currentSurvey['config'] as SurveyEntity;
+    final surveyId = currentSurvey['id'] as String;
+    final moduleId = currentModule['id'] as String;
+
+    Map<String, dynamic>? moduleAnswers;
+    final rawModuleAnswers = _allAnswers[moduleId];
+    if (rawModuleAnswers is Map<String, dynamic>) {
+      moduleAnswers = rawModuleAnswers;
+    } else if (rawModuleAnswers is Map) {
+      moduleAnswers = Map<String, dynamic>.from(rawModuleAnswers as Map);
+    }
+
+    final initialAnswers = moduleAnswers != null
+        ? moduleAnswers[surveyId] as Map<String, dynamic>?
+        : null;
     final isLastModule = _currentModuleIndex == _modules.length - 1;
     final isLastSurveyInModule =
         _currentSurveyIndex == (currentModule['surveys'] as List).length - 1;
@@ -169,6 +189,7 @@ class _OnboardingFlowWidgetState extends ConsumerState<OnboardingFlowWidget> {
       headerTitle: currentModule['name'] as String?,
       startAtLastQuestion: _startAtEndForCurrentSurvey,
       showFinishLabel: isLastSurveyInFlow,
+      initialAnswers: initialAnswers,
     );
   }
 }

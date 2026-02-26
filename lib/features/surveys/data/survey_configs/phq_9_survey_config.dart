@@ -10,7 +10,7 @@ class PHQ9SurveyConfig {
         SurveyQuestionEntity(
           id: 'phq9_info',
           type: QuestionType.text,
-          question: 'Jak często w ciągu ostatnich 2 tygodni dokuczały Panu/Pani następujące problemy?',
+          question: 'Następne pytania dotyczą Twojego samopoczucia psychicznego oraz objawów, których mogłeś/-aś doświadczać w ostatnim czasie. Przeczytaj uważnie każde stwierdzenie i zaznacz, jak często występował u Ciebie dany objaw w ciągu ostatnich 2 tygodni. Odpowiadaj zgodnie z własnym doświadczeniem — nie ma odpowiedzi dobrych ani złych.',
           required: false,
           options: {
             'info': true,
@@ -20,7 +20,7 @@ class PHQ9SurveyConfig {
         SurveyQuestionEntity(
           id: 'phq9_1',
           type: QuestionType.choice,
-          question: 'Niewielkie zainteresowanie lub odczuwanie przyjemności z wykonywania czynności.',
+          question: 'Niewielkie zainteresowanie lub odczuwanie przyjemności z wykonywania czynności',
           required: true,
           options: {
             'options': [
@@ -35,7 +35,7 @@ class PHQ9SurveyConfig {
         SurveyQuestionEntity(
           id: 'phq9_2',
           type: QuestionType.choice,
-          question: 'Uczucie smutku, przygnębienia lub beznadziejności.',
+          question: 'Uczucie smutku, przygnębienia lub beznadziejności',
           required: true,
           options: {
             'options': [
@@ -50,7 +50,7 @@ class PHQ9SurveyConfig {
         SurveyQuestionEntity(
           id: 'phq9_3',
           type: QuestionType.choice,
-          question: 'Kłopoty z zaśnięciem lub przerywany sen, albo zbyt długi sen.',
+          question: 'Kłopoty z zaśnięciem lub przerywany sen, albo zbyt długi sen',
           required: true,
           options: {
             'options': [
@@ -65,7 +65,7 @@ class PHQ9SurveyConfig {
         SurveyQuestionEntity(
           id: 'phq9_4',
           type: QuestionType.choice,
-          question: 'Uczucie zmęczenia lub brak energii.',
+          question: 'Uczucie zmęczenia lub brak energii',
           required: true,
           options: {
             'options': [
@@ -80,7 +80,7 @@ class PHQ9SurveyConfig {
         SurveyQuestionEntity(
           id: 'phq9_5',
           type: QuestionType.choice,
-          question: 'Brak apetytu lub przejadanie się.',
+          question: 'Brak apetytu lub przejadanie się',
           required: true,
           options: {
             'options': [
@@ -95,7 +95,7 @@ class PHQ9SurveyConfig {
         SurveyQuestionEntity(
           id: 'phq9_6',
           type: QuestionType.choice,
-          question: 'Poczucie niezadowolenia z siebie — lub uczucie, że jest się do niczego, albo że zawiódł/zawiodła Pan/Pani siebie lub rodzinę.',
+          question: 'Poczucie niezadowolenia z siebie — lub uczucie, że jest się do niczego, albo że zawiódł/zawiodła Pan/Pani siebie lub rodzinę',
           required: true,
           options: {
             'options': [
@@ -110,7 +110,7 @@ class PHQ9SurveyConfig {
         SurveyQuestionEntity(
           id: 'phq9_7',
           type: QuestionType.choice,
-          question: 'Problemy ze skupieniem się, na przykład przy czytaniu gazety lub oglądaniu telewizji.',
+          question: 'Problemy ze skupieniem się, na przykład przy czytaniu gazety lub oglądaniu telewizji',
           required: true,
           options: {
             'options': [
@@ -125,7 +125,7 @@ class PHQ9SurveyConfig {
         SurveyQuestionEntity(
           id: 'phq9_8',
           type: QuestionType.choice,
-          question: 'Poruszanie się lub mówienie tak wolno, że inni mogli to zauważyć, albo wręcz przeciwnie — niemożność usiedzenia w miejscu lub podenerwowanie powodujące ruchliwość znacznie większą niż zwykle.',
+          question: 'Poruszanie się lub mówienie tak wolno, że inni mogli to zauważyć, albo wręcz przeciwnie — niemożność usiedzenia w miejscu lub podenerwowanie powodujące ruchliwość znacznie większą niż zwykle',
           required: true,
           options: {
             'options': [
@@ -140,7 +140,7 @@ class PHQ9SurveyConfig {
         SurveyQuestionEntity(
           id: 'phq9_9',
           type: QuestionType.choice,
-          question: 'Myśli, że lepiej byłoby umrzeć, albo chęć zrobienia sobie jakiejś krzywdy.',
+          question: 'Myśli, że lepiej byłoby umrzeć, albo chęć zrobienia sobie jakiejś krzywdy',
           required: true,
           options: {
             'options': [

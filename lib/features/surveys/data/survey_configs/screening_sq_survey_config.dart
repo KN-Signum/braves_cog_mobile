@@ -11,7 +11,7 @@ class ScreeningSQSurveyConfig {
         SurveyQuestionEntity(
           id: 'sq_info',
           type: QuestionType.text,
-          question: 'Poniższe pytania dotyczą Twoich typowych nawyków związanych ze snem wyłącznie w ciągu ostatniego miesiąca. Odpowiedzi powinny odzwierciedlać najbardziej trafną sytuację dla większości dni i nocy w ostatnim miesiącu.\n\nProsimy o udzielenie odpowiedzi na wszystkie pytania',
+          question: 'Następne pytania dotyczą Twoich typowych nawyków związanych ze snem wyłącznie w ciągu ostatniego miesiąca. Odpowiedzi powinny odzwierciedlać najbardziej trafną sytuację dla większości dni i nocy w ostatnim miesiącu.\n\nProsimy o udzielenie odpowiedzi na wszystkie pytania',
           required: false,
           options: {
             'info': true, // This is an info-only question, no input needed

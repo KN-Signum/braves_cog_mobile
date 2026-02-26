@@ -37,8 +37,21 @@ class _HoursMinutesPickerWidgetState extends State<HoursMinutesPickerWidget> {
     super.initState();
     _selectedHours = widget.hours ?? 0;
     _selectedMinutes = widget.minutes ?? 0;
-    _hoursController = FixedExtentScrollController(initialItem: _selectedHours);
-    _minutesController = FixedExtentScrollController(initialItem: _selectedMinutes);
+
+    // Jeśli 0 godzin – minimalnie minMinutesIfZeroHours minut (np. 10).
+    final minMinute =
+        _selectedHours == 0 ? widget.minMinutesIfZeroHours : 0;
+    if (_selectedMinutes < minMinute) {
+      _selectedMinutes = minMinute;
+    }
+
+    _hoursController =
+        FixedExtentScrollController(initialItem: _selectedHours);
+    // Dla minut indeks na kole to (wartość minuty - minMinute).
+    final initialMinuteIndex = (_selectedMinutes - minMinute)
+        .clamp(0, widget.maxMinutes - minMinute);
+    _minutesController =
+        FixedExtentScrollController(initialItem: initialMinuteIndex);
   }
 
   @override

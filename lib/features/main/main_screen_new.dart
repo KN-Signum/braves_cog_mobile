@@ -216,9 +216,11 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
       case 'monitoring':
         return UniversalSurveyWidget(
           survey: MonitoringSurveyConfig.getSurvey(),
-          onComplete: (answers) {
+          onComplete: (answers, {isBackNavigation = false}) {
             // TODO: Save answers
-            _navigateToHome();
+            if (!isBackNavigation) {
+              _navigateToHome();
+            }
           },
           onBack: _navigateToHome,
           startAtLastQuestion: false,      
@@ -232,8 +234,8 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
           },
           onBack: _navigateToHome,
         );
-      //case 'games':
-      //  return GamesScreen(onBack: _navigateToHome);
+      case 'games':
+        return GamesScreen(onBack: _navigateToHome);
       case 'profile':
         return UserProfileScreen(onBack: _navigateToHome);
       case 'settings':

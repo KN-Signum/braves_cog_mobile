@@ -8,6 +8,15 @@ class IPAQSurveyConfig {
       title: 'Aktywność fizyczna (IPAQ)',
       questions: [
         SurveyQuestionEntity(
+          id: 'iapq_info',
+          type: QuestionType.text,
+          question: 'Następne pytania będą dotyczyć czasu, jaki poświęciłeś/-aś na aktywność fizyczną w ciągu ostatnich 7 dni. Prosimy o odpowiedź na każde pytanie, nawet jeśli nie uważasz się za osobę aktywną. Pomyśl o aktywnościach wykonywanych w pracy, w domu i ogrodzie, podczas przemieszczania się z miejsca na miejsce oraz w czasie wolnym — rekreacyjnie, ćwicząc lub uprawiając sport.',
+          required: false,
+          options: {
+            'info': true,
+          },
+        ),
+        SurveyQuestionEntity(
           id: 'ipaq_vigorous_days',
           type: QuestionType.slider,
           question: 'W ciągu ostatnich 7 dni, przez ile dni wykonywałeś/-aś intensywne aktywności fizyczne, takie jak podnoszenie ciężarów, kopanie, aerobik lub szybka jazda na rowerze?',

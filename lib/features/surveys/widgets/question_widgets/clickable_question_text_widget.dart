@@ -39,8 +39,10 @@ class _ClickableQuestionTextWidgetState extends State<ClickableQuestionTextWidge
   // Extract keyword from question text (everything after "Jak często jesz/-asz" or "Jak często spożywasz/-asz")
   String? _extractKeyword(String text) {
     final patterns = [
-      RegExp(r'Jak często jesz/-asz (.+?)\?'),
-      RegExp(r'Jak często spożywasz/-asz (.+?)\?'),
+      // Obsługuje zarówno starą formę "jesz/-asz", jak i uproszczoną "jesz".
+      RegExp(r'Jak często jesz(?:/-asz)? (.+?)\?'),
+      // Analogicznie dla "spożywasz/-asz" vs "spożywasz".
+      RegExp(r'Jak często spożywasz(?:/-asz)? (.+?)\?'),
     ];
 
     for (final pattern in patterns) {

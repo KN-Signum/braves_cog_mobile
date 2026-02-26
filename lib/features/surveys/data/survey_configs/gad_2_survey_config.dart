@@ -8,38 +8,44 @@ class GAD2SurveyConfig {
       title: 'Screening',
       questions: [
         SurveyQuestionEntity(
-          id: 'gad2_symptoms',
-          type: QuestionType.table,
-          question: 'Jak często odczuwałaś/eś następujące problemy w ostatnich 2 tygodniach?',
+          id: 'gad2_info',
+          type: QuestionType.text,
+          question: 'Następne stwierdzenia dotyczą Twoich doświadczeń związanych z odczuwaniem lęku, napięcia oraz zamartwiania się w codziennym życiu. Przeczytaj uważnie każde stwierdzenie i zaznacz, w jakim stopniu odnosi się ono do Ciebie w ostatnim czasie. Odpowiadaj zgodnie z tym, jak rzeczywiście się czujesz — nie ma odpowiedzi dobrych ani złych.',
+          required: false,
+          options: {
+            'info': true,
+          },
+        ),
+        SurveyQuestionEntity(
+          id: 'gad2_1',
+          type: QuestionType.choice,
+          question:
+              'Jak często w ciągu ostatnich 2 tygodni odczuwałaś/eś zdenerwowanie, lęk lub irytację?',
           required: true,
           genderForm: 'odczuwałaś',
           options: {
-            'rows': [
-              {
-                'value': 'nervousness',
-                'label': '1. Zdenerwowanie, lęk lub irytację',
-              },
-              {
-                'value': 'worrying',
-                'label': '2. Trudności związane z opanowaniem zamartwiania się',
-              },
+            'options': [
+              {'value': 0, 'label': 'Wcale'},
+              {'value': 1, 'label': 'Przez kilka dni'},
+              {'value': 2, 'label': 'Więcej niż przez połowę dni'},
+              {'value': 3, 'label': 'Prawie każdego dnia'},
             ],
-            'columns': [
-              {'value': '0', 'label': 'Wcale'},
-              {'value': '1', 'label': 'Przez kilka dni'},
-              {'value': '2', 'label': 'Więcej niż przez połowę dni'},
-              {'value': '3', 'label': 'Prawie każdego dnia'},
+          },
+        ),
+        SurveyQuestionEntity(
+          id: 'gad2_2',
+          type: QuestionType.choice,
+          question:
+              'Jak często w ciągu ostatnich 2 tygodni miałaś/eś trudności z opanowaniem zamartwiania się?',
+          required: true,
+          genderForm: 'odczuwałaś',
+          options: {
+            'options': [
+              {'value': 0, 'label': 'Wcale'},
+              {'value': 1, 'label': 'Przez kilka dni'},
+              {'value': 2, 'label': 'Więcej niż przez połowę dni'},
+              {'value': 3, 'label': 'Prawie każdego dnia'},
             ],
-            'rowLabels': {
-              'nervousness': '1. Zdenerwowanie, lęk lub irytację',
-              'worrying': '2. Trudności związane z opanowaniem zamartwiania się',
-            },
-            'columnLabels': {
-              '0': 'Wcale',
-              '1': 'Przez kilka dni',
-              '2': 'Więcej niż przez połowę dni',
-              '3': 'Prawie każdego dnia',
-            },
           },
         ),
       ],

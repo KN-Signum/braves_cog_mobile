@@ -20,7 +20,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_1',
           type: QuestionType.choice,
-          question: 'Wolę robić coś razem z innymi niż samemu.',
+          question: 'Wolę robić coś razem z innymi niż samemu',
           required: true,
           options: {
             'options': [
@@ -35,7 +35,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_2',
           type: QuestionType.choice,
-          question: 'Wolę wykonywać czynności zawsze w ten sam sposób.',
+          question: 'Wolę wykonywać czynności zawsze w ten sam sposób',
           required: true,
           options: {
             'options': [
@@ -50,7 +50,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_3',
           type: QuestionType.choice,
-          question: 'Gdy próbuję sobie coś wyobrazić, bez trudności potrafię stworzyć w umyśle tego obraz.',
+          question: 'Gdy próbuję sobie coś wyobrazić, bez trudności potrafię stworzyć w umyśle tego obraz',
           required: true,
           options: {
             'options': [
@@ -65,7 +65,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_4',
           type: QuestionType.choice,
-          question: 'Często jestem czymś tak bardzo pochłonięty/a, że zapominam o innych sprawach.',
+          question: 'Często jestem czymś tak bardzo pochłonięty/a, że zapominam o innych sprawach',
           required: true,
           options: {
             'options': [
@@ -80,7 +80,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_5',
           type: QuestionType.choice,
-          question: 'Często zauważam nawet ciche dźwięki, których inni nie słyszą.',
+          question: 'Często zauważam nawet ciche dźwięki, których inni nie słyszą',
           required: true,
           options: {
             'options': [
@@ -95,7 +95,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_6',
           type: QuestionType.choice,
-          question: 'Zwykle zauważam numery tablic samochodów lub podobne ciągi informacji.',
+          question: 'Zwykle zauważam numery tablic samochodów lub podobne ciągi informacji',
           required: true,
           options: {
             'options': [
@@ -110,7 +110,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_7',
           type: QuestionType.choice,
-          question: 'Inni ludzie często mówią mi, że to, co powiedziałem/am było niegrzeczne, chociaż ja tego nie dostrzegam.',
+          question: 'Inni ludzie często mówią mi, że to, co powiedziałem/am było niegrzeczne, chociaż ja tego nie dostrzegam',
           required: true,
           options: {
             'options': [
@@ -125,7 +125,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_8',
           type: QuestionType.choice,
-          question: 'Kiedy czytam jakąś historię, mogę z łatwością wyobrazić sobie jej bohaterów.',
+          question: 'Kiedy czytam jakąś historię, mogę z łatwością wyobrazić sobie jej bohaterów',
           required: true,
           options: {
             'options': [
@@ -140,7 +140,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_9',
           type: QuestionType.choice,
-          question: 'Fascynują mnie daty.',
+          question: 'Fascynują mnie daty',
           required: true,
           options: {
             'options': [
@@ -155,7 +155,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_10',
           type: QuestionType.choice,
-          question: 'Będąc w grupie, potrafię z łatwością śledzić rozmowy kilku osób równocześnie.',
+          question: 'Będąc w grupie, potrafię z łatwością śledzić rozmowy kilku osób równocześnie',
           required: true,
           options: {
             'options': [
@@ -170,7 +170,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_11',
           type: QuestionType.choice,
-          question: 'Dobrze się czuję, będąc z innymi ludźmi.',
+          question: 'Dobrze się czuję, będąc z innymi ludźmi',
           required: true,
           options: {
             'options': [
@@ -185,7 +185,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_12',
           type: QuestionType.choice,
-          question: 'Mam tendencję do dostrzegania szczegółów, których inni nie widzą.',
+          question: 'Mam tendencję do dostrzegania szczegółów, których inni nie widzą',
           required: true,
           options: {
             'options': [
@@ -200,7 +200,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_13',
           type: QuestionType.choice,
-          question: 'Wolę raczej pójść do biblioteki niż na zabawę.',
+          question: 'Wolę raczej pójść do biblioteki niż na zabawę',
           required: true,
           options: {
             'options': [
@@ -215,7 +215,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_14',
           type: QuestionType.choice,
-          question: 'Z łatwością wymyślam rozmaite historie.',
+          question: 'Z łatwością wymyślam rozmaite historie',
           required: true,
           options: {
             'options': [
@@ -230,7 +230,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_15',
           type: QuestionType.choice,
-          question: 'Bardziej pociągają mnie ludzie niż rzeczy.',
+          question: 'Bardziej pociągają mnie ludzie niż rzeczy',
           required: true,
           options: {
             'options': [
@@ -245,7 +245,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_16',
           type: QuestionType.choice,
-          question: 'Mam wyraźnie określone zainteresowania i złości mnie, kiedy nie mogę ich realizować.',
+          question: 'Mam wyraźnie określone zainteresowania i złości mnie, kiedy nie mogę ich realizować',
           required: true,
           options: {
             'options': [
@@ -260,7 +260,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_17',
           type: QuestionType.choice,
-          question: 'Lubię towarzyskie pogaduszki.',
+          question: 'Lubię towarzyskie pogaduszki',
           required: true,
           options: {
             'options': [
@@ -275,14 +275,14 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_18',
           type: QuestionType.choice,
-          question: 'Kiedy coś mówię, innym ludziom nie zawsze łatwo jest coś wtrącić.',
+          question: 'Kiedy coś mówię, innym ludziom nie zawsze łatwo jest coś wtrącić',
           required: true,
           options: {
             'options': [
               {'value': 'definitely_agree', 'label': 'Zdecydowanie się zgadzam'},
               {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się не zgadzam'},
-              {'value': 'definitely_disagree', 'label': 'Zdecydowanie się не zgadzam'},
+              {'value': 'slightly_disagree', 'label': 'Raczej się zgadzam'},
+              {'value': 'definitely_disagree', 'label': 'Zdecydowanie się zgadzam'},
             ],
           },
         ),
@@ -290,14 +290,14 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_19',
           type: QuestionType.choice,
-          question: 'Fascynują mnie liczby.',
+          question: 'Fascynują mnie liczby',
           required: true,
           options: {
             'options': [
               {'value': 'definitely_agree', 'label': 'Zdecydowanie się zgadzam'},
               {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się не zgadzam'},
-              {'value': 'definitely_disagree', 'label': 'Zdecydowanie się не zgadzam'},
+              {'value': 'slightly_disagree', 'label': 'Raczej się zgadzam'},
+              {'value': 'definitely_disagree', 'label': 'Zdecydowanie się zgadzam'},
             ],
           },
         ),
@@ -305,14 +305,14 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_20',
           type: QuestionType.choice,
-          question: 'Kiedy czytam jakąś opowieść, trudno mi odgadnąć intencje jej bohaterów.',
+          question: 'Kiedy czytam jakąś opowieść, trudno mi odgadnąć intencje jej bohaterów',
           required: true,
           options: {
             'options': [
               {'value': 'definitely_agree', 'label': 'Zdecydowanie się zgadzam'},
               {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się не zgadzam'},
-              {'value': 'definitely_disagree', 'label': 'Zdecydowanie się не zgadzam'},
+              {'value': 'slightly_disagree', 'label': 'Raczej się zgadzam'},
+              {'value': 'definitely_disagree', 'label': 'Zdecydowanie się zgadzam'},
             ],
           },
         ),
@@ -320,14 +320,14 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_21',
           type: QuestionType.choice,
-          question: 'Czytanie beletrystyki не sprawia mi szczególnej przyjemności.',
+          question: 'Czytanie beletrystyki не sprawia mi szczególnej przyjemności',
           required: true,
           options: {
             'options': [
               {'value': 'definitely_agree', 'label': 'Zdecydowanie się zgadzam'},
               {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się не zgadzam'},
-              {'value': 'definitely_disagree', 'label': 'Zdecydowanie się не zgadzам'},
+              {'value': 'slightly_disagree', 'label': 'Raczej się zgadzam'},
+              {'value': 'definitely_disagree', 'label': 'Zdecydowanie się zgadzam'},
             ],
           },
         ),
@@ -335,14 +335,14 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_22',
           type: QuestionType.choice,
-          question: 'Nawiązywanie nowych przyjaźni sprawia mi trudność.',
+          question: 'Nawiązywanie nowych przyjaźni sprawia mi trudność',
           required: true,
           options: {
             'options': [
               {'value': 'definitely_agree', 'label': 'Zdecydowanie się zgadzam'},
               {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się не zgadzam'},
-              {'value': 'definitely_disagree', 'label': 'Zdecydowanie się не zgadzam'},
+              {'value': 'slightly_disagree', 'label': 'Raczej się zgadzam'},
+              {'value': 'definitely_disagree', 'label': 'Zdecydowanie się zgadzam'},
             ],
           },
         ),
@@ -350,14 +350,14 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_23',
           type: QuestionType.choice,
-          question: 'Nieustannie zauważam, że różne rzeczy układają się według powtarzających się schematów, wzorów.',
+          question: 'Nieustannie zauważam, że różne rzeczy układają się według powtarzających się schematów, wzorów',
           required: true,
           options: {
             'options': [
               {'value': 'definitely_agree', 'label': 'Zdecydowanie się zgadzam'},
               {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się не zgadzam'},
-              {'value': 'definitely_disagree', 'label': 'Zdecydowanie się не zgadzam'},
+              {'value': 'slightly_disagree', 'label': 'Raczej się zgadzam'},
+              {'value': 'definitely_disagree', 'label': 'Zdecydowanie się zgadzam'},
             ],
           },
         ),
@@ -365,14 +365,14 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_24',
           type: QuestionType.choice,
-          question: 'Wolałbym/ałabym raczej pójść do teatru niż do muzeum.',
+          question: 'Wolałbym/ałabym raczej pójść do teatru niż do muzeum',
           required: true,
           options: {
             'options': [
               {'value': 'definitely_agree', 'label': 'Zdecydowanie się zgadzam'},
               {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się не zgadzam'},
-              {'value': 'definitely_disagree', 'label': 'Zdecydowanie się не zgadzam'},
+              {'value': 'slightly_disagree', 'label': 'Raczej się zgadzam'},
+              {'value': 'definitely_disagree', 'label': 'Zdecydowanie się zgadzam'},
             ],
           },
         ),
@@ -380,14 +380,14 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_25',
           type: QuestionType.choice,
-          question: 'Nie denerwuje mnie, gdy mój codzienny rozkład zajęć zostaje zakłócony.',
+          question: 'Nie denerwuje mnie, gdy mój codzienny rozkład zajęć zostaje zakłócony',
           required: true,
           options: {
             'options': [
               {'value': 'definitely_agree', 'label': 'Zdecydowanie się zgadzam'},
               {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się не zgadzam'},
-              {'value': 'definitely_disagree', 'label': 'Zdecydowanie się не zgadzam'},
+              {'value': 'slightly_disagree', 'label': 'Raczej się zgadzam'},
+              {'value': 'definitely_disagree', 'label': 'Zdecydowanie się zgadzam'},
             ],
           },
         ),

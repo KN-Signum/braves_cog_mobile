@@ -28,6 +28,7 @@ class ScreeningFlowWidget extends ConsumerStatefulWidget {
 class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
   int _currentSurveyIndex = 0;
   final Map<String, dynamic> _allAnswers = {};
+  bool _startAtEndForCurrentSurvey = false;
 
   final List<Map<String, dynamic>> _surveys = [
     {
@@ -60,9 +61,14 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
     },
   ];
 
-  void _handleSurveyComplete(Map<String, dynamic> answers) {
+  void _handleSurveyComplete(Map<String, dynamic> answers, {bool isBackNavigation = false}) {
     final currentSurveyId = _surveys[_currentSurveyIndex]['id'];
     _allAnswers[currentSurveyId] = answers;
+
+    // Jeśli to nawigacja wstecz, tylko zapisz odpowiedzi, nie przechodź dalej
+    if (isBackNavigation) {
+      return;
+    }
 
     if (currentSurveyId == 'screening_diet') {
       final dietChanged = answers['diet_changed'];
@@ -81,6 +87,7 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
     if (_currentSurveyIndex < _surveys.length - 1) {
       setState(() {
         _currentSurveyIndex++;
+        _startAtEndForCurrentSurvey = false;
       });
     } else {
       widget.onComplete(_allAnswers);
@@ -91,6 +98,7 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
     if (_currentSurveyIndex > 0) {
       setState(() {
         _currentSurveyIndex--;
+        _startAtEndForCurrentSurvey = true;
       });
     } else {
       widget.onBack();
@@ -99,7 +107,11 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final currentSurvey = _surveys[_currentSurveyIndex]['config'] as SurveyEntity;
+    final currentMeta = _surveys[_currentSurveyIndex];
+    final currentSurvey = currentMeta['config'] as SurveyEntity;
+    final currentSurveyId = currentMeta['id'] as String;
+    final initialAnswers =
+        _allAnswers[currentSurveyId] as Map<String, dynamic>?;
 
     if (currentSurvey.questions.isEmpty) {
       return Scaffold(
@@ -109,12 +121,29 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
       );
     }
 
+    // Global progress liczony po WSZYSTKICH pytaniach we wszystkich ankietach screeningu.
+    int totalQuestions = 0;
+    int questionOffset = 0;
+    for (int i = 0; i < _surveys.length; i++) {
+      final meta = _surveys[i];
+      final survey = meta['config'] as SurveyEntity;
+      final qCount = survey.questions.length;
+      if (i < _currentSurveyIndex) {
+        questionOffset += qCount;
+      }
+      totalQuestions += qCount;
+    }
+
     return UniversalSurveyWidget(
       survey: currentSurvey,
       onComplete: _handleSurveyComplete,
       onBack: _handleBack,
-      startAtLastQuestion: false,
-      showFinishLabel: true,
+      showHeaderAndProgress: true,
+      globalStepOffset: questionOffset,
+      globalTotalSteps: totalQuestions,
+      startAtLastQuestion: _startAtEndForCurrentSurvey,
+      showFinishLabel: _currentSurveyIndex == _surveys.length - 1,
+      initialAnswers: initialAnswers,
     );
   }
 }

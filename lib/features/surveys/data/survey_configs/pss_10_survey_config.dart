@@ -10,7 +10,7 @@ class PSS10SurveyConfig {
         SurveyQuestionEntity(
           id: 'pss10_info',
           type: QuestionType.text,
-          question: 'Pytania zawarte w tej skali dotyczą Twoich myśli i odczuć związanych z doświadczanymi w ostatnim miesiącu zdarzeniami.\nW każdym pytaniu należy wskazać, jak często myślałeś/aś i odczuwałeś/aś w podany sposób.\nMimo znacznych podobieństw są to różne pytania i każde z nich należy traktować oddzielnie.\nNajlepiej na każde pytanie odpowiadać w miarę szybko, wybierając tę odpowiedź, która wydaje się najbardziej trafna.\n\nPrzy każdym pytaniu należy wpisać do kratki z prawej strony odpowiednią cyfrę, zgodnie z podanym poniżej znaczeniem:\n0 – nigdy\n1 – prawie nigdy\n2 – czasem\n3 – dość często\n4 – bardzo często',
+          question: 'Pytania zawarte w tej skali dotyczą Twoich myśli i odczuć związanych z doświadczanymi w ostatnim miesiącu zdarzeniami.\nW każdym pytaniu należy wskazać, jak często myślałeś/aś i odczuwałeś/aś w podany sposób.\nMimo znacznych podobieństw są to różne pytania i każde z nich należy traktować oddzielnie.\nNajlepiej na każde pytanie odpowiadać w miarę szybko, wybierając tę odpowiedź, która wydaje się najbardziej trafna.',
           required: false,
           options: {
             'info': true,

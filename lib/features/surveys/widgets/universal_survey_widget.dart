@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:braves_cog/core/theme/app_theme.dart';
 import 'package:braves_cog/features/surveys/domain/entities/survey_entity.dart';
 import 'package:braves_cog/features/surveys/domain/entities/survey_question_entity.dart';
-import 'package:braves_cog/features/surveys/utils/gender_form_helper.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 import 'package:braves_cog/features/onboarding/widgets/medication_autocomplete.dart';
+import 'package:braves_cog/core/services/medication_api_service.dart';
 import 'package:braves_cog/features/health/widgets/specialization_autocomplete.dart';
 import 'package:braves_cog/features/surveys/widgets/question_widgets/time_picker_widget.dart';
 import 'package:braves_cog/features/surveys/widgets/question_widgets/slider_widget.dart';
@@ -23,7 +23,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class UniversalSurveyWidget extends ConsumerStatefulWidget {
   final SurveyEntity survey;
-  final Function(Map<String, dynamic>) onComplete;
+  final Function(Map<String, dynamic>, {bool isBackNavigation}) onComplete;
   final VoidCallback onBack;
   final bool showHeaderAndProgress;
   final int? globalStepOffset;
@@ -31,6 +31,7 @@ class UniversalSurveyWidget extends ConsumerStatefulWidget {
   final String? headerTitle;
   final bool startAtLastQuestion;
   final bool showFinishLabel;
+  final Map<String, dynamic>? initialAnswers;
 
   const UniversalSurveyWidget({
     super.key,
@@ -43,6 +44,7 @@ class UniversalSurveyWidget extends ConsumerStatefulWidget {
     this.headerTitle,
     this.startAtLastQuestion = false,
     this.showFinishLabel = false,
+    this.initialAnswers,
   });
 
   @override
@@ -52,14 +54,24 @@ class UniversalSurveyWidget extends ConsumerStatefulWidget {
 class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
   final Map<String, dynamic> _answers = {};
   final Map<String, List<int>> _hoursMinutesCache = {};
+  final Map<String, TextEditingController> _textControllers = {};
+  final Map<String, List<String>> _medicationStrengthsCache = {};
+  final MedicationApiService _medicationApiService = MedicationApiService();
   int _currentStep = 0;
   String? _lastSurveyId;
+  bool _showingAlert = false;
+  String? _alertTitle;
+  String? _alertMessage;
 
   @override
   void initState() {
     super.initState();
     _lastSurveyId = widget.survey.id;
+    if (widget.initialAnswers != null) {
+      _answers.addAll(widget.initialAnswers!);
+    }
     _initializeDefaultValues();
+
     if (widget.startAtLastQuestion) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
@@ -75,14 +87,68 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
   }
 
   @override
+  void dispose() {
+    for (final controller in _textControllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
   void didUpdateWidget(UniversalSurveyWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.survey.id != widget.survey.id) {
       _answers.clear();
-      _currentStep = 0;
+      if (widget.initialAnswers != null) {
+        _answers.addAll(widget.initialAnswers!);
+      }
       _lastSurveyId = widget.survey.id;
       _initializeDefaultValues();
+      
+      // Jeśli startAtLastQuestion jest ustawione, ustaw _currentStep na ostatnie pytanie
+      if (widget.startAtLastQuestion) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            final visibleQuestions = _visibleQuestions;
+            if (visibleQuestions.isNotEmpty) {
+              setState(() {
+                _currentStep = visibleQuestions.length - 1;
+              });
+            }
+          }
+        });
+      } else {
+        _currentStep = 0;
+      }
+    } else if (oldWidget.startAtLastQuestion != widget.startAtLastQuestion) {
+      // Jeśli tylko startAtLastQuestion się zmieniło, zaktualizuj _currentStep
+      if (widget.startAtLastQuestion) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            final visibleQuestions = _visibleQuestions;
+            if (visibleQuestions.isNotEmpty) {
+              setState(() {
+                _currentStep = visibleQuestions.length - 1;
+              });
+            }
+          }
+        });
+      } else {
+        setState(() {
+          _currentStep = 0;
+        });
+      }
     }
+  }
+
+  TextEditingController _getTextController(String key, String initialText) {
+    final existing = _textControllers[key];
+    if (existing != null) {
+      return existing;
+    }
+    final controller = TextEditingController(text: initialText);
+    _textControllers[key] = controller;
+    return controller;
   }
 
   void _initializeDefaultValues() {
@@ -153,6 +219,9 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
   }
 
   bool get _canProceed {
+    // Jeśli pokazujemy alert, zawsze pozwól przejść dalej
+    if (_showingAlert) return true;
+    
     if (_currentStep >= _visibleQuestions.length) return false;
     final question = _visibleQuestions[_currentStep];
     
@@ -238,30 +307,6 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
       return true;
     }
     
-    if (compositeType == 'hours_minutes') {
-      final showDontKnow = question.options?['showDontKnow'] == true;
-      final dontKnowKey = '${question.id}_dont_know';
-      
-      // If "Nie wiem" is selected, validation passes
-      if (showDontKnow) {
-        final dontKnowValue = _answers[dontKnowKey] as bool?;
-        if (dontKnowValue == true) {
-          return true;
-        }
-      }
-      
-      final hours = _answers['${question.id}_hours'];
-      final minutes = _answers['${question.id}_minutes'];
-      // Both hours and minutes should be set (can be 0, which is valid)
-      return hours != null && minutes != null;
-    }
-    
-    if (compositeType == 'single_hours' || compositeType == 'single_minutes') {
-      final value = _answers[question.id];
-      // Value should be set (can be 0, which is valid)
-      return value != null;
-    }
-    
     if (compositeType == 'somatic_disease') {
       final enabledKey = '${question.id}_enabled';
       final dontKnowKey = '${question.id}_dont_know';
@@ -299,7 +344,145 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
       return true;
     }
     
+    if (compositeType == 'hours_minutes') {
+      final showDontKnow = question.options?['showDontKnow'] == true;
+      final dontKnowKey = '${question.id}_dont_know';
+      
+      // If "Nie wiem" is selected, validation passes
+      if (showDontKnow) {
+        final dontKnowValue = _answers[dontKnowKey] as bool?;
+        if (dontKnowValue == true) {
+          return true;
+        }
+      }
+      
+      final hours = _answers['${question.id}_hours'];
+      final minutes = _answers['${question.id}_minutes'];
+      // Both hours and minutes should be set (can be 0, which is valid)
+      return hours != null && minutes != null;
+    }
+    
+    if (compositeType == 'single_hours' || compositeType == 'single_minutes') {
+      final value = _answers[question.id];
+      // Value should be set (can be 0, which is valid)
+      return value != null;
+    }
+    
     return true;
+  }
+
+  int _getIntAnswer(String key) {
+    final value = _answers[key];
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) {
+      final parsed = int.tryParse(value);
+      if (parsed != null) return parsed;
+    }
+    return 0;
+  }
+
+  int _getTableInt(String questionId, String rowKey) {
+    return _getIntAnswer('${questionId}_$rowKey');
+  }
+
+  void _prepareAlertForCurrentSurvey() {
+    _showingAlert = false;
+    _alertTitle = null;
+    _alertMessage = null;
+
+    final surveyId = widget.survey.id;
+
+    // PHQ-2
+    if (surveyId == 'PHQ_2') {
+      final q1 = _getIntAnswer('phq2_1');
+      final q2 = _getIntAnswer('phq2_2');
+      final score = q1 + q2;
+      
+      _showingAlert = true;
+      if (score < 3) {
+        _alertTitle = 'Alert informacyjny';
+        _alertMessage = 'Twój wynik wykonanego testu nie wskazuje obecnie na podwyższone objawy obniżonego nastroju. Ten wynik pochodzi z kwestionariusza przesiewowego i nie stanowi diagnozy.';
+      } else {
+        _alertTitle = 'Alert ostrzegawczy';
+        _alertMessage = 'Twój wynik wykonanego testu sugeruje podwyższone objawy obniżonego nastroju w ostatnich dwóch tygodniach. Nie jest to diagnoza, ale sygnał, że warto rozważyć dalszą ocenę lub rozmowę ze specjalistą. Jeśli potrzebujesz wsparcia już teraz, przejdź do zakładki „Uzyskaj pomoc".';
+      }
+    }
+    
+    // GAD-2
+    if (surveyId == 'GAD_2') {
+      final q1 = _getIntAnswer('gad2_1');
+      final q2 = _getIntAnswer('gad2_2');
+      final score = q1 + q2;
+      
+      _showingAlert = true;
+      if (score < 3) {
+        _alertTitle = 'Alert informacyjny';
+        _alertMessage = 'Twój wynik wykonanego testu nie wskazuje obecnie na podwyższony poziom objawów lękowych. Ten wynik nie stanowi diagnozy.';
+      } else {
+        _alertTitle = 'Alert ostrzegawczy';
+        _alertMessage = 'Twój wynik wykonanego testu sugeruje podwyższony poziom objawów lękowych w ostatnich dwóch tygodniach. Nie jest to diagnoza, ale sygnał, że warto rozważyć dalszą ocenę lub kontakt ze specjalistą. W zakładce „Uzyskaj pomoc" znajdziesz dostępne formy wsparcia.';
+      }
+    }
+    
+    // PHQ-9
+    if (surveyId == 'Baseline_Depression' || surveyId.contains('PHQ_9') || surveyId.contains('phq9')) {
+      int score = 0;
+      for (int i = 1; i <= 9; i++) {
+        score += _getIntAnswer('phq9_$i');
+      }
+      
+      // Sprawdź pytanie 9 (myśli samobójcze) - priorytet najwyższy
+      final q9Value = _getIntAnswer('phq9_9');
+      if (q9Value >= 1) {
+        _showingAlert = true;
+        _alertTitle = 'Alert krytyczny';
+        _alertMessage = 'Jedna z twoich odpowiedzi wykonanego testu sugeruje obecność myśli o zrobieniu sobie krzywdy lub odebraniu sobie życia. Ten wynik nie jest diagnozą, ale sygnałem wymagającym natychmiastowego działania. Jeśli czujesz, że możesz być w niebezpieczeństwie, zadzwoń 112 lub 999. Szczegółowe numery wsparcia znajdziesz w zakładce „Uzyskaj pomoc".';
+      } else if (score >= 20) {
+        _showingAlert = true;
+        _alertTitle = 'Alert krytyczny';
+        _alertMessage = 'Twój wynik wykonanego testu wskazuje na bardzo nasilone objawy depresyjne. Nie jest to diagnoza, jednak zalecany jest pilny kontakt ze specjalistą. W sytuacji nagłej skorzystaj z numerów dostępnych w zakładce „Uzyskaj pomoc" lub zadzwoń 112 / 999.';
+      } else if (score >= 15) {
+        _showingAlert = true;
+        _alertTitle = 'Alert wysoki';
+        _alertMessage = 'Twój wynik wykonanego testu wskazuje na nasilone objawy depresyjne. Nie jest to diagnoza, ale zalecany jest kontakt ze specjalistą zdrowia psychicznego. Skorzystaj z informacji dostępnych w zakładce „Uzyskaj pomoc".';
+      } else if (score >= 10) {
+        _showingAlert = true;
+        _alertTitle = 'Alert podwyższony';
+        _alertMessage = 'Twój wynik wykonanego testu wskazuje na umiarkowane objawy depresyjne. Nie jest to diagnoza, jednak zalecany jest kontakt ze specjalistą. W zakładce „Uzyskaj pomoc" znajdziesz numery i kontakty do wsparcia.';
+      } else if (score >= 5) {
+        _showingAlert = true;
+        _alertTitle = 'Alert ostrzegawczy';
+        _alertMessage = 'Twój wynik wykonanego testu sugeruje łagodne objawy depresyjne. Nie jest to diagnoza. Jeśli objawy utrzymują się lub wpływają na codzienne funkcjonowanie, warto je monitorować lub skonsultować ze specjalistą. W razie potrzeby zajrzyj do zakładki „Uzyskaj pomoc".';
+      } else {
+        _showingAlert = true;
+        _alertTitle = 'Alert informacyjny';
+        _alertMessage = 'Twój wynik wykonanego testu wskazuje na brak lub minimalne objawy depresyjne. Ten wynik pochodzi z narzędzia przesiewowego i nie stanowi diagnozy.';
+      }
+    }
+    
+    // GAD-7
+    if (surveyId == 'Baseline_Stress_And_Anxiety_GAD7' || surveyId.contains('GAD_7') || surveyId.contains('gad7')) {
+      int score = 0;
+      for (int i = 1; i <= 7; i++) {
+        score += _getIntAnswer('gad7_$i');
+      }
+      
+      _showingAlert = true;
+      if (score >= 15) {
+        _alertTitle = 'Alert wysoki';
+        _alertMessage = 'Twój wynik wykonanego testu wskazuje na wysoki poziom objawów lękowych. Nie jest to diagnoza, ale zalecany jest kontakt z psychologiem lub psychiatrą. Skorzystaj z informacji dostępnych w zakładce „Uzyskaj pomoc".';
+      } else if (score >= 10) {
+        _alertTitle = 'Alert podwyższony';
+        _alertMessage = 'Twój wynik wykonanego testu wskazuje na umiarkowany poziom objawów lękowych. Nie jest to diagnoza, jednak zaleca się kontakt ze specjalistą. Pomocne kontakty znajdziesz w zakładce „Uzyskaj pomoc".';
+      } else if (score >= 5) {
+        _alertTitle = 'Alert ostrzegawczy';
+        _alertMessage = 'Twój wynik wykonanego testu sugeruje łagodny poziom objawów lękowych. Nie jest to diagnoza. Warto obserwować objawy i rozważyć strategie radzenia sobie ze stresem. Jeśli potrzebujesz wsparcia, zajrzyj do zakładki „Uzyskaj pomoc".';
+      } else {
+        _alertTitle = 'Alert informacyjny';
+        _alertMessage = 'Twój wynik wykonanego testu nie wskazuje na istotne objawy lękowe. Ten wynik nie stanowi diagnozy.';
+      }
+    }
   }
 
   void _handleNext() {
@@ -320,12 +503,31 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
       return;
     }
 
+    // Jeśli pokazujemy alert, przejdź dalej (zamknij alert i zakończ ankietę)
+    if (_showingAlert) {
+      setState(() {
+        _showingAlert = false;
+        _alertTitle = null;
+        _alertMessage = null;
+      });
+      widget.onComplete(_answers, isBackNavigation: false);
+      return;
+    }
+
     if (_currentStep < _visibleQuestions.length - 1) {
       setState(() {
         _currentStep++;
       });
     } else {
-      widget.onComplete(_answers);
+      // Sprawdź czy trzeba pokazać alert przed zakończeniem
+      _prepareAlertForCurrentSurvey();
+      if (_showingAlert) {
+        setState(() {
+          // Alert będzie wyświetlony w build
+        });
+      } else {
+        widget.onComplete(_answers, isBackNavigation: false);
+      }
     }
   }
 
@@ -335,6 +537,8 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
         _currentStep--;
       });
     } else {
+      // Zapisz odpowiedzi przed powrotem do poprzedniej ankiety
+      widget.onComplete(_answers, isBackNavigation: true);
       widget.onBack();
     }
   }
@@ -488,7 +692,7 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
-              child: _buildQuestion(currentQuestion),
+              child: _showingAlert ? _buildAlertContent() : _buildQuestion(currentQuestion),
             ),
           ),
           Padding(
@@ -509,7 +713,11 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    (_currentStep == totalSteps - 1 && widget.showFinishLabel) ? 'Zakończ' : 'Kontynuuj',
+                    _showingAlert 
+                        ? 'Kontynuuj' 
+                        : (widget.showFinishLabel && _currentStep == totalSteps - 1 
+                            ? 'Zakończ' 
+                            : 'Kontynuuj'),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: AppTheme.inverseTextColor,
@@ -524,6 +732,40 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAlertContent() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          if (_alertTitle != null) ...[
+            Text(
+              _alertTitle!,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+                color: Theme.of(context).colorScheme.primary,
+                fontSize: 24,
+              ),
+            ),
+            const SizedBox(height: 24),
+          ],
+          if (_alertMessage != null) ...[
+            Text(
+              _alertMessage!,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+                fontSize: 18,
+                height: 1.5,
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -651,9 +893,8 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
 
   Widget _buildTextQuestion(SurveyQuestionEntity question) {
     final isMultiline = question.options?['multiline'] == true;
-    final controller = TextEditingController(
-      text: _answers[question.id]?.toString() ?? '',
-    );
+    final text = _answers[question.id]?.toString() ?? '';
+    final controller = _getTextController(question.id, text);
 
     return TextField(
       controller: controller,
@@ -675,21 +916,21 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.zero,
           borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.secondary,
+            color: Theme.of(context).colorScheme.primary,
             width: 2,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.zero,
           borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.secondary,
+            color: Theme.of(context).colorScheme.primary,
             width: 2,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.zero,
           borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.secondary,
+            color: Theme.of(context).colorScheme.primary,
             width: 2,
           ),
         ),
@@ -710,11 +951,20 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
       
       final maxHours = question.options?['maxHours'] as int? ?? 23;
       final maxMinutes = question.options?['maxMinutes'] as int? ?? 59;
+      final minMinutesIfZeroHours =
+          question.options?['minMinutesIfZeroHours'] as int? ?? 0;
       
-      // Get hours and minutes from answers, default to 0 if not set
+      // Get hours and minutes from answers, with fallback to cache.
       final cached = _hoursMinutesCache[question.id];
-      final hoursValue = _answers['${question.id}_hours'] as int? ?? cached?[0] ?? 0;
-      final minutesValue = _answers['${question.id}_minutes'] as int? ?? cached?[1] ?? 0;
+      int hoursValue =
+          _answers['${question.id}_hours'] as int? ?? cached?[0] ?? 0;
+      int minutesValue =
+          _answers['${question.id}_minutes'] as int? ?? cached?[1] ?? 0;
+
+      // Jeśli 0 godzin – minimalnie minMinutesIfZeroHours minut (np. 10 dla aktywności fizycznej).
+      if (hoursValue == 0 && minutesValue < minMinutesIfZeroHours) {
+        minutesValue = minMinutesIfZeroHours;
+      }
       
       // Initialize if not set
       // Nie inicjalizujemy wartości w _answers jeśli użytkownik zaznaczył "Nie wiem"
@@ -724,7 +974,8 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
           _answers['${question.id}_hours'] = 0;
         }
         if (!_answers.containsKey('${question.id}_minutes')) {
-          _answers['${question.id}_minutes'] = 0;
+          _answers['${question.id}_minutes'] =
+              hoursValue == 0 ? minMinutesIfZeroHours : 0;
         }
       }
       
@@ -737,6 +988,7 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
               minutes: minutesValue,
               maxHours: maxHours,
               maxMinutes: maxMinutes,
+              minMinutesIfZeroHours: minMinutesIfZeroHours,
               onChanged: (hours, minutes) {
                 setState(() {
                   final h = hours ?? 0;
@@ -896,21 +1148,21 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.zero,
               borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.secondary,
+                color: Theme.of(context).colorScheme.primary,
                 width: 2,
               ),
             ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.zero,
           borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.secondary,
+            color: Theme.of(context).colorScheme.primary,
             width: 2,
           ),
         ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.zero,
               borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.secondary,
+                color: Theme.of(context).colorScheme.primary,
                 width: 2,
               ),
             ),
@@ -935,7 +1187,7 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
         final selectedBackground = Color.lerp(
           progressColor,
           Colors.white,
-          0.7,
+          0.5,
         )!;
 
         return Padding(
@@ -1210,6 +1462,11 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
 
   Widget _buildBooleanQuestion(SurveyQuestionEntity question) {
     final selectedValue = _answers[question.id] as bool?;
+    final primary = Theme.of(context).colorScheme.primary;
+    final secondary = Theme.of(context).colorScheme.secondary;
+    // Kolor z paska postępu zmieszany w 50% z białym
+    final selectedBackground = Color.lerp(secondary, Colors.white, 0.5) ??
+        Theme.of(context).scaffoldBackgroundColor;
 
     return Row(
       children: [
@@ -1224,10 +1481,10 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: selectedValue == true
-                    ? Theme.of(context).colorScheme.secondary
+                    ? selectedBackground
                     : Theme.of(context).scaffoldBackgroundColor,
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.secondary,
+                  color: primary,
                   width: 2,
                 ),
                 borderRadius: BorderRadius.zero,
@@ -1237,7 +1494,7 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: primary,
                 ),
               ),
             ),
@@ -1255,10 +1512,10 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: selectedValue == false
-                    ? Theme.of(context).colorScheme.secondary
+                    ? selectedBackground
                     : Theme.of(context).scaffoldBackgroundColor,
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.secondary,
+                  color: primary,
                   width: 2,
                 ),
                 borderRadius: BorderRadius.zero,
@@ -1268,7 +1525,7 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: primary,
                 ),
               ),
             ),
@@ -1313,14 +1570,19 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
     final substanceLabel = question.options?['substanceLabel'] as String? ?? question.question;
     final substanceDescription = question.options?['substanceDescription'] as String?;
 
+    final primary = Theme.of(context).colorScheme.primary;
+    final secondary = Theme.of(context).colorScheme.secondary;
+    final selectedBg = Color.lerp(secondary, Colors.white, 0.5) ??
+        Theme.of(context).scaffoldBackgroundColor;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.zero,
         border: Border.all(
-          color: Theme.of(context).colorScheme.secondary,
+          color: primary,
           width: 2,
         ),
       ),
@@ -1358,7 +1620,7 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
                   Text(
                     'Nie    Tak',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
+                          color: primary,
                         ),
                   ),
                   Switch(
@@ -1378,10 +1640,13 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
                       });
                     },
                     thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {
-                      if (states.contains(WidgetState.selected)) {
-                        return Theme.of(context).colorScheme.secondary;
-                      }
-                      return null;
+                      return primary;
+                    }),
+                    trackColor: WidgetStateProperty.resolveWith<Color?>((states) {
+                      return Theme.of(context).colorScheme.surfaceContainerHighest;
+                    }),
+                    trackOutlineColor: WidgetStateProperty.resolveWith<Color?>((states) {
+                      return primary;
                     }),
                   ),
                 ],
@@ -1393,7 +1658,7 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
             Text(
               'Jak często?',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                   ),
             ),
             const SizedBox(height: 12),
@@ -1416,19 +1681,19 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
                       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? Theme.of(context).colorScheme.secondary
+                            ? selectedBg
                             : Theme.of(context).scaffoldBackgroundColor,
                         borderRadius: BorderRadius.zero,
                         border: Border.all(
-                          color: Theme.of(context).colorScheme.secondary,
+                          color: primary,
                           width: 2,
                         ),
                       ),
                       child: Text(
                         label,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).colorScheme.primary,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: primary,
                             ),
                       ),
                     ),
@@ -1463,6 +1728,13 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
             label: 'Specjalizacja lekarza',
             hint: 'np. Kardiolog, Dermatolog',
           ),
+          const SizedBox(height: 24),
+          Text(
+            'Czy otrzymałeś nową diagnozę?',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
           const SizedBox(height: 16),
           Row(
             children: [
@@ -1477,16 +1749,17 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: newDiagnosis == true
-                          ? Theme.of(context).colorScheme.secondary
+                          ? (Color.lerp(Theme.of(context).colorScheme.secondary, Colors.white, 0.5) ??
+                              Theme.of(context).scaffoldBackgroundColor)
                           : Theme.of(context).scaffoldBackgroundColor,
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.secondary,
+                        color: Theme.of(context).colorScheme.primary,
                         width: 2,
                       ),
                       borderRadius: BorderRadius.zero,
                     ),
                     child: Text(
-                      'Czy otrzymałeś nową diagnozę?',
+                      'Tak',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
@@ -1509,10 +1782,11 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: newDiagnosis == false
-                          ? Theme.of(context).colorScheme.secondary
+                          ? (Color.lerp(Theme.of(context).colorScheme.secondary, Colors.white, 0.5) ??
+                              Theme.of(context).scaffoldBackgroundColor)
                           : Theme.of(context).scaffoldBackgroundColor,
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.secondary,
+                        color: Theme.of(context).colorScheme.primary,
                         width: 2,
                       ),
                       borderRadius: BorderRadius.zero,
@@ -1553,166 +1827,27 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.zero,
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    color: Theme.of(context).colorScheme.primary,
                     width: 2,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.zero,
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    color: Theme.of(context).colorScheme.primary,
                     width: 2,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.zero,
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.secondary,
+                    color: Theme.of(context).colorScheme.primary,
                     width: 2,
                   ),
                 ),
               ),
             ),
           ],
-        ],
-      ],
-    );
-  }
-
-  Widget _buildMedicationsCompositeQuestion(SurveyQuestionEntity question) {
-    final medsChanged = _answers[question.id] as bool?;
-    final medications = (_answers['${question.id}_medications'] as List<dynamic>?) ?? [];
-
-    return Column(
-      children: [
-        _buildBooleanQuestion(question),
-        if (medsChanged == true) ...[
-          const SizedBox(height: 24),
-          ...medications.asMap().entries.map((entry) {
-            final index = entry.key;
-            final med = entry.value as Map<String, dynamic>;
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: MedicationAutocomplete(
-                      key: ValueKey('med_${question.id}_$index'),
-                      initialValue: med['name'] as String?,
-                      onChanged: (value) {
-                        setState(() {
-                          final newMeds = List<Map<String, dynamic>>.from(medications);
-                          newMeds[index]['name'] = value;
-                          _answers['${question.id}_medications'] = newMeds;
-                        });
-                      },
-                      label: 'Lek ${index + 1}',
-                      hint: 'Wpisz nazwę leku',
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      controller: TextEditingController(text: med['dosage']?.toString() ?? ''),
-                      onChanged: (value) {
-                        setState(() {
-                          final newMeds = List<Map<String, dynamic>>.from(medications);
-                          newMeds[index]['dosage'] = value;
-                          _answers['${question.id}_medications'] = newMeds;
-                        });
-                      },
-                      decoration: InputDecoration(
-                        labelText: 'Dawkowanie',
-                        hintText: 'np. 2x dziennie',
-                        hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
-                        ),
-                        filled: true,
-                        fillColor: Theme.of(context).scaffoldBackgroundColor,
-                        contentPadding: const EdgeInsets.all(16),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.zero,
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                            width: 2,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.zero,
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                            width: 2,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.zero,
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.secondary,
-                            width: 2,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (medications.length > 1) ...[
-                    const SizedBox(width: 8),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          final newMeds = List<Map<String, dynamic>>.from(medications);
-                          newMeds.removeAt(index);
-                          _answers['${question.id}_medications'] = newMeds;
-                        });
-                      },
-                      icon: Icon(Icons.remove_circle, color: Colors.red[400]),
-                      style: IconButton.styleFrom(
-                        minimumSize: const Size(44, 44),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            );
-          }),
-          const SizedBox(height: 8),
-          ElevatedButton.icon(
-            onPressed: () {
-              setState(() {
-                final newMeds = List<Map<String, dynamic>>.from(medications);
-                newMeds.add({'name': '', 'dosage': ''});
-                _answers['${question.id}_medications'] = newMeds;
-              });
-            },
-            icon: const Icon(Icons.add),
-            label: Text(
-              medications.isEmpty ? 'Dodaj lek' : 'Dodaj kolejny lek',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              foregroundColor: Theme.of(context).colorScheme.primary,
-              minimumSize: const Size(double.infinity, 56),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero,
-              ),
-              elevation: 0,
-            ),
-          ),
-          if (medications.isEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 16),
-              child: Text(
-                'Kliknij przycisk aby dodać lek',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
-                ),
-              ),
-            ),
         ],
       ],
     );
@@ -2073,7 +2208,11 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
             Column(
               children: subtypes.map((subtype) {
                 final value = subtype['value'] as String;
-                final label = subtype['label'] as String;
+                // Zmień "Inne (jakie?)" na "Inne"
+                String label = subtype['label'] as String;
+                if (label.contains('Inne (jakie?)')) {
+                  label = 'Inne';
+                }
                 final allowFreeText = subtype['allowFreeText'] as bool;
                 final isSelected = selectedSubtypes.contains(value);
 
@@ -2177,6 +2316,529 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
           ],
         ],
       ),
+    );
+  }
+
+  Widget _buildMedicationsCompositeQuestion(SurveyQuestionEntity question) {
+    final medsChanged = _answers[question.id] as bool?;
+    final medications =
+        (_answers['${question.id}_medications'] as List<dynamic>?) ?? [];
+
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final secondary = theme.colorScheme.secondary;
+
+    return Column(
+      children: [
+        _buildBooleanQuestion(question),
+        if (medsChanged == true) ...[
+          const SizedBox(height: 24),
+          ...medications.asMap().entries.map((entry) {
+            final index = entry.key;
+            final med = entry.value as Map<String, dynamic>;
+            final name = (med['name'] as String?) ?? '';
+            final dose = med['dose'] as String? ?? med['dosage']?.toString();
+            final doseDontKnow = med['doseDontKnow'] as bool? ?? false;
+            final manual = med['manual'] as bool? ?? false;
+            final selectedStrength = med['selectedStrength'] as String?;
+
+            // Wczytaj z cache listę dawek dla danego leku (tylko w trybie automatycznym).
+            final strengths =
+                manual ? const <String>[] : _medicationStrengthsCache[name] ?? const <String>[];
+            final hasStrengths = strengths.isNotEmpty;
+
+            // Jeśli mamy nazwę leku, a nie ma jeszcze dawek w cache,
+            // dociągnij je asynchronicznie z serwisu na podstawie pliku JSON.
+            if (name.isNotEmpty && !manual &&
+                !_medicationStrengthsCache.containsKey(name)) {
+              _medicationApiService.getStrengthsFor(name).then((values) {
+                if (!mounted) return;
+                setState(() {
+                  _medicationStrengthsCache[name] = values;
+                });
+              });
+            }
+
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.zero,
+                  border: Border.all(
+                    color: primary,
+                    width: 2,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Tryb automatyczny – wybór z listy leków
+                    if (!manual) ...[
+                      MedicationAutocomplete(
+                        key: ValueKey('med_${question.id}_$index'),
+                        initialValue: name.isEmpty ? null : name,
+                        onChanged: (value) {
+                          setState(() {
+                            final newMeds =
+                                List<Map<String, dynamic>>.from(medications);
+                            newMeds[index]['name'] = value;
+                            // resetuj dawkę przy zmianie leku
+                            newMeds[index]['dose'] = null;
+                            newMeds[index]['dosage'] = null;
+                            newMeds[index]['doseDontKnow'] = false;
+                            newMeds[index]['selectedStrength'] = null;
+                            newMeds[index]['manual'] = false;
+                            _answers['${question.id}_medications'] = newMeds;
+                          });
+                          // Po wybraniu leku dociągnij listę dawek.
+                          _medicationApiService
+                              .getStrengthsFor(value)
+                              .then((values) {
+                            if (!mounted) return;
+                            setState(() {
+                              _medicationStrengthsCache[value] = values;
+                            });
+                          });
+                        },
+                        label: 'Lek ${index + 1}',
+                        hint: 'Wpisz nazwę leku',
+                      ),
+                      const SizedBox(height: 12),
+                    ] else ...[
+                      // Tryb ręczny – użytkownik sam wpisuje nazwę leku.
+                      Text(
+                        'Nazwa leku',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: _getTextController(
+                          'med_${question.id}_${index}_name_manual',
+                          name,
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            final newMeds =
+                                List<Map<String, dynamic>>.from(medications);
+                            newMeds[index]['name'] = value;
+                            _answers['${question.id}_medications'] = newMeds;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Wpisz nazwę leku',
+                          filled: true,
+                          fillColor: theme.scaffoldBackgroundColor,
+                          contentPadding: const EdgeInsets.all(16),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.zero,
+                            borderSide: BorderSide(
+                              color: primary,
+                              width: 2,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.zero,
+                            borderSide: BorderSide(
+                              color: primary,
+                              width: 2,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.zero,
+                            borderSide: BorderSide(
+                              color: primary,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+
+                    // Dawka leku
+                    Text(
+                      'Dawka',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+
+                    if (!manual && hasStrengths && !doseDontKnow) ...[
+                      Column(
+                        children: [
+                          ...strengths.map((s) {
+                            final isSelected = selectedStrength == s;
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    final newMeds =
+                                        List<Map<String, dynamic>>.from(
+                                            medications);
+                                    newMeds[index]['selectedStrength'] = s;
+                                    newMeds[index]['dose'] = s;
+                                    newMeds[index]['dosage'] = s;
+                                    _answers['${question.id}_medications'] =
+                                        newMeds;
+                                  });
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 12, horizontal: 16),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? (Color.lerp(
+                                              secondary,
+                                              Colors.white,
+                                              0.7,
+                                            ) ??
+                                            theme.scaffoldBackgroundColor)
+                                        : theme.scaffoldBackgroundColor,
+                                    borderRadius: BorderRadius.zero,
+                                    border: Border.all(
+                                      color: primary,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    s,
+                                    style:
+                                        theme.textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: primary,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }),
+                          // Opcja "Inna" -> wolny tekst.
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  final newMeds =
+                                      List<Map<String, dynamic>>.from(
+                                          medications);
+                                  newMeds[index]['selectedStrength'] =
+                                      '_other';
+                                  // Nie nadpisujemy od razu dawki – użytkownik wpisze niżej.
+                                  _answers['${question.id}_medications'] =
+                                      newMeds;
+                                });
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 16),
+                                decoration: BoxDecoration(
+                                  color: selectedStrength == '_other'
+                                      ? (Color.lerp(
+                                            secondary,
+                                            Colors.white,
+                                            0.7,
+                                          ) ??
+                                          theme.scaffoldBackgroundColor)
+                                      : theme.scaffoldBackgroundColor,
+                                  borderRadius: BorderRadius.zero,
+                                  border: Border.all(
+                                    color: primary,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: Text(
+                                  'Inna',
+                                  style:
+                                      theme.textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: primary,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          if (selectedStrength == '_other') ...[
+                            TextField(
+                              controller: _getTextController(
+                                'med_${question.id}_${index}_dose_other',
+                                dose ?? '',
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  final newMeds =
+                                      List<Map<String, dynamic>>.from(
+                                          medications);
+                                  newMeds[index]['dose'] = value;
+                                  newMeds[index]['dosage'] = value;
+                                  _answers['${question.id}_medications'] =
+                                      newMeds;
+                                });
+                              },
+                              decoration: InputDecoration(
+                                hintText: 'np. 10 mg, 2x dziennie',
+                                hintStyle:
+                                    theme.textTheme.bodyMedium?.copyWith(
+                                  color: primary.withValues(alpha: 0.5),
+                                ),
+                                filled: true,
+                                fillColor: theme.scaffoldBackgroundColor,
+                                contentPadding: const EdgeInsets.all(16),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.zero,
+                                  borderSide: BorderSide(
+                                    color: primary,
+                                    width: 2,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.zero,
+                                  borderSide: BorderSide(
+                                    color: primary,
+                                    width: 2,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.zero,
+                                  borderSide: BorderSide(
+                                    color: primary,
+                                    width: 2,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ] else ...[
+                      // Brak listy dawek albo tryb ręczny – zwykłe pole tekstowe.
+                      TextField(
+                        controller: _getTextController(
+                          'med_${question.id}_${index}_dose_manual',
+                          dose ?? '',
+                        ),
+                        enabled: !doseDontKnow,
+                        onChanged: (value) {
+                          setState(() {
+                            final newMeds =
+                                List<Map<String, dynamic>>.from(medications);
+                            newMeds[index]['dose'] = value;
+                            newMeds[index]['dosage'] = value;
+                            _answers['${question.id}_medications'] = newMeds;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'np. 10 mg, 2x dziennie',
+                          hintStyle:
+                              theme.textTheme.bodyMedium?.copyWith(
+                            color: primary.withValues(alpha: 0.5),
+                          ),
+                          filled: true,
+                          fillColor: theme.scaffoldBackgroundColor,
+                          contentPadding: const EdgeInsets.all(16),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.zero,
+                            borderSide: BorderSide(
+                              color: primary,
+                              width: 2,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.zero,
+                            borderSide: BorderSide(
+                              color: primary,
+                              width: 2,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.zero,
+                            borderSide: BorderSide(
+                              color: primary,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+
+                    if (!manual) ...[
+                      const SizedBox(height: 8),
+                      // "Nie wiem" dla dawki – tylko w trybie automatycznym.
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            final newMeds =
+                                List<Map<String, dynamic>>.from(medications);
+                            final newValue = !doseDontKnow;
+                            newMeds[index]['doseDontKnow'] = newValue;
+                            if (newValue) {
+                              newMeds[index]['dose'] = null;
+                              newMeds[index]['dosage'] = null;
+                            }
+                            _answers['${question.id}_medications'] = newMeds;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 16,
+                          ),
+                          decoration: BoxDecoration(
+                            color: doseDontKnow
+                                ? Color.lerp(secondary, Colors.white, 0.5) ??
+                                    theme.scaffoldBackgroundColor
+                                : theme.scaffoldBackgroundColor,
+                            borderRadius: BorderRadius.zero,
+                            border: Border.all(
+                              color: primary,
+                              width: 2,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                doseDontKnow
+                                    ? Icons.check_box
+                                    : Icons.check_box_outline_blank,
+                                color: primary,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Nie wiem',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+
+                    const SizedBox(height: 12),
+                    // Fallback: użytkownik nie znalazł leku na liście.
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          final newMeds =
+                              List<Map<String, dynamic>>.from(medications);
+                          final newManual = !manual;
+                          newMeds[index]['manual'] = newManual;
+                          if (newManual) {
+                            // Czyścimy dawkę i znacznik "Nie wiem".
+                            newMeds[index]['dose'] = null;
+                            newMeds[index]['dosage'] = null;
+                            newMeds[index]['doseDontKnow'] = false;
+                            newMeds[index]['selectedStrength'] = null;
+                          }
+                          _answers['${question.id}_medications'] = newMeds;
+                        });
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 16,
+                        ),
+                        decoration: BoxDecoration(
+                          color: theme.scaffoldBackgroundColor,
+                          borderRadius: BorderRadius.zero,
+                          border: Border.all(
+                            color: primary,
+                            width: 2,
+                          ),
+                        ),
+                        child: Text(
+                          'Nie znalazłem mojego leku wśród proponowanych',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: primary,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    if (medications.length > 1) ...[
+                      const SizedBox(height: 12),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              final newMeds =
+                                  List<Map<String, dynamic>>.from(medications);
+                              newMeds.removeAt(index);
+                              _answers['${question.id}_medications'] = newMeds;
+                            });
+                          },
+                          icon: Icon(Icons.remove_circle, color: Colors.red[400]),
+                          style: IconButton.styleFrom(
+                            minimumSize: const Size(44, 44),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            );
+          }),
+          const SizedBox(height: 8),
+          ElevatedButton.icon(
+            onPressed: () {
+              setState(() {
+                final newMeds = List<Map<String, dynamic>>.from(medications);
+                newMeds.add({
+                  'name': '',
+                  'dose': null,
+                  'dosage': null,
+                  'doseDontKnow': false,
+                });
+                _answers['${question.id}_medications'] = newMeds;
+              });
+            },
+            icon: const Icon(Icons.add),
+            label: Text(
+              medications.isEmpty ? 'Dodaj lek' : 'Dodaj kolejny lek',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppTheme.inverseTextColor,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryColor,
+              foregroundColor: AppTheme.inverseTextColor,
+              minimumSize: const Size(double.infinity, 56),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
+              ),
+              elevation: 0,
+            ),
+          ),
+          if (medications.isEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: Text(
+                'Kliknij przycisk aby dodać lek',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
+                ),
+              ),
+            ),
+        ],
+      ],
     );
   }
 

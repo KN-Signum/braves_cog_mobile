@@ -169,14 +169,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         style: Theme.of(context).textTheme.headlineMedium,
                       ),
                       SizedBox(height: AppTheme.spacingSm),
-                      Text(
-                        'Test: test@test.pl / password',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.secondary,
-                          fontSize: 12,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
                       SizedBox(height: AppTheme.spacingLg),
                       _buildTextField(
                         label: 'Kod autoryzacyjny',
@@ -295,14 +287,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: AppTheme.spacingSm),
-                      Text(
-                        'Test: test@test.pl / password',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.secondary,
-                          fontSize: 12,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
                       SizedBox(height: AppTheme.spacingLg),
                       _buildTextField(
                         label: 'Login',

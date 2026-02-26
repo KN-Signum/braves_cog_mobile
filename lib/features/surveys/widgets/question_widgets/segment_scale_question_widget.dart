@@ -17,10 +17,12 @@ class SegmentScaleQuestionWidget extends StatefulWidget {
   });
 
   @override
-  State<SegmentScaleQuestionWidget> createState() => _SegmentScaleQuestionWidgetState();
+  State<SegmentScaleQuestionWidget> createState() =>
+      _SegmentScaleQuestionWidgetState();
 }
 
-class _SegmentScaleQuestionWidgetState extends State<SegmentScaleQuestionWidget> {
+class _SegmentScaleQuestionWidgetState
+    extends State<SegmentScaleQuestionWidget> {
   List<Color> get _colors {
     final baseColors = [
       Colors.green.shade900,
@@ -66,12 +68,14 @@ class _SegmentScaleQuestionWidgetState extends State<SegmentScaleQuestionWidget>
                     child: Text(
                       '$segmentValue',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: isSelected ? Theme.of(context).colorScheme.onPrimary : Colors.white,
+                        color: isSelected
+                            ? Theme.of(context).colorScheme.onPrimary
+                            : Colors.white,
                         fontWeight: FontWeight.bold,
                         shadows: [
                           Shadow(
                             blurRadius: 2.0,
-                            color: Colors.black.withOpacity(0.5),
+                            color: Colors.black.withValues(alpha: 0.5),
                             offset: Offset(1.0, 1.0),
                           ),
                         ],
@@ -89,15 +93,15 @@ class _SegmentScaleQuestionWidgetState extends State<SegmentScaleQuestionWidget>
           children: [
             Text(
               widget.minLabel ?? '1',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: _colors.first,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: _colors.first),
             ),
             Text(
               widget.maxLabel ?? '10',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: _colors.last,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: _colors.last),
             ),
           ],
         ),
@@ -105,4 +109,3 @@ class _SegmentScaleQuestionWidgetState extends State<SegmentScaleQuestionWidget>
     );
   }
 }
-

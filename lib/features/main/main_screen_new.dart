@@ -11,7 +11,7 @@ import '../home/home_screen.dart';
 import '../health/health_module_screen.dart';
 import '../surveys/widgets/universal_survey_widget.dart';
 import '../surveys/widgets/screening_flow_widget.dart';
-import '../surveys/data/survey_configs/monitoring_survey_config.dart';
+import '../surveys/config/survey_configs/monitoring_survey_config.dart';
 import '../profile/user_profile_screen.dart';
 import '../cognitive_games/presentation/games_screen.dart';
 import '../settings/settings_screen.dart';
@@ -199,14 +199,19 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
     switch (_currentView) {
       case 'home':
         return HomeScreen(
+          key: const ValueKey('home'),
           onMonitoringClick: _navigateToMonitoring,
           onScreeningClick: _navigateToScreening,
           onTestsClick: _navigateToTests,
         );
       case 'health':
-        return HealthModuleScreen(onBack: _navigateToHome);
+        return HealthModuleScreen(
+          key: const ValueKey('health'),
+          onBack: _navigateToHome,
+        );
       case 'monitoring':
         return UniversalSurveyWidget(
+          key: const ValueKey('monitoring'),
           survey: MonitoringSurveyConfig.getSurvey(),
           onComplete: (answers, {isBackNavigation = false}) {
             // TODO: Save answers
@@ -220,6 +225,7 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
         );
       case 'screening':
         return ScreeningFlowWidget(
+          key: const ValueKey('screening'),
           onComplete: (Map<String, dynamic> allAnswers) {
             // TODO: Save all answers from all screening surveys
             _navigateToHome();
@@ -227,11 +233,18 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
           onBack: _navigateToHome,
         );
       case 'games':
-        return GamesScreen(onBack: _navigateToHome);
+        return GamesScreen(
+          key: const ValueKey('games'),
+          onBack: _navigateToHome,
+        );
       case 'profile':
-        return UserProfileScreen(onBack: _navigateToHome);
+        return UserProfileScreen(
+          key: const ValueKey('profile'),
+          onBack: _navigateToHome,
+        );
       case 'settings':
         return SettingsScreen(
+          key: const ValueKey('settings'),
           onBack: _navigateToHome,
           onLogout: () {
             setState(() {
@@ -243,6 +256,7 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
       default:
         // Fallback to home
         return HomeScreen(
+          key: const ValueKey('default_home'),
           onMonitoringClick: _navigateToMonitoring,
           onScreeningClick: _navigateToScreening,
           onTestsClick: _navigateToTests,

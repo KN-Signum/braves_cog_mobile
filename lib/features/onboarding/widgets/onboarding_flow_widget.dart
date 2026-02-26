@@ -2,20 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:braves_cog/features/surveys/widgets/universal_survey_widget.dart';
 import 'package:braves_cog/features/surveys/domain/entities/survey_entity.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/demographic_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/ipaq_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/screening_sq_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/mini_eat_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/screening_su_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/brief_2way_sss_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/aq_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/gad_7_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/pss_10_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/phq_9_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/somatic_diseases_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/somatic_drugs_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/mental_disorders_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/medications_survey_config.dart';
+import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
+import 'package:braves_cog/features/surveys/config/survey_flow_rules.dart';
 
 class OnboardingFlowWidget extends ConsumerStatefulWidget {
   final VoidCallback onBack;
@@ -28,7 +16,8 @@ class OnboardingFlowWidget extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<OnboardingFlowWidget> createState() => _OnboardingFlowWidgetState();
+  ConsumerState<OnboardingFlowWidget> createState() =>
+      _OnboardingFlowWidgetState();
 }
 
 class _OnboardingFlowWidgetState extends ConsumerState<OnboardingFlowWidget> {
@@ -37,56 +26,27 @@ class _OnboardingFlowWidgetState extends ConsumerState<OnboardingFlowWidget> {
   final Map<String, dynamic> _allAnswers = {};
   bool _startAtEndForCurrentSurvey = false;
 
-  final List<Map<String, dynamic>> _modules = [
-    {
-      'id': 'Demographic',
-      'name': 'Dane demograficzne',
-      'surveys': [
-        {'id': 'Demographic', 'config': DemographicSurveyConfig.getSurvey()},
-      ],
-    },
-    {
-      'id': 'Baseline_Lifestyle',
-      'name': 'Styl życia',
-      'surveys': [
-        {'id': 'Baseline_Physical_Activity', 'config': IPAQSurveyConfig.getSurvey()},
-        {'id': 'Baseline_Sleep_Quality', 'config': ScreeningSQSurveyConfig.getSurvey()},
-        {'id': 'Baseline_Eating_Habits', 'config': MiniEatSurveyConfig.getSurvey()},
-        {'id': 'Baseline_Substance_Use', 'config': ScreeningSUSurveyConfig.getSurvey()},
-        {'id': 'Baseline_Social_Support', 'config': Brief2WaySSSSurveyConfig.getSurvey()},
-      ],
-    },
-    {
-      'id': 'Baseline_Symptoms',
-      'name': 'Profil psychologiczny',
-      'surveys': [
-        {'id': 'Baseline_ASD', 'config': AQSurveyConfig.getSurvey()},
-        {'id': 'Baseline_Stress_And_Anxiety_GAD7', 'config': GAD7SurveyConfig.getSurvey()},
-        {'id': 'Baseline_Stress_And_Anxiety_PSS10', 'config': PSS10SurveyConfig.getSurvey()},
-        {'id': 'Baseline_Depression', 'config': PHQ9SurveyConfig.getSurvey()},
-      ],
-    },
-    {
-      'id': 'Baseline_Medical_History',
-      'name': 'Informacje zdrowotne',
-      'surveys': [
-        {'id': 'Baseline_Somatic_Disease', 'config': SomaticDiseasesSurveyConfig.getSurvey()},
-        {'id': 'Baseline_Mental_Health_Disorders', 'config': MentalDisordersSurveyConfig.getSurvey()},
-        {'id': 'Baseline_Medications', 'config': MedicationsSurveyConfig.getSurvey()},
-      ],
-    },
-  ];
+  late List<Map<String, dynamic>> _modules;
 
-  void _handleSurveyComplete(Map<String, dynamic> answers, {bool isBackNavigation = false}) {
+  @override
+  void initState() {
+    super.initState();
+    final profile = ref.read(profileProvider).profile;
+    _modules = SurveyFlowRules.getOnboardingModules(profile.type);
+  }
+
+  void _handleSurveyComplete(
+    Map<String, dynamic> answers, {
+    bool isBackNavigation = false,
+  }) {
     final currentModule = _modules[_currentModuleIndex];
     final currentSurvey = currentModule['surveys'][_currentSurveyIndex];
     final surveyId = currentSurvey['id'];
-    
+
     if (!_allAnswers.containsKey(currentModule['id'])) {
       _allAnswers[currentModule['id']] = <String, dynamic>{};
     }
-    final moduleMap =
-        _allAnswers[currentModule['id']] as Map<String, dynamic>;
+    final moduleMap = _allAnswers[currentModule['id']] as Map<String, dynamic>;
     moduleMap[surveyId as String] = answers;
 
     // Jeśli to nawigacja wstecz, tylko zapisz odpowiedzi, nie przechodź dalej
@@ -156,9 +116,7 @@ class _OnboardingFlowWidgetState extends ConsumerState<OnboardingFlowWidget> {
 
     if (survey.questions.isEmpty) {
       return Scaffold(
-        body: Center(
-          child: Text('Brak pytań w ankiecie: ${survey.id}'),
-        ),
+        body: Center(child: Text('Brak pytań w ankiecie: ${survey.id}')),
       );
     }
 
@@ -193,13 +151,3 @@ class _OnboardingFlowWidgetState extends ConsumerState<OnboardingFlowWidget> {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-

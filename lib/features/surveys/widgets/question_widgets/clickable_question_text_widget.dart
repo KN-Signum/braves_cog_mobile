@@ -14,13 +14,13 @@ class ClickableQuestionTextWidget extends StatefulWidget {
   });
 
   @override
-  State<ClickableQuestionTextWidget> createState() => _ClickableQuestionTextWidgetState();
+  State<ClickableQuestionTextWidget> createState() =>
+      _ClickableQuestionTextWidgetState();
 }
 
-class _ClickableQuestionTextWidgetState extends State<ClickableQuestionTextWidget> {
-  String? _selectedKeyword;
+class _ClickableQuestionTextWidgetState
+    extends State<ClickableQuestionTextWidget> {
   OverlayEntry? _overlayEntry;
-  final GlobalKey _tooltipKey = GlobalKey();
   TapGestureRecognizer? _keywordTapRecognizer;
 
   @override
@@ -33,7 +33,6 @@ class _ClickableQuestionTextWidgetState extends State<ClickableQuestionTextWidge
   void _removeOverlay() {
     _overlayEntry?.remove();
     _overlayEntry = null;
-    _selectedKeyword = null;
   }
 
   // Extract keyword from question text (everything after "Jak często jesz/-asz" or "Jak często spożywasz/-asz")
@@ -59,10 +58,6 @@ class _ClickableQuestionTextWidgetState extends State<ClickableQuestionTextWidge
 
     _removeOverlay();
 
-    setState(() {
-      _selectedKeyword = keyword;
-    });
-
     final overlay = Overlay.of(context);
     final primary = Theme.of(context).colorScheme.primary;
     final tooltipBg = Theme.of(context).colorScheme.surfaceContainerHighest;
@@ -86,7 +81,10 @@ class _ClickableQuestionTextWidgetState extends State<ClickableQuestionTextWidge
           ),
           // Tooltip positioned below keyword, centered
           Positioned(
-            left: tooltipX.clamp(tooltipPadding, screenSize.width - tooltipMaxWidth - tooltipPadding),
+            left: tooltipX.clamp(
+              tooltipPadding,
+              screenSize.width - tooltipMaxWidth - tooltipPadding,
+            ),
             top: tooltipY,
             child: Material(
               color: Colors.transparent,
@@ -95,19 +93,16 @@ class _ClickableQuestionTextWidgetState extends State<ClickableQuestionTextWidge
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: tooltipBg,
-                  border: Border.all(
-                    color: primary,
-                    width: 2,
-                  ),
+                  border: Border.all(color: primary, width: 2),
                   borderRadius: BorderRadius.zero,
                 ),
                 child: Text(
                   widget.tooltipText!,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: primary,
-                        fontWeight: FontWeight.w400,
-                        height: 1.5,
-                      ),
+                    color: primary,
+                    fontWeight: FontWeight.w400,
+                    height: 1.5,
+                  ),
                 ),
               ),
             ),
@@ -124,7 +119,9 @@ class _ClickableQuestionTextWidgetState extends State<ClickableQuestionTextWidge
     final keyword = _extractKeyword(widget.questionText);
     final primary = Theme.of(context).colorScheme.primary;
 
-    if (keyword == null || widget.tooltipText == null || widget.tooltipText!.isEmpty) {
+    if (keyword == null ||
+        widget.tooltipText == null ||
+        widget.tooltipText!.isEmpty) {
       // No keyword found or no tooltip text, just show regular text
       return Text(
         widget.questionText,
@@ -144,7 +141,9 @@ class _ClickableQuestionTextWidgetState extends State<ClickableQuestionTextWidge
     }
 
     final beforeKeyword = widget.questionText.substring(0, keywordIndex);
-    final afterKeyword = widget.questionText.substring(keywordIndex + keyword.length);
+    final afterKeyword = widget.questionText.substring(
+      keywordIndex + keyword.length,
+    );
 
     _keywordTapRecognizer?.dispose();
     _keywordTapRecognizer = TapGestureRecognizer()
@@ -155,7 +154,10 @@ class _ClickableQuestionTextWidgetState extends State<ClickableQuestionTextWidge
           // Calculate approximate position of keyword (centered in text)
           final screenSize = MediaQuery.of(context).size;
           final globalPosition = renderBox.localToGlobal(Offset.zero);
-          final tapPosition = Offset(screenSize.width / 2, globalPosition.dy + renderBox.size.height / 2);
+          final tapPosition = Offset(
+            screenSize.width / 2,
+            globalPosition.dy + renderBox.size.height / 2,
+          );
           _showTooltip(keyword, context, tapPosition);
         }
       };
@@ -182,4 +184,3 @@ class _ClickableQuestionTextWidgetState extends State<ClickableQuestionTextWidge
     );
   }
 }
-

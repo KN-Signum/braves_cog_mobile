@@ -156,9 +156,7 @@ class _ConsentsScreenState extends ConsumerState<ConsentsScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryColor,
                 minimumSize: const Size(double.infinity, 56),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.zero,
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -172,10 +170,7 @@ class _ConsentsScreenState extends ConsumerState<ConsentsScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Icon(
-                    Icons.chevron_right,
-                    color: AppTheme.inverseTextColor,
-                  ),
+                  Icon(Icons.chevron_right, color: AppTheme.inverseTextColor),
                 ],
               ),
             ),
@@ -258,7 +253,7 @@ class _ConsentsScreenState extends ConsumerState<ConsentsScreen> {
                 onChanged: onChanged,
                 thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {
                   if (states.contains(WidgetState.selected)) {
-                    return Theme.of(context).colorScheme.secondary;
+                    return Theme.of(context).colorScheme.surface;
                   }
                   return null;
                 }),

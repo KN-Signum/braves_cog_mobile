@@ -23,7 +23,9 @@ class OnboardingScreen extends ConsumerWidget {
     // Listen to changes to handle completion
     ref.listen(onboardingProvider, (previous, next) {
       if (next.stage == OnboardingStage.completed) {
-        onComplete();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          onComplete();
+        });
       }
       if (next.error != null && (previous?.error != next.error)) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -56,12 +58,16 @@ class OnboardingScreen extends ConsumerWidget {
             if (onBackToLogin != null) {
               onBackToLogin!();
             } else {
-              ref.read(onboardingProvider.notifier).setStage(OnboardingStage.intro);
+              ref
+                  .read(onboardingProvider.notifier)
+                  .setStage(OnboardingStage.intro);
             }
           },
           onComplete: (data) {
             ref.read(onboardingProvider.notifier).saveOnboardingData(data);
-            ref.read(onboardingProvider.notifier).setStage(OnboardingStage.consentsIntro);
+            ref
+                .read(onboardingProvider.notifier)
+                .setStage(OnboardingStage.consentsIntro);
           },
         );
 

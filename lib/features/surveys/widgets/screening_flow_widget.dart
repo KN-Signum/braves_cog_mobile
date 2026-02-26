@@ -2,14 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:braves_cog/features/surveys/widgets/universal_survey_widget.dart';
 import 'package:braves_cog/features/surveys/domain/entities/survey_entity.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/screening_pa_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/screening_sq_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/screening_cognitivecomplaints_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/screening_su_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/screening_diet_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/mini_eat_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/gad_2_survey_config.dart';
-import 'package:braves_cog/features/surveys/data/survey_configs/phq_2_survey_config.dart';
+import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
+import 'package:braves_cog/features/surveys/config/survey_flow_rules.dart';
+import 'package:braves_cog/features/surveys/config/survey_configs/mini_eat_survey_config.dart';
 
 class ScreeningFlowWidget extends ConsumerStatefulWidget {
   final VoidCallback onBack;
@@ -22,7 +17,8 @@ class ScreeningFlowWidget extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ScreeningFlowWidget> createState() => _ScreeningFlowWidgetState();
+  ConsumerState<ScreeningFlowWidget> createState() =>
+      _ScreeningFlowWidgetState();
 }
 
 class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
@@ -30,38 +26,19 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
   final Map<String, dynamic> _allAnswers = {};
   bool _startAtEndForCurrentSurvey = false;
 
-  final List<Map<String, dynamic>> _surveys = [
-    {
-      'id': 'screening_PA',
-      'config': ScreeningPASurveyConfig.getSurvey(),
-    },
-    {
-      'id': 'screening_SQ',
-      'config': ScreeningSQSurveyConfig.getSurvey(),
-    },
-    {
-      'id': 'BC-CCI-E',
-      'config': ScreeningCognitiveComplaintsSurveyConfig.getSurvey(),
-    },
-    {
-      'id': 'screening_SU',
-      'config': ScreeningSUSurveyConfig.getSurvey(),
-    },
-    {
-      'id': 'screening_diet',
-      'config': ScreeningDietSurveyConfig.getSurvey(),
-    },
-    {
-      'id': 'GAD_2',
-      'config': GAD2SurveyConfig.getSurvey(),
-    },
-    {
-      'id': 'PHQ_2',
-      'config': PHQ2SurveyConfig.getSurvey(),
-    },
-  ];
+  late List<Map<String, dynamic>> _surveys;
 
-  void _handleSurveyComplete(Map<String, dynamic> answers, {bool isBackNavigation = false}) {
+  @override
+  void initState() {
+    super.initState();
+    final profile = ref.read(profileProvider).profile;
+    _surveys = SurveyFlowRules.getScreeningSurveys(profile.type);
+  }
+
+  void _handleSurveyComplete(
+    Map<String, dynamic> answers, {
+    bool isBackNavigation = false,
+  }) {
     final currentSurveyId = _surveys[_currentSurveyIndex]['id'];
     _allAnswers[currentSurveyId] = answers;
 
@@ -115,9 +92,7 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
 
     if (currentSurvey.questions.isEmpty) {
       return Scaffold(
-        body: Center(
-          child: Text('Brak pytań w ankiecie: ${currentSurvey.id}'),
-        ),
+        body: Center(child: Text('Brak pytań w ankiecie: ${currentSurvey.id}')),
       );
     }
 
@@ -147,4 +122,3 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
     );
   }
 }
-

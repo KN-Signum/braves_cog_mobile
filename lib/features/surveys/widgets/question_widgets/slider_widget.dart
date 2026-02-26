@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
 
 class SliderQuestionWidget extends StatefulWidget {
   final double value;
@@ -54,18 +53,18 @@ class _SliderQuestionWidgetState extends State<SliderQuestionWidget> {
         if (widget.label != null) ...[
           Text(
             widget.label!,
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
         ],
         Center(
           child: Text(
             '${widget.value.toStringAsFixed(widget.step != null && widget.step! < 1 ? 2 : 0)}${widget.unit ?? ''}',
-            style: Theme.of(context).textTheme.displaySmall?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w800),
           ),
         ),
         const SizedBox(height: 16),
@@ -74,25 +73,28 @@ class _SliderQuestionWidgetState extends State<SliderQuestionWidget> {
             trackShape: widget.startColor != null && widget.endColor != null
                 ? GradientRectSliderTrackShape(
                     gradient: LinearGradient(
-                      colors: [
-                        widget.startColor!,
-                        widget.endColor!,
-                      ],
+                      colors: [widget.startColor!, widget.endColor!],
                     ),
                     darkenInactive: false,
                   )
                 : null,
-            activeTrackColor: widget.startColor ?? Theme.of(context).colorScheme.secondary,
-            inactiveTrackColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+            activeTrackColor:
+                widget.startColor ?? Theme.of(context).colorScheme.secondary,
+            inactiveTrackColor: Theme.of(
+              context,
+            ).colorScheme.surfaceContainerHighest,
             thumbColor: Theme.of(context).colorScheme.secondary,
-            overlayColor: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2),
+            overlayColor: Theme.of(
+              context,
+            ).colorScheme.secondary.withValues(alpha: 0.2),
           ),
           child: Slider(
             value: widget.value,
             min: widget.min,
             max: widget.max,
             divisions: divisions,
-            label: '${widget.value.toStringAsFixed(widget.step != null && widget.step! < 1 ? 2 : 0)}${widget.unit ?? ''}',
+            label:
+                '${widget.value.toStringAsFixed(widget.step != null && widget.step! < 1 ? 2 : 0)}${widget.unit ?? ''}',
             onChanged: (value) {
               setState(() {
                 widget.onChanged(value);
@@ -106,7 +108,8 @@ class _SliderQuestionWidgetState extends State<SliderQuestionWidget> {
             Text(
               widget.minLabel ?? '${widget.min}${widget.unit ?? ''}',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: widget.startColor ?? Theme.of(context).colorScheme.primary,
+                color:
+                    widget.startColor ?? Theme.of(context).colorScheme.primary,
               ),
             ),
             Text(
@@ -129,7 +132,8 @@ class _SliderQuestionWidgetState extends State<SliderQuestionWidget> {
     final int maxValue = widget.max.toInt();
     final int markerCount = maxValue - minValue + 1;
     final screenWidth = MediaQuery.of(context).size.width;
-    final trackWidth = screenWidth - 120; // marginesy, żeby skrajne pozycje nie były ucięte
+    final trackWidth =
+        screenWidth - 120; // marginesy, żeby skrajne pozycje nie były ucięte
     final markerIndex = currentValue - minValue;
     final thumbPosition = markerCount > 1
         ? (markerIndex / (markerCount - 1)) * trackWidth
@@ -200,18 +204,20 @@ class _SliderQuestionWidgetState extends State<SliderQuestionWidget> {
             height: 24,
             child: Stack(
               clipBehavior: Clip.none,
-            children: List.generate(markerCount, (index) {
-              final markerValue = minValue + index;
+              children: List.generate(markerCount, (index) {
+                final markerValue = minValue + index;
                 final valueThumbPosition = markerCount > 1
                     ? (index / (markerCount - 1)) * trackWidth
                     : trackWidth / 2;
 
                 final isSelected = markerValue == currentValue;
-                final baseStyle = Theme.of(context).textTheme.bodySmall ??
+                final baseStyle =
+                    Theme.of(context).textTheme.bodySmall ??
                     const TextStyle(fontSize: 12);
 
                 final labelText =
-                    widget.valueLabels?[markerValue.toString()] ?? '$markerValue';
+                    widget.valueLabels?[markerValue.toString()] ??
+                    '$markerValue';
 
                 final textStyle = baseStyle.copyWith(
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
@@ -221,10 +227,7 @@ class _SliderQuestionWidgetState extends State<SliderQuestionWidget> {
                 );
 
                 final textPainter = TextPainter(
-                  text: TextSpan(
-                    text: labelText,
-                    style: textStyle,
-                  ),
+                  text: TextSpan(text: labelText, style: textStyle),
                   maxLines: 1,
                   textDirection: TextDirection.ltr,
                 );
@@ -234,12 +237,9 @@ class _SliderQuestionWidgetState extends State<SliderQuestionWidget> {
                 return Positioned(
                   left: valueThumbPosition - textWidth / 2,
                   top: 0,
-                  child: Text(
-                    labelText,
-                    style: textStyle,
-                ),
-              );
-            }),
+                  child: Text(labelText, style: textStyle),
+                );
+              }),
             ),
           ),
         ),
@@ -294,21 +294,18 @@ class _SliderTrackPainter extends CustomPainter {
       canvas.drawRRect(activeRect, activeTrackPaint);
     }
 
-    final markerPaint = Paint()
-      ..style = PaintingStyle.fill;
+    final markerPaint = Paint()..style = PaintingStyle.fill;
 
     for (int i = 0; i < markerCount; i++) {
       final isActive = i < activeMarkerCount;
       markerPaint.color = isActive ? activeColor : inactiveColor;
 
-      final markerX = markerCount > 1 ? (i / (markerCount - 1)) * size.width : size.width / 2;
+      final markerX = markerCount > 1
+          ? (i / (markerCount - 1)) * size.width
+          : size.width / 2;
       final markerY = trackY;
 
-      canvas.drawCircle(
-        Offset(markerX, markerY),
-        markerSize / 2,
-        markerPaint,
-      );
+      canvas.drawCircle(Offset(markerX, markerY), markerSize / 2, markerPaint);
     }
   }
 
@@ -321,7 +318,8 @@ class _SliderTrackPainter extends CustomPainter {
   }
 }
 
-class GradientRectSliderTrackShape extends SliderTrackShape with BaseSliderTrackShape {
+class GradientRectSliderTrackShape extends SliderTrackShape
+    with BaseSliderTrackShape {
   final LinearGradient gradient;
   final bool darkenInactive;
 
@@ -373,10 +371,6 @@ class GradientRectSliderTrackShape extends SliderTrackShape with BaseSliderTrack
     final Paint activePaint = Paint()
       ..shader = gradient.createShader(trackRect)
       ..color = activeTrackColorTween.evaluate(enableAnimation)!;
-    final Paint inactivePaint = Paint()
-      ..color = inactiveTrackColorTween.evaluate(enableAnimation)!;
-    final Paint leftTrackPaint = Paint()
-      ..color = activeTrackColorTween.evaluate(enableAnimation)!;
     final Paint rightTrackPaint = Paint()
       ..color = inactiveTrackColorTween.evaluate(enableAnimation)!;
 
@@ -397,6 +391,3 @@ class GradientRectSliderTrackShape extends SliderTrackShape with BaseSliderTrack
     context.canvas.drawRect(rightTrackSegment, rightTrackPaint);
   }
 }
-
-
-

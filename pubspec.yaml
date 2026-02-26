@@ -40,6 +40,9 @@ dependencies:
   # URL Launcher
   url_launcher: ^6.2.0
   
+  # Path Provider - for accessing app documents directory
+  path_provider: ^2.1.0
+  
   # Google Fonts - Space Grotesk & Inter
   google_fonts: ^6.1.0
   flutter_dotenv: ^6.0.0

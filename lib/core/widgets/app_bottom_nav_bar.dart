@@ -14,15 +14,7 @@ class AppBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: ColorScheme.of(context).primary,
-        border: Border(
-          top: BorderSide(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            width: 1,
-          ),
-        ),
-      ),
+      decoration: BoxDecoration(color: ColorScheme.of(context).secondary),
       child: SafeArea(
         top: false,
         child: Padding(
@@ -59,20 +51,20 @@ class AppBottomNavigationBar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isActive
-              ? Theme.of(context).colorScheme.secondary
+              ? Theme.of(context).colorScheme.primary
               : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: isActive ? activeColor : inactiveColor, size: 24),
+            Icon(icon, color: inactiveColor, size: 24),
             const SizedBox(height: 4),
             Text(
               label,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                color: isActive ? activeColor : inactiveColor,
+                color: inactiveColor,
               ),
             ),
           ],

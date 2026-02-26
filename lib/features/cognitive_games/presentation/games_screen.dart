@@ -1,366 +1,287 @@
+import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
 import 'package:braves_cog/features/cognitive_games/data/mappers/rp_result_mapper.dart';
 import 'package:braves_cog/features/cognitive_games/domain/entities/cognitive_game_result.dart';
 import 'package:braves_cog/features/cognitive_games/presentation/providers/cognitive_game_provider.dart';
+import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:research_package/research_package.dart';
 import '../../../cognition_config.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class GamesScreen extends ConsumerWidget {
   final VoidCallback? onBack;
 
   const GamesScreen({super.key, this.onBack});
 
+  static const Map<String, CognitiveTestType> _stepMap = {
+    'stroop_ffect_step': CognitiveTestType.stroop,
+    'trail_making_step': CognitiveTestType.trailMaking,
+    'flanker_step': CognitiveTestType.flanker,
+    'RVIP_step': CognitiveTestType.rvip,
+    'tapping_step': CognitiveTestType.tapping,
+    'corsi_block_step': CognitiveTestType.corsiBlock,
+    'reaction_time_step': CognitiveTestType.reactionTime,
+  };
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final profileState = ref.watch(profileProvider);
+
+    debugPrint(
+      '👤 [GamesScreen] authUser: ${authState.user?.email} | authId: ${authState.user?.id}',
+    );
+    debugPrint(
+      '👤 [GamesScreen] profile.id: ${profileState.profile.id} | isLoading: ${profileState.isLoading}',
+    );
+
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondary.withAlpha(70),
+      backgroundColor: ColorScheme.of(context).surface,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: ColorScheme.of(context).secondary,
         foregroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.chevron_left),
-          onPressed: () {
-            if (onBack != null) {
-              onBack?.call();
-            } else {
-              Navigator.pop(context);
-            }
-          },
+          onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Gry Kognitywne',
-          style: TextStyle(color: Colors.white),
+          'Trening Poznawczy',
+          style: TextStyle(
+            fontFamily: 'SpaceGrotesk',
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         centerTitle: true,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
+      body: Column(
         children: [
-          // Header
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Icon(
-                    LucideIcons.brain,
-                    size: 60,
-                    color: Theme.of(context).colorScheme.primary,
+          Container(
+            width: double.infinity,
+            color: Colors.white,
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.psychology,
+                  size: 64,
+                  color: ColorScheme.of(context).secondary,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Twój Profil Poznawczy',
+                  style: TextStyle(
+                    fontFamily: 'SpaceGrotesk',
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: ColorScheme.of(context).primary,
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Gry Treningowe',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Rozpocznij nasz wspólny trening. Przejdziesz przez serię 7 krótkich ćwiczeń, które pomogą nam lepiej zrozumieć i wesprzeć Twoją koncentrację, pamięć oraz szybkość reakcji.',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 16,
+                    color: Colors.black87,
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildStatBox('Ostatni trening', 'Wczoraj'),
+                    Container(
+                      width: 1,
+                      height: 40,
+                      color: ColorScheme.of(context).secondary,
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Wybierz grę aby rozpocząć trening poznawczy',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
+                    _buildStatBox('Ukończone sesje', '12'),
+                  ],
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
 
-          // Stroop Test
-          _GameCard(
-            title: 'Test Stroopa',
-            description: 'Trening kontroli uwagi i hamowania impulsów',
-            icon: LucideIcons.palette,
-            color: ColorScheme.of(context).primary,
-            onTap: () => _launchStroopTest(context, ref),
+          const Spacer(),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.timer_outlined,
+                      size: 20,
+                      color: ColorScheme.of(context).secondary,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      'Szacowany czas: ~12 minut',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w600,
+                        color: ColorScheme.of(context).secondary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () => _launchFullSequence(context, ref),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorScheme.of(context).secondary,
+                    foregroundColor: ColorScheme.of(context).primary,
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'ROZPOCZNIJ SEKWENCJĘ',
+                    style: TextStyle(
+                      fontFamily: 'SpaceGrotesk',
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
-
-          // Trail Making Test
-          _GameCard(
-            title: 'Test Łączenia Punktów',
-            description: 'Szybkość przetwarzania i elastyczność poznawcza',
-            icon: LucideIcons.moveDiagonal2,
-            color: ColorScheme.of(context).primary,
-            onTap: () => _launchTrailMakingTest(context, ref),
-          ),
-
-          // Flanker Test
-          _GameCard(
-            title: 'Test Flankera',
-            description: 'Uwaga selektywna i kontrola poznawcza',
-            icon: LucideIcons.arrowRight,
-            color: ColorScheme.of(context).primary,
-            onTap: () => _launchFlankerTest(context, ref),
-          ),
-
-          // Rapid Visual Processing
-          _GameCard(
-            title: 'Szybkie Przetwarzanie Wzrokowe',
-            description: 'Uwaga wzrokowa i czujność',
-            icon: LucideIcons.eye,
-            color: ColorScheme.of(context).primary,
-            onTap: () => _launchRapidVisualTest(context, ref),
-          ),
-
-          // Tapping Test
-          _GameCard(
-            title: 'Test Stukania',
-            description: 'Koordynacja ruchowa i szybkość reakcji',
-            icon: LucideIcons.hand,
-            color: ColorScheme.of(context).primary,
-            onTap: () => _launchTappingTest(context, ref),
-          ),
-
-          // Corsi Block
-          _GameCard(
-            title: 'Test Bloków Corsi',
-            description: 'Pamięć robocza przestrzenna',
-            icon: LucideIcons.grid3x3,
-            color: ColorScheme.of(context).primary,
-            onTap: () => _launchCorsiBlockTest(context, ref),
-          ),
-
-          // Reaction Time
-          _GameCard(
-            title: 'Test Czasu Reakcji',
-            description: 'Szybkość reakcji na bodźce wzrokowe',
-            icon: LucideIcons.timer,
-            color: ColorScheme.of(context).primary,
-            onTap: () => _launchReactionTimeTest(context, ref),
-          ),
-
-          const SizedBox(height: 16),
         ],
       ),
     );
   }
 
-  void _launchStroopTest(BuildContext context, WidgetRef ref) {
-    _launchSingleTest(
-      context,
-      stroopEffect,
-      'Test Stroopa',
-      ref,
-      CognitiveTestType.stroop,
+  Widget _buildStatBox(String label, String value) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: const TextStyle(
+            fontFamily: 'SpaceGrotesk',
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF0F2847),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 12,
+            color: Colors.black54,
+          ),
+        ),
+      ],
     );
   }
 
-  void _launchTrailMakingTest(BuildContext context, WidgetRef ref) {
-    _launchSingleTest(
-      context,
-      trailMaking,
-      'Test Łączenia Punktów',
-      ref,
-      CognitiveTestType.trailMaking,
-    );
-  }
+  void _launchFullSequence(BuildContext context, WidgetRef ref) {
+    final List<RPStep> steps = [];
 
-  void _launchFlankerTest(BuildContext context, WidgetRef ref) {
-    _launchSingleTest(
-      context,
-      flanker,
-      'Test Flankera',
-      ref,
-      CognitiveTestType.flanker,
-    );
-  }
+    _stepMap.forEach((stepId, testType) {
+      steps.add(_getStepById(stepId));
+    });
 
-  void _launchRapidVisualTest(BuildContext context, WidgetRef ref) {
-    _launchSingleTest(
-      context,
-      rapidVisualInfoProcessing,
-      'Szybkie Przetwarzanie Wzrokowe',
-      ref,
-      CognitiveTestType.rvip,
-    );
-  }
-
-  void _launchTappingTest(BuildContext context, WidgetRef ref) {
-    _launchSingleTest(
-      context,
-      tapping,
-      'Test Stukania',
-      ref,
-      CognitiveTestType.tapping,
-    );
-  }
-
-  void _launchCorsiBlockTest(BuildContext context, WidgetRef ref) {
-    _launchSingleTest(
-      context,
-      corsiBlockTapping,
-      'Test Bloków Corsi',
-      ref,
-      CognitiveTestType.corsiBlock,
-    );
-  }
-
-  void _launchReactionTimeTest(BuildContext context, WidgetRef ref) {
-    _launchSingleTest(
-      context,
-      reactionTime,
-      'Test Czasu Reakcji',
-      ref,
-      CognitiveTestType.reactionTime,
-    );
-  }
-
-  void _launchSingleTest(
-    BuildContext context,
-    RPActivityStep activityStep,
-    String title,
-    WidgetRef ref,
-    CognitiveTestType testType,
-  ) {
-    // Create a task with instruction, activity, and completion steps
-    final instructionStep = RPInstructionStep(
-      identifier: 'instruction_${activityStep.identifier}',
-      title: title,
-      text: _getInstructionText(activityStep.identifier),
-    );
-
-    final completionStep = RPCompletionStep(
-      identifier: 'completion_${activityStep.identifier}',
-      title: 'Ukończono!',
-      text: 'Świetna robota! Test został ukończony.',
+    steps.add(
+      RPCompletionStep(
+        identifier: 'sequence_completion',
+        title: 'Świetna robota!',
+        text: 'Dziękujemy za Twój wkład w badania. Trening został ukończony.',
+      ),
     );
 
     final task = RPOrderedTask(
-      identifier: 'task_${activityStep.identifier}',
-      steps: [instructionStep, activityStep, completionStep],
+      identifier: 'full_cognitive_sequence',
+      steps: steps,
     );
 
-    // Navigate to a dedicated task screen
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => _CognitiveTaskScreen(
           task: task,
-          onComplete: (result) => _processAndSaveResults(
-            context,
-            ref,
-            result,
-            testType,
-            activityStep.identifier,
-          ),
+          onComplete: (result) => _processSequenceResults(ref, result),
         ),
       ),
     );
   }
 
-  String _getInstructionText(String identifier) {
-    switch (identifier) {
-      case 'stroop_effect_step':
-        return 'Zobaczysz słowa kolorów napisane różnymi kolorami. '
-            'Twoim zadaniem jest wybrać KOLOR tekstu, a nie czytać słowo. '
-            'Odpowiadaj jak najszybciej i najdokładniej.';
-      case 'trail_making_step':
-        return 'Połącz liczby i litery w odpowiedniej kolejności. '
-            'Przełączaj się między liczbami i literami (1-A-2-B-3-C...). '
-            'Wykonaj zadanie jak najszybciej bez błędów.';
-      case 'flanker_step':
-        return 'Zobaczysz strzałki na ekranie. Wskaż kierunek środkowej strzałki, '
-            'ignorując strzałki po bokach. Odpowiadaj szybko i dokładnie.';
-      case 'RVIP_step':
-        return 'Cyfry będą pojawiać się jedna po drugiej. '
-            'Stuknij ekran gdy zobaczysz sekwencję: 3-5-7 lub 2-4-6. '
-            'Zachowaj czujność przez cały test.';
-      case 'tapping_step':
-        return 'Stukaj naprzemiennie w dwa przyciski tak szybko jak możesz. '
-            'Utrzymuj stały rytm przez cały test.';
-      case 'corsi_block_step':
-        return 'Zapamiętaj kolejność w jakiej zaświecają się bloki, '
-            'a następnie powtórz tę sekwencję. '
-            'Sekwencje stają się coraz dłuższe.';
-      case 'reaction_time_step':
-        return 'Gdy zobaczysz pojawiający się bodziec, stuknij ekran tak szybko jak możesz. '
-            'Test mierzy Twój czas reakcji. Bądź gotowy i reaguj natychmiast!';
-      default:
-        return 'Postępuj zgodnie z instrukcjami na ekranie.';
+  void _processSequenceResults(WidgetRef ref, RPTaskResult taskResult) {
+    try {
+      final currentProfile = ref.read(profileProvider).profile;
+      final userId = currentProfile.id ?? 'unknown_user';
+
+      debugPrint(
+        '📊 [GamesScreen] Przetwarzanie wyników dla użytkownika: $userId',
+      );
+
+      final List<CognitiveTestResult> collectedResults = [];
+      final fullJson = taskResult.toJson();
+      final resultsNode = fullJson['results'] as Map<String, dynamic>?;
+
+      if (resultsNode == null) return;
+
+      _stepMap.forEach((stepId, testType) {
+        if (resultsNode.containsKey(stepId)) {
+          try {
+            final cleanResult = RPResultMapper.fromRPTaskResult(
+              taskResult: taskResult,
+              userId: userId,
+              testType: testType,
+              stepIdentifier: stepId,
+            );
+            collectedResults.add(cleanResult);
+          } catch (e) {
+            debugPrint('❌ Błąd mapowania kroku $stepId: $e');
+          }
+        }
+      });
+
+      if (collectedResults.isNotEmpty) {
+        debugPrint(
+          '📊 [GamesScreen] Wysyłanie ${collectedResults.length} wyników...',
+        );
+        ref
+            .read(cognitiveGamesProvider.notifier)
+            .saveSequenceResults(collectedResults);
+      }
+    } catch (e) {
+      debugPrint("❌ Krytyczny błąd przetwarzania wyników: $e");
     }
   }
 
-  void printWrapped(String text) {
-    final pattern = RegExp('.{1,800}');
-    pattern.allMatches(text).forEach((match) => debugPrint(match.group(0)));
-  }
-
-  // void _showResults(BuildContext context, RPTaskResult result) {
-  //   final Map<String, dynamic> jsonMap = result.toJson();
-
-  //   const JsonEncoder encoder = JsonEncoder.withIndent('  ');
-  //   final String jsonString = encoder.convert(jsonMap);
-
-  //   debugPrint("================ RESULT START ================");
-  //   printWrapped(jsonString);
-  //   debugPrint("================ RESULT END ================");
-
-  //   final activityResults = result.results.values.whereType<RPActivityResult>();
-
-  //   if (activityResults.isNotEmpty) {
-  //     final firstResult = activityResults.first;
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text(
-  //           'Test ukończony! ${firstResult.results.length} wyników zapisanych.',
-  //         ),
-  //         duration: const Duration(seconds: 3),
-  //         backgroundColor: Colors.green,
-  //       ),
-  //     );
-  //   } else {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text('Test ukończony!'),
-  //         duration: Duration(seconds: 2),
-  //         backgroundColor: Colors.green,
-  //       ),
-  //     );
-  //   }
-  // }
-  void _processAndSaveResults(
-    BuildContext context,
-    WidgetRef ref,
-    RPTaskResult result,
-    CognitiveTestType testType,
-    String stepIdentifier,
-  ) {
-    try {
-      debugPrint('🎮 [GamesScreen] Rozpoczęcie zapisu wyników...');
-      debugPrint(
-        '🎮 [GamesScreen] Test type: $testType, Step: $stepIdentifier',
-      );
-
-      // 1. Zmapuj surowy wynik na czysty obiekt domeny
-      final cleanResult = RPResultMapper.fromRPTaskResult(
-        taskResult: result,
-        userId: 'temp_user_id',
-        testType: testType,
-        stepIdentifier: stepIdentifier,
-      );
-
-      debugPrint('🎮 [GamesScreen] Wynik zmapowany: ${cleanResult.testType}');
-
-      // 2. Wywołaj zapis przez Riverpod
-      debugPrint('🎮 [GamesScreen] Wysyłanie do notifier...');
-      ref.read(cognitiveGamesProvider.notifier).saveResult(cleanResult);
-      debugPrint('🎮 [GamesScreen] Wynik wysłany do notifier!');
-
-      // 3. Pokaż komunikat użytkownikowi
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Ukończono! Trwa zapisywanie wyników...'),
-          backgroundColor: Color(0xFF00D4E6), // Cyan
-        ),
-      );
-    } catch (e) {
-      debugPrint('❌ [GamesScreen] Błąd mapowania wyników: $e');
-      debugPrint('❌ [GamesScreen] StackTrace: ${StackTrace.current}');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Błąd: $e'), backgroundColor: Colors.red),
-      );
+  RPStep _getStepById(String identifier) {
+    switch (identifier) {
+      case 'stroop_ffect_step':
+        return stroopEffect;
+      case 'trail_making_step':
+        return trailMaking;
+      case 'flanker_step':
+        return flanker;
+      case 'RVIP_step':
+        return rapidVisualInfoProcessing;
+      case 'tapping_step':
+        return tapping;
+      case 'corsi_block_step':
+        return corsiBlockTapping;
+      case 'reaction_time_step':
+        return reactionTime;
+      default:
+        throw Exception('Nieznany krok: $identifier');
     }
   }
 }
@@ -377,95 +298,11 @@ class _CognitiveTaskScreen extends StatelessWidget {
       body: Localizations.override(
         context: context,
         child: RPUITask(
+          hideNextButton: true,
           task: task,
           onSubmit: (result) {
-            // RPUITask automatically pops the route, so we just call the callback
             onComplete(result);
           },
-          onCancel: ([result]) {
-            // RPUITask automatically pops on cancel too
-            // No action needed, just let it close
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class _GameCard extends StatelessWidget {
-  final String title;
-  final String description;
-  final IconData icon;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _GameCard({
-    required this.title,
-    required this.description,
-    required this.icon,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        border: Border.all(width: 1.0, color: ColorScheme.of(context).primary),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 1.0,
-                    color: ColorScheme.of(context).secondary,
-                  ),
-                  shape: BoxShape.circle,
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 5.0,
-                      color: ColorScheme.of(context).primary.withAlpha(30),
-                    ),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(icon, color: color, size: 30),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      description,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: const Color(0xFC515667),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(LucideIcons.chevronRight, color: Color(0xFC515667)),
-            ],
-          ),
         ),
       ),
     );

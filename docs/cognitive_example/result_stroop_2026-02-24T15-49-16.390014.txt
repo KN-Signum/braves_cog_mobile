@@ -1,0 +1,128 @@
+════════════════════════════════════════════════════════════════════════════════
+COGNITIVE TEST RESULT
+════════════════════════════════════════════════════════════════════════════════
+Timestamp: 2026-02-24 15:49:16.390419
+
+TEST INFORMATION:
+--------------------------------------------------------------------------------
+id: stroop_ffect_step_1771944556365
+userId: covidcog_user
+testType: stroop
+completedAt: 2026-02-24T15:43:12.395337
+
+METRICS:
+--------------------------------------------------------------------------------
+type: stroop
+correctTaps: 0
+mistakes: 22
+totalTrials: 22
+
+RAW DATA:
+--------------------------------------------------------------------------------
+__type: RPActivityResult
+identifier: stroop_ffect_step
+endDate: 2026-02-24T15:43:12.395337
+results:
+  result:
+    mistakes: 22
+    correct taps: 0
+stepTimes:
+  instruction_started: 2026-02-24T15:42:31.546411
+  instruction_ended: 2026-02-24T15:42:32.389284
+  test_started: 2026-02-24T15:42:32.389372
+  test_ended: 2026-02-24T15:43:12.393640
+  results_shown: 2026-02-24T15:43:12.396324
+interactions: [
+  time: 2026-02-24T15:42:34.147871
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was ZIELONY. The word spelled NIEBIESKI. Total words passed: 1
+  time: 2026-02-24T15:42:35.904681
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was NIEBIESKI. The word spelled ŻÓŁTY. Total words passed: 2
+  time: 2026-02-24T15:42:37.659580
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was ZIELONY. The word spelled NIEBIESKI. Total words passed: 3
+  time: 2026-02-24T15:42:39.414790
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was CZERWONY. The word spelled CZERWONY. Total words passed: 4
+  time: 2026-02-24T15:42:41.170013
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was ŻÓŁTY. The word spelled ŻÓŁTY. Total words passed: 5
+  time: 2026-02-24T15:42:42.925379
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was ŻÓŁTY. The word spelled CZERWONY. Total words passed: 6
+  time: 2026-02-24T15:42:44.679780
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was NIEBIESKI. The word spelled CZERWONY. Total words passed: 7
+  time: 2026-02-24T15:42:46.433695
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was CZERWONY. The word spelled ZIELONY. Total words passed: 8
+  time: 2026-02-24T15:42:48.188050
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was CZERWONY. The word spelled NIEBIESKI. Total words passed: 9
+  time: 2026-02-24T15:42:49.943433
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was CZERWONY. The word spelled CZERWONY. Total words passed: 10
+  time: 2026-02-24T15:42:51.698200
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was CZERWONY. The word spelled ŻÓŁTY. Total words passed: 11
+  time: 2026-02-24T15:42:53.452800
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was ŻÓŁTY. The word spelled ŻÓŁTY. Total words passed: 12
+  time: 2026-02-24T15:42:55.208170
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was NIEBIESKI. The word spelled ŻÓŁTY. Total words passed: 13
+  time: 2026-02-24T15:42:56.962870
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was ZIELONY. The word spelled ZIELONY. Total words passed: 14
+  time: 2026-02-24T15:42:58.717727
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was ZIELONY. The word spelled ŻÓŁTY. Total words passed: 15
+  time: 2026-02-24T15:43:00.471307
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was ŻÓŁTY. The word spelled CZERWONY. Total words passed: 16
+  time: 2026-02-24T15:43:02.226874
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was ŻÓŁTY. The word spelled ŻÓŁTY. Total words passed: 17
+  time: 2026-02-24T15:43:03.981040
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was ZIELONY. The word spelled NIEBIESKI. Total words passed: 18
+  time: 2026-02-24T15:43:05.735899
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was CZERWONY. The word spelled NIEBIESKI. Total words passed: 19
+  time: 2026-02-24T15:43:07.490873
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was CZERWONY. The word spelled ZIELONY. Total words passed: 20
+  time: 2026-02-24T15:43:09.246792
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was ZIELONY. The word spelled ZIELONY. Total words passed: 21
+  time: 2026-02-24T15:43:11.001765
+  correctness: Wrong gesture
+  type: Button tap
+  description: No color tapped. The color was CZERWONY. The word spelled ZIELONY. Total words passed: 22
+]
+
+════════════════════════════════════════════════════════════════════════════════
+END OF RESULT
+════════════════════════════════════════════════════════════════════════════════

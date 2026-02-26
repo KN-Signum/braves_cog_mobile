@@ -1,0 +1,39 @@
+{
+  "surveyId": "monitoring",
+  "userId": "normalcog_user",
+  "metadata": {
+    "completedAt": "2026-02-26T20:21:56.556794Z"
+  },
+  "answers": [
+    {
+      "questionId": "q1",
+      "type": "number",
+      "value": 8
+    },
+    {
+      "questionId": "q4_doctor",
+      "type": "boolean",
+      "value": true
+    },
+    {
+      "questionId": "q4_doctor_specialization",
+      "type": "text",
+      "value": "psychiatra"
+    },
+    {
+      "questionId": "q4_doctor_new_diagnosis",
+      "type": "boolean",
+      "value": true
+    },
+    {
+      "questionId": "q4_doctor_new_diagnosis_desc",
+      "type": "text",
+      "value": "aaaa"
+    },
+    {
+      "questionId": "q5_meds_changed",
+      "type": "boolean",
+      "value": false
+    }
+  ]
+}

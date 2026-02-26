@@ -1,0 +1,134 @@
+{
+  "surveyId": "Baseline_ASD",
+  "userId": "normalcog_user",
+  "metadata": {
+    "completedAt": "2026-02-26T20:12:22.690845Z"
+  },
+  "answers": [
+    {
+      "questionId": "aq_1",
+      "type": "text",
+      "value": "slightly_agree"
+    },
+    {
+      "questionId": "aq_2",
+      "type": "text",
+      "value": "definitely_disagree"
+    },
+    {
+      "questionId": "aq_3",
+      "type": "text",
+      "value": "slightly_disagree"
+    },
+    {
+      "questionId": "aq_4",
+      "type": "text",
+      "value": "slightly_disagree"
+    },
+    {
+      "questionId": "aq_5",
+      "type": "text",
+      "value": "slightly_disagree"
+    },
+    {
+      "questionId": "aq_6",
+      "type": "text",
+      "value": "slightly_agree"
+    },
+    {
+      "questionId": "aq_7",
+      "type": "text",
+      "value": "slightly_agree"
+    },
+    {
+      "questionId": "aq_8",
+      "type": "text",
+      "value": "definitely_disagree"
+    },
+    {
+      "questionId": "aq_9",
+      "type": "text",
+      "value": "slightly_disagree"
+    },
+    {
+      "questionId": "aq_10",
+      "type": "text",
+      "value": "definitely_disagree"
+    },
+    {
+      "questionId": "aq_11",
+      "type": "text",
+      "value": "slightly_disagree"
+    },
+    {
+      "questionId": "aq_12",
+      "type": "text",
+      "value": "slightly_disagree"
+    },
+    {
+      "questionId": "aq_13",
+      "type": "text",
+      "value": "definitely_disagree"
+    },
+    {
+      "questionId": "aq_14",
+      "type": "text",
+      "value": "definitely_disagree"
+    },
+    {
+      "questionId": "aq_15",
+      "type": "text",
+      "value": "definitely_disagree"
+    },
+    {
+      "questionId": "aq_16",
+      "type": "text",
+      "value": "definitely_disagree"
+    },
+    {
+      "questionId": "aq_17",
+      "type": "text",
+      "value": "definitely_disagree"
+    },
+    {
+      "questionId": "aq_18",
+      "type": "text",
+      "value": "definitely_disagree"
+    },
+    {
+      "questionId": "aq_19",
+      "type": "text",
+      "value": "slightly_agree"
+    },
+    {
+      "questionId": "aq_20",
+      "type": "text",
+      "value": "slightly_disagree"
+    },
+    {
+      "questionId": "aq_21",
+      "type": "text",
+      "value": "slightly_agree"
+    },
+    {
+      "questionId": "aq_22",
+      "type": "text",
+      "value": "slightly_disagree"
+    },
+    {
+      "questionId": "aq_23",
+      "type": "text",
+      "value": "slightly_agree"
+    },
+    {
+      "questionId": "aq_24",
+      "type": "text",
+      "value": "definitely_disagree"
+    },
+    {
+      "questionId": "aq_25",
+      "type": "text",
+      "value": "slightly_agree"
+    }
+  ]
+}

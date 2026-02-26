@@ -1,0 +1,19 @@
+{
+  "surveyId": "PHQ_2",
+  "userId": "normalcog_user",
+  "metadata": {
+    "completedAt": "2026-02-26T20:20:58.324319Z"
+  },
+  "answers": [
+    {
+      "questionId": "phq2_1",
+      "type": "number",
+      "value": 3
+    },
+    {
+      "questionId": "phq2_2",
+      "type": "number",
+      "value": 1
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "surveyId": "GAD_2",
+  "userId": "normalcog_user",
+  "metadata": {
+    "completedAt": "2026-02-26T20:20:50.589212Z"
+  },
+  "answers": [
+    {
+      "questionId": "gad2_1",
+      "type": "number",
+      "value": 1
+    },
+    {
+      "questionId": "gad2_2",
+      "type": "number",
+      "value": 2
+    }
+  ]
+}

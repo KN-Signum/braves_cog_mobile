@@ -1,0 +1,64 @@
+{
+  "surveyId": "Baseline_Depression",
+  "userId": "normalcog_user",
+  "metadata": {
+    "completedAt": "2026-02-26T20:14:14.522907Z"
+  },
+  "answers": [
+    {
+      "questionId": "phq9_1",
+      "type": "number",
+      "value": 2
+    },
+    {
+      "questionId": "phq9_any_positive",
+      "type": "boolean",
+      "value": true
+    },
+    {
+      "questionId": "phq9_2",
+      "type": "number",
+      "value": 2
+    },
+    {
+      "questionId": "phq9_3",
+      "type": "number",
+      "value": 2
+    },
+    {
+      "questionId": "phq9_4",
+      "type": "number",
+      "value": 3
+    },
+    {
+      "questionId": "phq9_5",
+      "type": "number",
+      "value": 2
+    },
+    {
+      "questionId": "phq9_6",
+      "type": "number",
+      "value": 0
+    },
+    {
+      "questionId": "phq9_7",
+      "type": "number",
+      "value": 2
+    },
+    {
+      "questionId": "phq9_8",
+      "type": "number",
+      "value": 0
+    },
+    {
+      "questionId": "phq9_9",
+      "type": "number",
+      "value": 3
+    },
+    {
+      "questionId": "phq9_difficulty",
+      "type": "text",
+      "value": "very"
+    }
+  ]
+}

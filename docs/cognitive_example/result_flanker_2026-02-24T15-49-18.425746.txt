@@ -1,0 +1,51 @@
+════════════════════════════════════════════════════════════════════════════════
+COGNITIVE TEST RESULT
+════════════════════════════════════════════════════════════════════════════════
+Timestamp: 2026-02-24 15:49:18.426039
+
+TEST INFORMATION:
+--------------------------------------------------------------------------------
+id: flanker_step_1771944556367
+userId: covidcog_user
+testType: flanker
+completedAt: 2026-02-24T15:44:33.206492
+
+METRICS:
+--------------------------------------------------------------------------------
+type: flanker
+correctSwipes: 10
+wrongSwipes: 0
+totalTimeSeconds: 6
+score: 1
+meanCongruentTime: 468.4
+meanIncongruentTime: 596.6
+congruentTrialsCount: 5
+incongruentTrialsCount: 5
+
+RAW DATA:
+--------------------------------------------------------------------------------
+__type: RPActivityResult
+identifier: flanker_step
+endDate: 2026-02-24T15:44:33.206492
+results:
+  result:
+    wrong swipes: 0
+    right swipes: 10
+    time: 6
+    score: 1
+    meanCongruent: 468.4
+    meanIncongruent: 596.6
+    numberCardsCongruent: 5
+    numberCardsIncongruent: 5
+stepTimes:
+  instruction_started: 2026-02-24T15:44:25.706441
+  instruction_ended: 2026-02-24T15:44:26.623629
+  test_started: 2026-02-24T15:44:26.623637
+  test_ended: 2026-02-24T15:44:33.205227
+  results_shown: 2026-02-24T15:44:33.206566
+interactions: [
+]
+
+════════════════════════════════════════════════════════════════════════════════
+END OF RESULT
+════════════════════════════════════════════════════════════════════════════════

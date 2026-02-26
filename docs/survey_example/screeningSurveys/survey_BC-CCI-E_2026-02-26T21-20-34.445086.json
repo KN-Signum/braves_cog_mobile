@@ -1,0 +1,54 @@
+{
+  "surveyId": "BC-CCI-E",
+  "userId": "normalcog_user",
+  "metadata": {
+    "completedAt": "2026-02-26T20:20:33.443127Z"
+  },
+  "answers": [
+    {
+      "questionId": "cc_rating_forgetting",
+      "type": "text",
+      "value": "3"
+    },
+    {
+      "questionId": "cc_rating_concentration",
+      "type": "text",
+      "value": "2"
+    },
+    {
+      "questionId": "cc_rating_expressing_thoughts",
+      "type": "text",
+      "value": "1"
+    },
+    {
+      "questionId": "cc_rating_finding_words",
+      "type": "text",
+      "value": "2"
+    },
+    {
+      "questionId": "cc_rating_slowed_thinking",
+      "type": "text",
+      "value": "2"
+    },
+    {
+      "questionId": "cc_rating_problem_solving",
+      "type": "text",
+      "value": "1"
+    },
+    {
+      "questionId": "cc_impact_work",
+      "type": "text",
+      "value": "somewhat_true"
+    },
+    {
+      "questionId": "cc_impact_relationships",
+      "type": "text",
+      "value": "somewhat_true"
+    },
+    {
+      "questionId": "cc_impact_hobbies",
+      "type": "text",
+      "value": "rather_false"
+    }
+  ]
+}

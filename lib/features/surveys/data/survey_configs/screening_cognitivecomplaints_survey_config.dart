@@ -8,58 +8,93 @@ class ScreeningCognitiveComplaintsSurveyConfig {
       title: 'Screening',
       questions: [
         SurveyQuestionEntity(
-          id: 'cc_rating',
-          type: QuestionType.table,
-          question: 'Proszę ocenić swoje problemy z koncentracją, pamięcią i myśleniem w ciągu ostatnich 30 dni.',
-          description: 'Skala odpowiedzi:\n0 = brak\n1 = niewielkie\n2 = dość nasilone\n3 = bardzo nasilone',
+          id: 'cc_rating_forgetting',
+          type: QuestionType.choice,
+          question:
+              'Proszę ocenić w ciągu ostatnich 30 dni nasilenie objawu: Zapominanie / Problemy z pamięcią.',
           required: true,
           options: {
-            'rows': [
-              {
-                'value': 'forgetting',
-                'label': 'Zapominanie / Problemy z pamięcią',
-              },
-              {
-                'value': 'concentration',
-                'label': 'Słaba koncentracja',
-              },
-              {
-                'value': 'expressing_thoughts',
-                'label': 'Trudności w wyrażaniu myśli',
-              },
-              {
-                'value': 'finding_words',
-                'label': 'Trudność w znalezieniu właściwego słowa',
-              },
-              {
-                'value': 'slowed_thinking',
-                'label': 'Spowolnione tempo myślenia',
-              },
-              {
-                'value': 'problem_solving',
-                'label': 'Trudności z rozwiązywaniem problemów lub „rozgryzaniem” rzeczy',
-              },
+            'options': [
+              {'value': '0', 'label': 'Brak'},
+              {'value': '1', 'label': 'Niewielkie'},
+              {'value': '2', 'label': 'Dość nasilone'},
+              {'value': '3', 'label': 'Bardzo nasilone'},
             ],
-            'columns': [
-              {'value': '0', 'label': '0'},
-              {'value': '1', 'label': '1'},
-              {'value': '2', 'label': '2'},
-              {'value': '3', 'label': '3'},
+          },
+        ),
+        SurveyQuestionEntity(
+          id: 'cc_rating_concentration',
+          type: QuestionType.choice,
+          question:
+              'Proszę ocenić w ciągu ostatnich 30 dni nasilenie objawu: Słaba koncentracja.',
+          required: true,
+          options: {
+            'options': [
+              {'value': '0', 'label': 'Brak'},
+              {'value': '1', 'label': 'Niewielkie'},
+              {'value': '2', 'label': 'Dość nasilone'},
+              {'value': '3', 'label': 'Bardzo nasilone'},
             ],
-            'rowLabels': {
-              'forgetting': 'Zapominanie / Problemy z pamięcią',
-              'concentration': 'Słaba koncentracja',
-              'expressing_thoughts': 'Trudności w wyrażaniu myśli',
-              'finding_words': 'Trudność w znalezieniu właściwego słowa',
-              'slowed_thinking': 'Spowolnione tempo myślenia',
-              'problem_solving': 'Trudności z rozwiązywaniem problemów lub „rozgryzaniem” rzeczy',
-            },
-            'columnLabels': {
-              '0': '0',
-              '1': '1',
-              '2': '2',
-              '3': '3',
-            },
+          },
+        ),
+        SurveyQuestionEntity(
+          id: 'cc_rating_expressing_thoughts',
+          type: QuestionType.choice,
+          question:
+              'Proszę ocenić w ciągu ostatnich 30 dni nasilenie objawu: Trudności w wyrażaniu myśli.',
+          required: true,
+          options: {
+            'options': [
+              {'value': '0', 'label': 'Brak'},
+              {'value': '1', 'label': 'Niewielkie'},
+              {'value': '2', 'label': 'Dość nasilone'},
+              {'value': '3', 'label': 'Bardzo nasilone'},
+            ],
+          },
+        ),
+        SurveyQuestionEntity(
+          id: 'cc_rating_finding_words',
+          type: QuestionType.choice,
+          question:
+              'Proszę ocenić w ciągu ostatnich 30 dni nasilenie objawu: Trudność w znalezieniu właściwego słowa.',
+          required: true,
+          options: {
+            'options': [
+              {'value': '0', 'label': 'Brak'},
+              {'value': '1', 'label': 'Niewielkie'},
+              {'value': '2', 'label': 'Dość nasilone'},
+              {'value': '3', 'label': 'Bardzo nasilone'},
+            ],
+          },
+        ),
+        SurveyQuestionEntity(
+          id: 'cc_rating_slowed_thinking',
+          type: QuestionType.choice,
+          question:
+              'Proszę ocenić w ciągu ostatnich 30 dni nasilenie objawu: Spowolnione tempo myślenia.',
+          required: true,
+          options: {
+            'options': [
+              {'value': '0', 'label': 'Brak'},
+              {'value': '1', 'label': 'Niewielkie'},
+              {'value': '2', 'label': 'Dość nasilone'},
+              {'value': '3', 'label': 'Bardzo nasilone'},
+            ],
+          },
+        ),
+        SurveyQuestionEntity(
+          id: 'cc_rating_problem_solving',
+          type: QuestionType.choice,
+          question:
+              'Proszę ocenić w ciągu ostatnich 30 dni nasilenie objawu: Trudności z rozwiązywaniem problemów lub „rozgryzaniem” rzeczy.',
+          required: true,
+          options: {
+            'options': [
+              {'value': '0', 'label': 'Brak'},
+              {'value': '1', 'label': 'Niewielkie'},
+              {'value': '2', 'label': 'Dość nasilone'},
+              {'value': '3', 'label': 'Bardzo nasilone'},
+            ],
           },
         ),
         // Info page for second part

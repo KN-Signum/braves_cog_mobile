@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui' as ui;
 
 class SliderQuestionWidget extends StatefulWidget {
   final double value;
@@ -12,6 +13,8 @@ class SliderQuestionWidget extends StatefulWidget {
   final Color? endColor;
   final String? minLabel;
   final String? maxLabel;
+  final bool showMarkers;
+  final Map<String, String>? valueLabels;
 
   const SliderQuestionWidget({
     super.key,
@@ -26,6 +29,8 @@ class SliderQuestionWidget extends StatefulWidget {
     this.endColor,
     this.minLabel,
     this.maxLabel,
+    this.showMarkers = false,
+    this.valueLabels,
   });
 
   @override
@@ -38,6 +43,10 @@ class _SliderQuestionWidgetState extends State<SliderQuestionWidget> {
     final divisions = widget.step != null
         ? ((widget.max - widget.min) / widget.step!).round()
         : null;
+
+    if (widget.showMarkers) {
+      return _buildSliderWithMarkers(context, divisions);
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,6 +119,205 @@ class _SliderQuestionWidgetState extends State<SliderQuestionWidget> {
         ),
       ],
     );
+  }
+
+  Widget _buildSliderWithMarkers(BuildContext context, int? divisions) {
+    final activeColor = Theme.of(context).colorScheme.secondary;
+    final inactiveColor = Theme.of(context).colorScheme.surfaceContainerHighest;
+    final int currentValue = widget.value.round();
+    final int minValue = widget.min.toInt();
+    final int maxValue = widget.max.toInt();
+    final int markerCount = maxValue - minValue + 1;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final trackWidth = screenWidth - 120; // marginesy, żeby skrajne pozycje nie były ucięte
+    final markerIndex = currentValue - minValue;
+    final thumbPosition = markerCount > 1
+        ? (markerIndex / (markerCount - 1)) * trackWidth
+        : trackWidth / 2;
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: GestureDetector(
+            onTapDown: (details) {
+              final tapX = details.localPosition.dx;
+              final normalizedX = (tapX / trackWidth).clamp(0.0, 1.0);
+              final newValue = minValue + (normalizedX * (maxValue - minValue));
+              final roundedValue = newValue.round().toDouble();
+              widget.onChanged(
+                roundedValue.clamp(minValue.toDouble(), maxValue.toDouble()),
+              );
+            },
+            onPanUpdate: (details) {
+              final tapX = details.localPosition.dx;
+              final normalizedX = (tapX / trackWidth).clamp(0.0, 1.0);
+              final newValue = minValue + (normalizedX * (maxValue - minValue));
+              final roundedValue = newValue.round().toDouble();
+              widget.onChanged(
+                roundedValue.clamp(minValue.toDouble(), maxValue.toDouble()),
+              );
+            },
+            child: SizedBox(
+              width: trackWidth,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  CustomPaint(
+                    size: Size(trackWidth, 4),
+                    painter: _SliderTrackPainter(
+                      activeColor: activeColor,
+                      inactiveColor: inactiveColor,
+                      markerCount: markerCount,
+                      activeMarkerCount: currentValue - minValue + 1,
+                      trackHeight: 4,
+                      markerSize: 8,
+                      thumbPosition: thumbPosition,
+                    ),
+                  ),
+                  Positioned(
+                    left: thumbPosition - 10,
+                    top: -8,
+                    child: Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: activeColor,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: SizedBox(
+            width: trackWidth,
+            height: 24,
+            child: Stack(
+              clipBehavior: Clip.none,
+            children: List.generate(markerCount, (index) {
+              final markerValue = minValue + index;
+                final valueThumbPosition = markerCount > 1
+                    ? (index / (markerCount - 1)) * trackWidth
+                    : trackWidth / 2;
+
+                final isSelected = markerValue == currentValue;
+                final baseStyle = Theme.of(context).textTheme.bodySmall ??
+                    const TextStyle(fontSize: 12);
+
+                final labelText =
+                    widget.valueLabels?[markerValue.toString()] ?? '$markerValue';
+
+                final textStyle = baseStyle.copyWith(
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                  color: isSelected
+                      ? activeColor
+                      : Theme.of(context).colorScheme.outline,
+                );
+
+                final textPainter = TextPainter(
+                  text: TextSpan(
+                    text: labelText,
+                    style: textStyle,
+                  ),
+                  maxLines: 1,
+                  textDirection: TextDirection.ltr,
+                );
+                textPainter.layout();
+                final textWidth = textPainter.width;
+
+                return Positioned(
+                  left: valueThumbPosition - textWidth / 2,
+                  top: 0,
+                  child: Text(
+                    labelText,
+                    style: textStyle,
+                ),
+              );
+            }),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SliderTrackPainter extends CustomPainter {
+  final Color activeColor;
+  final Color inactiveColor;
+  final int markerCount;
+  final int activeMarkerCount;
+  final double trackHeight;
+  final double markerSize;
+  final double thumbPosition;
+
+  _SliderTrackPainter({
+    required this.activeColor,
+    required this.inactiveColor,
+    required this.markerCount,
+    required this.activeMarkerCount,
+    required this.trackHeight,
+    required this.markerSize,
+    required this.thumbPosition,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final trackPaint = Paint()
+      ..color = inactiveColor
+      ..style = PaintingStyle.fill;
+
+    final activeTrackPaint = Paint()
+      ..color = activeColor
+      ..style = PaintingStyle.fill;
+
+    final trackY = size.height / 2;
+    final trackRect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(0, trackY - trackHeight / 2, size.width, trackHeight),
+      Radius.zero,
+    );
+
+    canvas.drawRRect(trackRect, trackPaint);
+
+    final activeWidth = thumbPosition.clamp(0.0, size.width);
+    if (activeWidth > 0) {
+      final activeRect = RRect.fromRectAndRadius(
+        Rect.fromLTWH(0, trackY - trackHeight / 2, activeWidth, trackHeight),
+        Radius.zero,
+      );
+      canvas.drawRRect(activeRect, activeTrackPaint);
+    }
+
+    final markerPaint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < markerCount; i++) {
+      final isActive = i < activeMarkerCount;
+      markerPaint.color = isActive ? activeColor : inactiveColor;
+
+      final markerX = markerCount > 1 ? (i / (markerCount - 1)) * size.width : size.width / 2;
+      final markerY = trackY;
+
+      canvas.drawCircle(
+        Offset(markerX, markerY),
+        markerSize / 2,
+        markerPaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_SliderTrackPainter oldDelegate) {
+    return oldDelegate.activeMarkerCount != activeMarkerCount ||
+        oldDelegate.activeColor != activeColor ||
+        oldDelegate.inactiveColor != inactiveColor ||
+        oldDelegate.thumbPosition != thumbPosition;
   }
 }
 

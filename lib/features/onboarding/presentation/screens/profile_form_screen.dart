@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:braves_cog/core/theme/app_theme.dart';
 import 'package:braves_cog/features/onboarding/presentation/providers/onboarding_provider.dart';
 import 'package:braves_cog/features/profile/domain/entities/user_profile_entity.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
@@ -206,13 +207,11 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                   ? () => _handleNext(profile)
                   : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                disabledBackgroundColor: Theme.of(
-                  context,
-                ).colorScheme.primary.withValues(alpha: 0.5),
+                backgroundColor: AppTheme.primaryColor,
+                disabledBackgroundColor: AppTheme.primaryColor,
                 minimumSize: const Size(double.infinity, 56),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(1000),
+                  borderRadius: BorderRadius.zero,
                 ),
               ),
               child: Row(
@@ -222,14 +221,14 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                     _currentStep == _totalSteps - 1 ? 'Dalej' : 'Kontynuuj',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: AppTheme.inverseTextColor,
                       letterSpacing: -0.072,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Icon(
                     Icons.chevron_right,
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: AppTheme.inverseTextColor,
                   ),
                 ],
               ),

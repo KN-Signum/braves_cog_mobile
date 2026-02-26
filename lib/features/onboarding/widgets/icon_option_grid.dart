@@ -24,6 +24,11 @@ class IconOptionGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final progressColor = theme.colorScheme.secondary;
+    // Tło: kolor paska postępu zmieszany 50/50 z białym
+    final selectedBackground = Color.lerp(progressColor, Colors.white, 0.5)!;
+
     return Wrap(
       spacing: 12,
       runSpacing: 12,
@@ -37,17 +42,16 @@ class IconOptionGrid extends StatelessWidget {
                     64 -
                     (12 * (columns - 1))) /
                 columns,
-            height: 100,
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
             decoration: BoxDecoration(
               color: isSelected
-                  ? Theme.of(context).colorScheme.secondary
-                  : Theme.of(context).scaffoldBackgroundColor,
-              borderRadius: BorderRadius.circular(24),
+                  ? selectedBackground
+                  : theme.scaffoldBackgroundColor,
+              borderRadius: BorderRadius.zero,
               border: Border.all(
                 color: isSelected
-                    ? Theme.of(context).colorScheme.secondary
-                    : Theme.of(context).colorScheme.surfaceContainerHighest,
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.surfaceContainerHighest,
                 width: 2,
               ),
             ),
@@ -57,15 +61,16 @@ class IconOptionGrid extends StatelessWidget {
               children: [
                 Icon(
                   option.icon,
-                  size: 32,
-                  color: Theme.of(context).colorScheme.primary,
+                  size: 36,
+                  color: theme.colorScheme.primary,
                 ),
                 const SizedBox(height: 8),
                 Text(
                   option.label,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: theme.colorScheme.primary,
                   ),
                 ),
               ],

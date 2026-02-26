@@ -9,12 +9,11 @@ import '../auth/login_screen.dart';
 import '../onboarding/onboarding_screen.dart';
 import '../home/home_screen.dart';
 import '../health/health_module_screen.dart';
-import '../psychological_tests/psychological_tests_screen.dart';
 import '../surveys/widgets/universal_survey_widget.dart';
 import '../surveys/widgets/screening_flow_widget.dart';
 import '../surveys/data/survey_configs/monitoring_survey_config.dart';
 import '../profile/user_profile_screen.dart';
-import '../games/games_screen.dart';
+import '../cognitive_games/presentation/games_screen.dart';
 import '../settings/settings_screen.dart';
 
 class MainScreenNew extends ConsumerStatefulWidget {
@@ -121,13 +120,6 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
     });
   }
 
-  void _navigateToHealth() {
-    setState(() {
-      _currentView = 'health';
-      _currentIndex = 1;
-    });
-  }
-
   void _navigateToTests() {
     setState(() => _currentView = 'tests');
     // Tests doesn't have a bottom nav item, keep current index or deselect?
@@ -223,8 +215,8 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
             }
           },
           onBack: _navigateToHome,
-          startAtLastQuestion: false,      
-          showFinishLabel: true,          
+          startAtLastQuestion: false,
+          showFinishLabel: true,
         );
       case 'screening':
         return ScreeningFlowWidget(
@@ -248,8 +240,6 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
             });
           },
         );
-      case 'tests':
-        return PsychologicalTestsScreen(onBack: _navigateToHome);
       default:
         // Fallback to home
         return HomeScreen(

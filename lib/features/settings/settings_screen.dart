@@ -7,43 +7,33 @@ import 'package:braves_cog/features/profile/presentation/providers/profile_provi
 import 'package:braves_cog/features/profile/domain/entities/user_type.dart';
 
 class SettingsScreen extends ConsumerWidget {
-  final VoidCallback onBack;
   final VoidCallback onLogout;
 
-  const SettingsScreen({
-    super.key,
-    required this.onBack,
-    required this.onLogout,
-  });
+  const SettingsScreen({super.key, required this.onLogout});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userType = ref.watch(profileProvider).profile.type;
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondary,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(
-            Icons.chevron_left,
-            color: Theme.of(context).colorScheme.primary,
-            size: 28,
-          ),
-          onPressed: onBack,
-        ),
         title: Text(
           'Ustawienia',
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+          style: TextStyle(
+            fontFamily: 'SpaceGrotesk',
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          if (userType == UserType.normalCog) _buildThemeSwitchTile(context, ref),
+          if (userType == UserType.normalCog)
+            _buildThemeSwitchTile(context, ref),
           _buildGroupThemeVariantTile(context, ref),
           _buildSettingsTile(
             context: context,
@@ -84,10 +74,10 @@ class SettingsScreen extends ConsumerWidget {
             child: Text(
               'Wyloguj się',
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
             ),
           ),
         ],
@@ -99,9 +89,7 @@ class SettingsScreen extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
     final isDarkMode = themeMode == ThemeMode.dark;
 
-    final accentColor = isDarkMode
-        ? Theme.of(context).colorScheme.primary
-        : Theme.of(context).colorScheme.secondary;
+    final accentColor = Theme.of(context).colorScheme.primary;
     final textColor = Theme.of(context).colorScheme.onSurface;
 
     return Container(
@@ -110,7 +98,7 @@ class SettingsScreen extends ConsumerWidget {
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.zero,
         border: Border.all(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          color: Theme.of(context).colorScheme.secondary,
           width: 2,
         ),
       ),
@@ -134,9 +122,9 @@ class SettingsScreen extends ConsumerWidget {
         title: Text(
           'Motyw aplikacji',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: textColor,
-              ),
+            fontWeight: FontWeight.w700,
+            color: textColor,
+          ),
         ),
         subtitle: null,
         trailing: Row(
@@ -145,9 +133,9 @@ class SettingsScreen extends ConsumerWidget {
             Text(
               isDarkMode ? 'Ciemny' : 'Jasny',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: textColor,
-                  ),
+                fontWeight: FontWeight.w600,
+                color: textColor,
+              ),
             ),
             const SizedBox(width: 8),
             Switch(
@@ -206,9 +194,9 @@ class SettingsScreen extends ConsumerWidget {
         title: Text(
           'Motyw',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: textColor,
-              ),
+            fontWeight: FontWeight.w700,
+            color: textColor,
+          ),
         ),
         subtitle: null,
         trailing: Row(
@@ -217,9 +205,9 @@ class SettingsScreen extends ConsumerWidget {
             Text(
               variantLabel,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: textColor,
-                  ),
+                fontWeight: FontWeight.w600,
+                color: textColor,
+              ),
             ),
             const SizedBox(width: 8),
             Switch(
@@ -245,10 +233,7 @@ class SettingsScreen extends ConsumerWidget {
     required String subtitle,
     required VoidCallback onTap,
   }) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final accentColor = isDarkMode
-        ? Theme.of(context).colorScheme.primary
-        : Theme.of(context).colorScheme.secondary;
+    final accentColor = Theme.of(context).colorScheme.primary;
     final textColor = Theme.of(context).colorScheme.onSurface;
 
     return Container(
@@ -257,7 +242,7 @@ class SettingsScreen extends ConsumerWidget {
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.zero,
         border: Border.all(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          color: Theme.of(context).colorScheme.secondary,
           width: 2,
         ),
       ),
@@ -277,16 +262,16 @@ class SettingsScreen extends ConsumerWidget {
         title: Text(
           title,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: textColor,
-              ),
+            fontWeight: FontWeight.w700,
+            color: textColor,
+          ),
         ),
         subtitle: Text(
           subtitle,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-                color: textColor,
-              ),
+            fontWeight: FontWeight.w500,
+            color: textColor,
+          ),
         ),
         trailing: Icon(
           Icons.chevron_right,

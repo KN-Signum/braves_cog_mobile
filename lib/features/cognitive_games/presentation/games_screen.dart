@@ -10,9 +10,7 @@ import 'package:research_package/research_package.dart';
 import '../../../cognition_config.dart';
 
 class GamesScreen extends ConsumerWidget {
-  final VoidCallback? onBack;
-
-  const GamesScreen({super.key, this.onBack});
+  const GamesScreen({super.key});
 
   static const Map<String, CognitiveTestType> _stepMap = {
     'stroop_ffect_step': CognitiveTestType.stroop,
@@ -39,12 +37,8 @@ class GamesScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: ColorScheme.of(context).surface,
       appBar: AppBar(
-        backgroundColor: ColorScheme.of(context).secondary,
+        backgroundColor: ColorScheme.of(context).primary,
         foregroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.chevron_left),
-          onPressed: () => Navigator.pop(context),
-        ),
         title: const Text(
           'Trening Poznawczy',
           style: TextStyle(
@@ -66,7 +60,7 @@ class GamesScreen extends ConsumerWidget {
                 Icon(
                   Icons.psychology,
                   size: 64,
-                  color: ColorScheme.of(context).secondary,
+                  color: ColorScheme.of(context).primary,
                 ),
                 const SizedBox(height: 16),
                 Text(

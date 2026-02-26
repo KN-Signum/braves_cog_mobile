@@ -233,19 +233,12 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
           onBack: _navigateToHome,
         );
       case 'games':
-        return GamesScreen(
-          key: const ValueKey('games'),
-          onBack: _navigateToHome,
-        );
+        return GamesScreen(key: const ValueKey('games'));
       case 'profile':
-        return UserProfileScreen(
-          key: const ValueKey('profile'),
-          onBack: _navigateToHome,
-        );
+        return UserProfileScreen(key: const ValueKey('profile'));
       case 'settings':
         return SettingsScreen(
           key: const ValueKey('settings'),
-          onBack: _navigateToHome,
           onLogout: () {
             setState(() {
               _currentView = 'login';

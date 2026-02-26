@@ -14,7 +14,7 @@ class AppBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: ColorScheme.of(context).secondary),
+      decoration: BoxDecoration(color: ColorScheme.of(context).primary),
       child: SafeArea(
         top: false,
         child: Padding(
@@ -41,7 +41,6 @@ class AppBottomNavigationBar extends StatelessWidget {
   ) {
     final isActive = currentIndex == index;
 
-    final activeColor = Theme.of(context).colorScheme.primary;
     final inactiveColor = Colors.white;
 
     return GestureDetector(
@@ -51,20 +50,28 @@ class AppBottomNavigationBar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isActive
-              ? Theme.of(context).colorScheme.primary
+              ? Theme.of(context).colorScheme.secondary
               : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: inactiveColor, size: 24),
+            Icon(
+              icon,
+              color: !isActive
+                  ? inactiveColor
+                  : Theme.of(context).colorScheme.primary,
+              size: 24,
+            ),
             const SizedBox(height: 4),
             Text(
               label,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                color: inactiveColor,
+                color: !isActive
+                    ? inactiveColor
+                    : Theme.of(context).colorScheme.primary,
               ),
             ),
           ],

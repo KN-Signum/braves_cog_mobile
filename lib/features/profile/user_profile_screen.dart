@@ -4,9 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 
 class UserProfileScreen extends ConsumerWidget {
-  final VoidCallback onBack;
-
-  const UserProfileScreen({super.key, required this.onBack});
+  const UserProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -15,10 +13,10 @@ class UserProfileScreen extends ConsumerWidget {
 
     if (profileState.isLoading) {
       return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.secondary,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         body: Center(
           child: CircularProgressIndicator(
-            color: Theme.of(context).colorScheme.secondary,
+            color: Theme.of(context).colorScheme.primary,
             strokeWidth: 3,
           ),
         ),
@@ -29,23 +27,18 @@ class UserProfileScreen extends ConsumerWidget {
     final bmi = _calculateBMI(profile.height, profile.weight);
 
     return Scaffold(
-      // Tło ekranu profilu w kolorze akcentu grupy (jak kafelek Monitoring)
-      backgroundColor: Theme.of(context).colorScheme.secondary,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(
-            Icons.chevron_left,
-            color: Theme.of(context).colorScheme.primary,
-            size: 28,
-          ),
-          onPressed: onBack,
-        ),
         title: Text(
           'Twój profil',
-          style: Theme.of(context).appBarTheme.titleTextStyle,
+          style: TextStyle(
+            fontFamily: 'SpaceGrotesk',
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -57,8 +50,8 @@ class UserProfileScreen extends ConsumerWidget {
             _buildHealthInfo(context, profile),
             const SizedBox(height: 16),
             _buildPersonalInfo(context, profile),
-        const SizedBox(height: 16),
-        _buildHelpSection(context),
+            const SizedBox(height: 16),
+            _buildHelpSection(context),
           ],
         ),
       ),
@@ -72,7 +65,7 @@ class UserProfileScreen extends ConsumerWidget {
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.zero,
         border: Border.all(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          color: Theme.of(context).colorScheme.secondary,
           width: 2,
         ),
       ),
@@ -81,10 +74,9 @@ class UserProfileScreen extends ConsumerWidget {
         children: [
           Text(
             'Uzyskaj pomoc',
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(fontWeight: FontWeight.w800),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 16),
           Text(
@@ -92,30 +84,26 @@ class UserProfileScreen extends ConsumerWidget {
             'W tej zakładce znajdziesz numery alarmowe i kontakty do bezpłatnych form wsparcia, dostępnych wtedy, gdy potrzebujesz rozmowy, porady lub natychmiastowej pomocy. '
             'Jeśli czujesz, że możesz być w niebezpieczeństwie w tej chwili, skontaktuj się z numerem alarmowym 112 lub 999.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  height: 1.5,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .primary
-                      .withValues(alpha: 0.9),
-                ),
+              height: 1.5,
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.9),
+            ),
           ),
           const SizedBox(height: 16),
           Text(
             'Poniżej znajdują się pomocne adresy alarmowe:',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
           const SizedBox(height: 12),
           _buildHelpRow(
             context,
             'Numer alarmowy 112 — europejski numer alarmowy (bezpośrednie zagrożenie życia lub zdrowia)',
           ),
-          _buildHelpRow(
-            context,
-            'Numer alarmowy 999 — pogotowie ratunkowe',
-          ),
+          _buildHelpRow(context, 'Numer alarmowy 999 — pogotowie ratunkowe'),
           _buildHelpRow(
             context,
             'Numer wsparcia kryzysowego dla dorosłych 800 70 2222 — Centrum Wsparcia dla Osób w Kryzysie Psychicznym',
@@ -140,9 +128,9 @@ class UserProfileScreen extends ConsumerWidget {
           Text(
             'Jak skorzystać z pomocy we Wrocławiu?',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+              fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -151,20 +139,19 @@ class UserProfileScreen extends ConsumerWidget {
             'Jeśli nie wiesz, od czego zacząć, interwencja kryzysowa i telefony zaufania i alarmowe są właściwym pierwszym krokiem w sytuacjach nagłych lub bardzo trudnych. '
             'Centra Zdrowia Psychicznego (NFZ) zapewniają dalszą diagnostykę i leczenie psychiatryczne oraz psychologiczne.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  height: 1.5,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .primary
-                      .withValues(alpha: 0.9),
-                ),
+              height: 1.5,
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.9),
+            ),
           ),
           const SizedBox(height: 16),
           Text(
             'Interwencja kryzysowa (samorząd):',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+              fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
           const SizedBox(height: 8),
           _buildPlaceBlock(
@@ -181,9 +168,9 @@ class UserProfileScreen extends ConsumerWidget {
           Text(
             'Centrum Zdrowia Psychicznego (NFZ):',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+              fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
           const SizedBox(height: 8),
           _buildPlaceBlock(
@@ -204,16 +191,15 @@ class UserProfileScreen extends ConsumerWidget {
             phone: '71 369 90 60',
             url:
                 'https://www.spzoz.wroc.pl/przychodnie/centrum-zdrowia-psychicznego-plus',
-            description:
-                'Pomoc ambulatoryjna i środowiskowa w ramach NFZ',
+            description: 'Pomoc ambulatoryjna i środowiskowa w ramach NFZ',
           ),
           const SizedBox(height: 16),
           Text(
             'Poradnia Zdrowia Psychicznego (NFZ):',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+              fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
           const SizedBox(height: 8),
           _buildPlaceBlock(
@@ -229,9 +215,9 @@ class UserProfileScreen extends ConsumerWidget {
           Text(
             'Centrum Zdrowia Psychicznego (NFZ):',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+              fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
           const SizedBox(height: 8),
           _buildPlaceBlock(
@@ -242,8 +228,7 @@ class UserProfileScreen extends ConsumerWidget {
             phone: '71 355 65 18',
             url:
                 'https://www.spzoz.wroc.pl/przychodnie/centrum-zdrowia-psychicznego-plus',
-            description:
-                'Punkt pierwszego kontaktu CZP',
+            description: 'Punkt pierwszego kontaktu CZP',
           ),
         ],
       ),
@@ -256,10 +241,9 @@ class UserProfileScreen extends ConsumerWidget {
       child: Text(
         text,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              height: 1.4,
-              color:
-                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.9),
-            ),
+          height: 1.4,
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.9),
+        ),
       ),
     );
   }
@@ -282,10 +266,7 @@ class UserProfileScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: theme.scaffoldBackgroundColor,
         borderRadius: BorderRadius.zero,
-        border: Border.all(
-          color: theme.colorScheme.surfaceContainerHighest,
-          width: 2,
-        ),
+        border: Border.all(color: theme.colorScheme.primary, width: 2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -298,15 +279,9 @@ class UserProfileScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            'Adres: $address',
-            style: theme.textTheme.bodyMedium,
-          ),
+          Text('Adres: $address', style: theme.textTheme.bodyMedium),
           const SizedBox(height: 4),
-          Text(
-            'Telefon: $phone',
-            style: theme.textTheme.bodyMedium,
-          ),
+          Text('Telefon: $phone', style: theme.textTheme.bodyMedium),
           const SizedBox(height: 4),
           GestureDetector(
             onTap: () async {
@@ -326,9 +301,7 @@ class UserProfileScreen extends ConsumerWidget {
           const SizedBox(height: 8),
           Text(
             'Zakres wsparcia: $description',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              height: 1.4,
-            ),
+            style: theme.textTheme.bodyMedium?.copyWith(height: 1.4),
           ),
         ],
       ),
@@ -376,7 +349,7 @@ class UserProfileScreen extends ConsumerWidget {
         // prostokątne brzegi (bez zaokrągleń)
         borderRadius: BorderRadius.zero,
         border: Border.all(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          color: Theme.of(context).colorScheme.secondary,
           width: 2,
         ),
       ),
@@ -494,7 +467,7 @@ class UserProfileScreen extends ConsumerWidget {
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.zero,
         border: Border.all(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          color: Theme.of(context).colorScheme.secondary,
           width: 2,
         ),
       ),
@@ -561,7 +534,7 @@ class UserProfileScreen extends ConsumerWidget {
         color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.zero,
         border: Border.all(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          color: Theme.of(context).colorScheme.secondary,
           width: 2,
         ),
       ),

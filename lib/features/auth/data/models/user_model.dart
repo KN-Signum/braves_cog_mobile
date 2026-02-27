@@ -5,6 +5,7 @@ class UserModel extends UserEntity {
     required super.id,
     required super.email,
     required super.name,
+    super.token,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -12,6 +13,7 @@ class UserModel extends UserEntity {
       id: json['id'] as String,
       email: json['email'] as String,
       name: json['name'] as String,
+      token: json['token'] as String?,
     );
   }
 
@@ -20,6 +22,7 @@ class UserModel extends UserEntity {
       'id': id,
       'email': email,
       'name': name,
+      if (token != null) 'token': token,
     };
   }
 
@@ -28,6 +31,7 @@ class UserModel extends UserEntity {
       id: entity.id,
       email: entity.email,
       name: entity.name,
+      token: entity.token,
     );
   }
 }

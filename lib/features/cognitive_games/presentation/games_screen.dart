@@ -114,7 +114,7 @@ class GamesScreen extends ConsumerWidget {
                     Icon(
                       Icons.timer_outlined,
                       size: 20,
-                      color: ColorScheme.of(context).secondary,
+                      color: Color(0xFF0F2847),
                     ),
                     SizedBox(width: 8),
                     Text(
@@ -122,7 +122,7 @@ class GamesScreen extends ConsumerWidget {
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w600,
-                        color: ColorScheme.of(context).secondary,
+                        color: Color(0xFF0F2847),
                       ),
                     ),
                   ],
@@ -131,8 +131,8 @@ class GamesScreen extends ConsumerWidget {
                 ElevatedButton(
                   onPressed: () => _launchFullSequence(context, ref),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: ColorScheme.of(context).secondary,
-                    foregroundColor: ColorScheme.of(context).primary,
+                    backgroundColor: ColorScheme.of(context).primary,
+                    foregroundColor: ColorScheme.of(context).surface,
                     padding: const EdgeInsets.symmetric(vertical: 24),
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.zero,

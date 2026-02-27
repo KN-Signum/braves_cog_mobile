@@ -15,10 +15,16 @@ class AuthRepositoryImpl implements AuthRepository {
   });
 
   @override
-  Future<Either<Failure, UserEntity>> login(String email, String password) async {
+  Future<Either<Failure, UserEntity>> login(
+    String email,
+    String password,
+  ) async {
     try {
       final userModel = await remoteDataSource.login(email, password);
       await localDataSource.cacheUser(userModel);
+      if (userModel.token != null) {
+        await localDataSource.saveToken(userModel.token!);
+      }
       return Right(userModel);
     } catch (e) {
       // In a real app we would check if e is NetworkException etc and return appropriate Failure
@@ -27,10 +33,17 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, UserEntity>> register(String email, String password, String name) async {
+  Future<Either<Failure, UserEntity>> register(
+    String email,
+    String password,
+    String name,
+  ) async {
     try {
       final userModel = await remoteDataSource.register(email, password, name);
       await localDataSource.cacheUser(userModel);
+      if (userModel.token != null) {
+        await localDataSource.saveToken(userModel.token!);
+      }
       return Right(userModel);
     } catch (e) {
       return Left(ServerFailure(e.toString()));

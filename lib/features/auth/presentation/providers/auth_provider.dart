@@ -13,13 +13,19 @@ import 'package:braves_cog/features/profile/presentation/providers/profile_provi
 
 // --- Dependency Injection ---
 
-final apiClientProvider = Provider<ApiClient>((ref) {
-  return ApiClient(baseUrl: EnvConfig.apiBaseUrl);
-});
-
 final authLocalDataSourceProvider = Provider<AuthLocalDataSource>((ref) {
   final prefs = ref.watch(sharedPreferencesProvider);
   return AuthLocalDataSourceImpl(sharedPreferences: prefs);
+});
+
+final apiClientProvider = Provider<ApiClient>((ref) {
+  return ApiClient(
+    baseUrl: EnvConfig.apiBaseUrl,
+    tokenProvider: () async {
+      final localAuth = ref.read(authLocalDataSourceProvider);
+      return await localAuth.getToken();
+    },
+  );
 });
 
 final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {

@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:braves_cog/core/widgets/app_bottom_nav_bar.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
-import '../auth/login_screen.dart';
+import 'package:braves_cog/features/auth/presentation/screens/login_screen.dart';
 import '../onboarding/onboarding_screen.dart';
 import '../home/home_screen.dart';
 import '../health/health_module_screen.dart';

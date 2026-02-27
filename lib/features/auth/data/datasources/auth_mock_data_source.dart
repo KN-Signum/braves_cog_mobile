@@ -33,6 +33,7 @@ class AuthMockDataSource implements AuthRemoteDataSource {
       id: 'mock_user_${email.split('@')[0]}',
       email: email,
       name: _testAccounts[email]!,
+      token: 'mock_jwt_token_${email.split('@')[0]}_12345',
     );
   }
 
@@ -43,6 +44,7 @@ class AuthMockDataSource implements AuthRemoteDataSource {
       id: 'mock_user_${DateTime.now().millisecondsSinceEpoch}',
       email: email,
       name: name,
+      token: 'mock_jwt_token_register_12345',
     );
   }
 
@@ -55,6 +57,7 @@ class AuthMockDataSource implements AuthRemoteDataSource {
       id: 'mock_user_normal',
       email: 'normalcog@test.pl',
       name: 'normalcog',
+      token: 'mock_jwt_token_current_user_12345',
     );
   }
 }

@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:braves_cog/core/theme/app_theme.dart';
 import 'package:braves_cog/features/onboarding/presentation/providers/onboarding_provider.dart';
 import 'package:braves_cog/features/profile/domain/entities/user_profile_entity.dart';
+import 'package:braves_cog/features/profile/domain/entities/biological_sex.dart';
+import 'package:braves_cog/features/profile/domain/entities/education_level.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 import 'package:braves_cog/features/onboarding/widgets/year_picker.dart'
     as custom_pickers;
@@ -48,11 +50,11 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
   bool _canProceed(UserProfileEntity profile) {
     switch (_currentStep) {
       case 0:
-        return profile.birthYear.isNotEmpty;
+        return true;
       case 1:
-        return profile.height.isNotEmpty;
+        return true;
       case 2:
-        return profile.weight.isNotEmpty;
+        return true;
       case 3:
         return true;
       case 4:
@@ -62,17 +64,17 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
       case 6: // Leki na stałe
         return true;
       case 7: // Płeć biologiczna
-        return profile.biologicalSex.isNotEmpty;
+        return true;
       case 8: // Tożsamość płciowa
         if (profile.genderIdentity == 'other') {
           return profile.genderIdentityOther.isNotEmpty;
         }
         return profile.genderIdentity.isNotEmpty;
       case 9: // Wykształcenie
-        if (profile.education == 'other') {
+        if (profile.education == EducationLevel.other) {
           return profile.educationOther.isNotEmpty;
         }
-        return profile.education.isNotEmpty;
+        return true;
       case 10: // Niepełnosprawność
         return profile.disability.isNotEmpty;
       default:
@@ -210,9 +212,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                 backgroundColor: AppTheme.primaryColor,
                 disabledBackgroundColor: AppTheme.primaryColor,
                 minimumSize: const Size(double.infinity, 56),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.zero,
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -226,10 +226,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Icon(
-                    Icons.chevron_right,
-                    color: AppTheme.inverseTextColor,
-                  ),
+                  Icon(Icons.chevron_right, color: AppTheme.inverseTextColor),
                 ],
               ),
             ),
@@ -456,10 +453,18 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
           ],
         );
       case 7:
-        return IconOptionGrid(
+        return IconOptionGrid<BiologicalSex>(
           options: [
-            IconOption(value: 'male', label: 'Mężczyzna', icon: Icons.male),
-            IconOption(value: 'female', label: 'Kobieta', icon: Icons.female),
+            IconOption<BiologicalSex>(
+              value: BiologicalSex.male,
+              label: 'Mężczyzna',
+              icon: Icons.male,
+            ),
+            IconOption<BiologicalSex>(
+              value: BiologicalSex.female,
+              label: 'Kobieta',
+              icon: Icons.female,
+            ),
           ],
           value: profile.biologicalSex,
           onChange: (value) =>
@@ -467,15 +472,27 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
         );
       case 8:
         final options = [
-          IconOption(value: 'male', label: 'Mężczyzna', icon: Icons.male),
-          IconOption(value: 'female', label: 'Kobieta', icon: Icons.female),
-          IconOption(
+          IconOption<String>(
+            value: 'male',
+            label: 'Mężczyzna',
+            icon: Icons.male,
+          ),
+          IconOption<String>(
+            value: 'female',
+            label: 'Kobieta',
+            icon: Icons.female,
+          ),
+          IconOption<String>(
             value: 'non_binary',
             label: 'Niebinarna',
             icon: Icons.transgender,
           ),
-          IconOption(value: 'other', label: 'Inna', icon: Icons.person_outline),
-          IconOption(
+          IconOption<String>(
+            value: 'other',
+            label: 'Inna',
+            icon: Icons.person_outline,
+          ),
+          IconOption<String>(
             value: 'prefer_not_to_say',
             label: 'Wolę nie mówić',
             icon: Icons.block,
@@ -483,7 +500,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
         ];
         return Column(
           children: [
-            IconOptionGrid(
+            IconOptionGrid<String>(
               options: options,
               value: profile.genderIdentity,
               onChange: (value) =>
@@ -505,34 +522,42 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
       case 9:
         // Education
         final eduOptions = [
-          IconOption(
-            value: 'primary',
+          IconOption<EducationLevel>(
+            value: EducationLevel.primary,
             label: 'Podstawowe',
             icon: Icons.school_outlined,
           ),
-          IconOption(
-            value: 'vocational',
+          IconOption<EducationLevel>(
+            value: EducationLevel.vocational,
             label: 'Zawodowe',
             icon: Icons.build_outlined,
           ),
-          IconOption(
-            value: 'secondary',
+          IconOption<EducationLevel>(
+            value: EducationLevel.secondary,
             label: 'Średnie',
             icon: Icons.menu_book,
           ),
-          IconOption(value: 'higher', label: 'Wyższe', icon: Icons.school),
-          IconOption(value: 'other', label: 'Inne', icon: Icons.more_horiz),
+          IconOption<EducationLevel>(
+            value: EducationLevel.higher,
+            label: 'Wyższe',
+            icon: Icons.school,
+          ),
+          IconOption<EducationLevel>(
+            value: EducationLevel.other,
+            label: 'Inne',
+            icon: Icons.more_horiz,
+          ),
         ];
 
         return Column(
           children: [
-            IconOptionGrid(
+            IconOptionGrid<EducationLevel>(
               options: eduOptions,
               value: profile.education,
               onChange: (value) =>
                   _updateProfile(profile.copyWith(education: value)),
             ),
-            if (profile.education == 'other') ...[
+            if (profile.education == EducationLevel.other) ...[
               const SizedBox(height: 16),
               _buildTextField(
                 label: 'Inne wykształcenie',
@@ -545,20 +570,24 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
           ],
         );
       case 10:
-        return IconOptionGrid(
+        return IconOptionGrid<String>(
           options: [
-            IconOption(
+            IconOption<String>(
               value: 'none',
               label: 'Brak',
               icon: Icons.accessibility_new,
             ),
-            IconOption(value: 'mild', label: 'Lekka', icon: Icons.accessible),
-            IconOption(
+            IconOption<String>(
+              value: 'mild',
+              label: 'Lekka',
+              icon: Icons.accessible,
+            ),
+            IconOption<String>(
               value: 'moderate',
               label: 'Umiarkowana',
               icon: Icons.accessible_forward,
             ),
-            IconOption(
+            IconOption<String>(
               value: 'severe',
               label: 'Znaczna',
               icon: Icons.wheelchair_pickup,

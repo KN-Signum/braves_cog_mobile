@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class WeightPicker extends StatelessWidget {
-  final String weight;
-  final Function(String) onWeightChanged;
+  final int weight;
+  final Function(int) onWeightChanged;
 
   const WeightPicker({
     super.key,
@@ -12,7 +12,7 @@ class WeightPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final weights = List.generate(151, (index) => (40 + index).toString());
+    final weights = List.generate(151, (index) => 40 + index);
     final initialIndex = weights.indexOf(weight);
 
     return SizedBox(
@@ -22,7 +22,7 @@ class WeightPicker extends StatelessWidget {
         itemExtent: 50,
         diameterRatio: 1.5,
         controller: FixedExtentScrollController(
-          initialItem: initialIndex >= 0 ? initialIndex : weights.indexOf('70'),
+          initialItem: initialIndex >= 0 ? initialIndex : weights.indexOf(70),
         ),
         onSelectedItemChanged: (index) {
           onWeightChanged(weights[index]);

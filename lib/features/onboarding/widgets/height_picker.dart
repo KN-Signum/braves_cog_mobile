@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class HeightPicker extends StatelessWidget {
-  final String height;
-  final Function(String) onHeightChanged;
+  final int height;
+  final Function(int) onHeightChanged;
 
   const HeightPicker({
     super.key,
@@ -12,7 +12,7 @@ class HeightPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final heights = List.generate(121, (index) => (120 + index).toString());
+    final heights = List.generate(121, (index) => 120 + index);
     final initialIndex = heights.indexOf(height);
 
     return SizedBox(
@@ -22,9 +22,7 @@ class HeightPicker extends StatelessWidget {
         itemExtent: 50,
         diameterRatio: 1.5,
         controller: FixedExtentScrollController(
-          initialItem: initialIndex >= 0
-              ? initialIndex
-              : heights.indexOf('170'),
+          initialItem: initialIndex >= 0 ? initialIndex : heights.indexOf(170),
         ),
         onSelectedItemChanged: (index) {
           onHeightChanged(heights[index]);

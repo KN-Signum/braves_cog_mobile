@@ -2,6 +2,8 @@ import 'package:braves_cog/features/profile/data/datasources/profile_remote_data
 import 'package:braves_cog/features/profile/data/models/user_profile_model.dart';
 import 'package:braves_cog/features/profile/domain/entities/user_type.dart';
 import 'package:braves_cog/features/profile/domain/entities/user_profile_entity.dart';
+import 'package:braves_cog/features/profile/domain/entities/biological_sex.dart';
+import 'package:braves_cog/features/profile/domain/entities/education_level.dart';
 
 class ProfileMockDataSource implements ProfileRemoteDataSource {
   @override
@@ -49,9 +51,9 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
   UserProfileModel _buildNeuroCogProfile() {
     return const UserProfileModel(
       id: 'neurocog_user',
-      birthYear: '1995',
-      height: '175',
-      weight: '70',
+      birthYear: 1995,
+      height: 175,
+      weight: 70,
       currentIllness: 'None',
       chronicDiseases: 'ADHD',
       smokingCigarettes: false,
@@ -63,10 +65,10 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
       otherSubstancesFrequency: '',
       allergies: [],
       medications: ['Methylphenidate'],
-      biologicalSex: 'male',
+      biologicalSex: BiologicalSex.male,
       genderIdentity: 'male',
       genderIdentityOther: '',
-      education: 'higher',
+      education: EducationLevel.higher,
       educationOther: '',
       disability: 'none',
       type: UserType.neuroCog,
@@ -76,9 +78,9 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
   UserProfileModel _buildCovidCogProfile() {
     return const UserProfileModel(
       id: 'covidcog_user',
-      birthYear: '1988',
-      height: '170',
-      weight: '75',
+      birthYear: 1988,
+      height: 170,
+      weight: 75,
       currentIllness: 'COVID-19 recovery',
       chronicDiseases: 'None',
       smokingCigarettes: false,
@@ -90,10 +92,10 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
       otherSubstancesFrequency: '',
       allergies: ['Aspirin'],
       medications: [],
-      biologicalSex: 'female',
+      biologicalSex: BiologicalSex.female,
       genderIdentity: 'female',
       genderIdentityOther: '',
-      education: 'higher',
+      education: EducationLevel.higher,
       educationOther: '',
       disability: 'none',
       type: UserType.covidCog,
@@ -103,9 +105,9 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
   UserProfileModel _buildVasCogProfile() {
     return const UserProfileModel(
       id: 'vascog_user',
-      birthYear: '1965',
-      height: '180',
-      weight: '85',
+      birthYear: 1965,
+      height: 180,
+      weight: 85,
       currentIllness: 'None',
       chronicDiseases: 'Hypertension',
       smokingCigarettes: true,
@@ -117,10 +119,10 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
       otherSubstancesFrequency: '',
       allergies: ['Lisinopril alternatives'],
       medications: ['Lisinopril', 'Amlodipine'],
-      biologicalSex: 'male',
+      biologicalSex: BiologicalSex.male,
       genderIdentity: 'male',
       genderIdentityOther: '',
-      education: 'secondary',
+      education: EducationLevel.secondary,
       educationOther: '',
       disability: 'none',
       type: UserType.vasCog,
@@ -130,9 +132,9 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
   UserProfileModel _buildSccCogProfile() {
     return const UserProfileModel(
       id: 'scccog_user',
-      birthYear: '1992',
-      height: '172',
-      weight: '68',
+      birthYear: 1992,
+      height: 172,
+      weight: 68,
       currentIllness: 'None',
       chronicDiseases: 'None',
       smokingCigarettes: false,
@@ -144,10 +146,10 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
       otherSubstancesFrequency: '',
       allergies: [],
       medications: [],
-      biologicalSex: 'female',
+      biologicalSex: BiologicalSex.female,
       genderIdentity: 'female',
       genderIdentityOther: '',
-      education: 'higher',
+      education: EducationLevel.higher,
       educationOther: '',
       disability: 'none',
       type: UserType.sccCog,
@@ -157,9 +159,9 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
   UserProfileModel _buildNormalCogProfile() {
     return const UserProfileModel(
       id: 'normalcog_user',
-      birthYear: '1990',
-      height: '175',
-      weight: '70',
+      birthYear: 1990,
+      height: 175,
+      weight: 70,
       currentIllness: 'None',
       chronicDiseases: 'None',
       smokingCigarettes: false,
@@ -171,10 +173,10 @@ class ProfileMockDataSource implements ProfileRemoteDataSource {
       otherSubstancesFrequency: '',
       allergies: ['Peanuts'],
       medications: [],
-      biologicalSex: 'male',
+      biologicalSex: BiologicalSex.male,
       genderIdentity: 'male',
       genderIdentityOther: '',
-      education: 'higher',
+      education: EducationLevel.higher,
       educationOther: '',
       disability: 'none',
       type: UserType.normalCog,

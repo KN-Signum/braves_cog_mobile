@@ -1,11 +1,13 @@
 import 'package:equatable/equatable.dart';
 import 'user_type.dart';
+import 'biological_sex.dart';
+import 'education_level.dart';
 
 class UserProfileEntity extends Equatable {
   final String? id;
-  final String birthYear;
-  final String height;
-  final String weight;
+  final int birthYear;
+  final int height;
+  final int weight;
   final String currentIllness;
   final String chronicDiseases;
   final bool smokingCigarettes;
@@ -17,19 +19,19 @@ class UserProfileEntity extends Equatable {
   final String otherSubstancesFrequency;
   final List<String> allergies;
   final List<String> medications;
-  final String biologicalSex;
+  final BiologicalSex biologicalSex;
   final String genderIdentity;
   final String genderIdentityOther;
-  final String education;
+  final EducationLevel education;
   final String educationOther;
   final String disability;
   final UserType type;
 
   const UserProfileEntity({
     this.id,
-    this.birthYear = '1990',
-    this.height = '170',
-    this.weight = '70',
+    this.birthYear = 1990,
+    this.height = 170,
+    this.weight = 70,
     this.currentIllness = '',
     this.chronicDiseases = '',
     this.smokingCigarettes = false,
@@ -41,10 +43,10 @@ class UserProfileEntity extends Equatable {
     this.otherSubstancesFrequency = '',
     this.allergies = const [],
     this.medications = const [],
-    this.biologicalSex = '',
+    this.biologicalSex = BiologicalSex.male,
     this.genderIdentity = '',
     this.genderIdentityOther = '',
-    this.education = '',
+    this.education = EducationLevel.other,
     this.educationOther = '',
     this.disability = '',
     this.type = UserType.normalCog,
@@ -52,9 +54,9 @@ class UserProfileEntity extends Equatable {
 
   UserProfileEntity copyWith({
     String? id,
-    String? birthYear,
-    String? height,
-    String? weight,
+    int? birthYear,
+    int? height,
+    int? weight,
     String? currentIllness,
     String? chronicDiseases,
     bool? smokingCigarettes,
@@ -66,10 +68,10 @@ class UserProfileEntity extends Equatable {
     String? otherSubstancesFrequency,
     List<String>? allergies,
     List<String>? medications,
-    String? biologicalSex,
+    BiologicalSex? biologicalSex,
     String? genderIdentity,
     String? genderIdentityOther,
-    String? education,
+    EducationLevel? education,
     String? educationOther,
     String? disability,
     UserType? type,

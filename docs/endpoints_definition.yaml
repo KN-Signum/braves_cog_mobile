@@ -1,16 +1,14 @@
 openapi: 3.0.3
 
 info:
-  title: BRAVES-Cog Cognitive Results API
+  title: BRAVES-Cog API
   description: |
-    API for submitting cognitive game test results from the BRAVES-Cog mobile application.
+    API for submitting cognitive game test results, surveys, and user profiles from the BRAVES-Cog mobile application.
 
-    ## Design Decision: Single vs Batch
-    The app runs a **sequence of 7 tests** in one session. Two endpoints are provided:
-    - `POST /cognitive-results` — single result (e.g. retry of one test)
-    - `POST /cognitive-results/batch` — full sequence submission (preferred, atomic)
-
-    The batch endpoint is the primary one used after a full training session completes.
+    ## Modules
+    - **Cognitive Results**: Submitting test results (single and sequenced batch).
+    - **Surveys**: Submitting survey answers.
+    - **User Profile**: Fetching and updating user demographic and health data.
   version: 1.0.0
   contact:
     name: BRAVES-Cog Team
@@ -26,6 +24,8 @@ tags:
     description: Submit and manage cognitive test results
   - name: Survey Results
     description: Submit and manage survey results
+  - name: User Profile
+    description: Manage user demographic and health profiles
 
 paths:
 
@@ -107,6 +107,60 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
 
+  /profile/me:
+    get:
+      tags:
+        - User Profile
+      summary: Get the current user's profile
+      description: Retrieves the demographic and health profile of the authenticated user.
+      operationId: getUserProfile
+      responses:
+        '200':
+          description: Profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      tags:
+        - User Profile
+      summary: Update the current user's profile
+      description: Updates the demographic and health profile of the authenticated user.
+      operationId: updateUserProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
 
   /cognitive-results:
     post:
@@ -183,6 +237,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /cognitive-results/stats:
+    get:
+      tags:
+        - Cognitive Results
+      summary: Get user cognitive training statistics
+      description: Retrieves summary statistics for the user's cognitive training sessions, such as total completed sessions and the date of the last session.
+      operationId: getCognitiveStats
+      responses:
+        '200':
+          description: Statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CognitiveStats'
+              examples:
+                success:
+                  summary: Example statistics
+                  value:
+                    totalSessions: 12
+                    lastSessionDate: "2026-03-02T15:30:00.000Z"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalError'
 
@@ -387,6 +466,84 @@ components:
 
   schemas:
 
+    BiologicalSex:
+      type: string
+      enum: [male, female]
+      description: Biological sex of the user.
+
+    EducationLevel:
+      type: string
+      enum: [primary, vocational, secondary, higher, other]
+      description: Highest attained education level.
+
+    UserProfile:
+      type: object
+      required: [birthYear, height, weight, biologicalSex, education]
+      properties:
+        birthYear:
+          type: integer
+          example: 1990
+        height:
+          type: integer
+          example: 175
+        weight:
+          type: integer
+          example: 70
+        currentIllness:
+          type: string
+          nullable: true
+        chronicDiseases:
+          type: string
+          nullable: true
+        smokingCigarettes:
+          type: boolean
+          nullable: true
+        smokingFrequency:
+          type: string
+          nullable: true
+        drinkingAlcohol:
+          type: boolean
+          nullable: true
+        alcoholFrequency:
+          type: string
+          nullable: true
+        otherSubstances:
+          type: boolean
+          nullable: true
+        otherSubstancesName:
+          type: string
+          nullable: true
+        otherSubstancesFrequency:
+          type: string
+          nullable: true
+        allergies:
+          type: array
+          items:
+            type: string
+        medications:
+          type: array
+          items:
+            type: string
+        biologicalSex:
+          $ref: '#/components/schemas/BiologicalSex'
+        genderIdentity:
+          type: string
+          nullable: true
+        genderIdentityOther:
+          type: string
+          nullable: true
+        education:
+          $ref: '#/components/schemas/EducationLevel'
+        educationOther:
+          type: string
+          nullable: true
+        disability:
+          type: string
+          nullable: true
+        type:
+          type: string
+          enum: [neuroCog, covidCog, vasCog, sccCog, normalCog]
+
     SurveySubmissionRequest:
       type: object
       required:
@@ -444,6 +601,22 @@ components:
           format: date-time
           example: "2026-02-26T20:21:56.556794Z"
 
+    CognitiveStats:
+      type: object
+      description: Summary statistics for a user's cognitive training history
+      required:
+        - totalSessions
+      properties:
+        totalSessions:
+          type: integer
+          description: Total number of completed full training sessions
+          example: 12
+        lastSessionDate:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp of the most recent completed training session. Can be null if the user has never completed a session.
+          nullable: true
+          example: "2026-03-02T15:30:00.000Z"
 
     CognitiveTestResultRequest:
       type: object

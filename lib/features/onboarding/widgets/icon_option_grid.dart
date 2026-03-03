@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-class IconOption {
-  final String value;
+class IconOption<T> {
+  final T value;
   final String label;
   final IconData icon;
 
   IconOption({required this.value, required this.label, required this.icon});
 }
 
-class IconOptionGrid extends StatelessWidget {
-  final List<IconOption> options;
-  final String value;
-  final Function(String) onChange;
+class IconOptionGrid<T> extends StatelessWidget {
+  final List<IconOption<T>> options;
+  final T value;
+  final Function(T) onChange;
   final int columns;
 
   const IconOptionGrid({
@@ -59,11 +59,7 @@ class IconOptionGrid extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  option.icon,
-                  size: 36,
-                  color: theme.colorScheme.primary,
-                ),
+                Icon(option.icon, size: 36, color: theme.colorScheme.primary),
                 const SizedBox(height: 8),
                 Text(
                   option.label,

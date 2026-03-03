@@ -148,16 +148,6 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
     }
   }
 
-  TextEditingController _getTextController(String key, String initialText) {
-    final existing = _textControllers[key];
-    if (existing != null) {
-      return existing;
-    }
-    final controller = TextEditingController(text: initialText);
-    _textControllers[key] = controller;
-    return controller;
-  }
-
   void _initializeDefaultValues(SurveyNotifier notifier) {
     final state = ref.read(surveyProvider(widget.survey.id));
     for (var question in widget.survey.questions) {
@@ -758,7 +748,10 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
   Widget _buildYearPicker(SurveyQuestionEntity question) {
     final state = ref.watch(surveyProvider(widget.survey.id));
     final notifier = ref.read(surveyProvider(widget.survey.id).notifier);
-    final currentValue = state.answers[question.id]?.toString() ?? '1990';
+    final answer = state.answers[question.id];
+    final currentValue = answer is int
+        ? answer
+        : (answer != null ? int.tryParse(answer.toString()) ?? 1990 : 1990);
     final minYear = question.options?['minYear'] as int? ?? 1925;
     final maxYear = question.options?['maxYear'] as int? ?? DateTime.now().year;
     final defaultYear = question.options?['defaultYear'] as int? ?? 1990;
@@ -777,7 +770,10 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
   Widget _buildHeightPicker(SurveyQuestionEntity question) {
     final state = ref.watch(surveyProvider(widget.survey.id));
     final notifier = ref.read(surveyProvider(widget.survey.id).notifier);
-    final currentValue = state.answers[question.id]?.toString() ?? '170';
+    final answer = state.answers[question.id];
+    final currentValue = answer is int
+        ? answer
+        : (answer != null ? int.tryParse(answer.toString()) ?? 170 : 170);
 
     return HeightPicker(
       height: currentValue,
@@ -790,7 +786,10 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
   Widget _buildWeightPicker(SurveyQuestionEntity question) {
     final state = ref.watch(surveyProvider(widget.survey.id));
     final notifier = ref.read(surveyProvider(widget.survey.id).notifier);
-    final currentValue = state.answers[question.id]?.toString() ?? '70';
+    final answer = state.answers[question.id];
+    final currentValue = answer is int
+        ? answer
+        : (answer != null ? int.tryParse(answer.toString()) ?? 70 : 70);
 
     return WeightPicker(
       weight: currentValue,

@@ -1,5 +1,7 @@
 import 'package:braves_cog/features/profile/domain/entities/user_profile_entity.dart';
 import 'package:braves_cog/features/profile/domain/entities/user_type.dart';
+import 'package:braves_cog/features/profile/domain/entities/biological_sex.dart';
+import 'package:braves_cog/features/profile/domain/entities/education_level.dart';
 
 class UserProfileModel extends UserProfileEntity {
   const UserProfileModel({
@@ -30,9 +32,15 @@ class UserProfileModel extends UserProfileEntity {
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
     return UserProfileModel(
       id: json['id'],
-      birthYear: json['birthYear'] ?? '1990',
-      height: json['height'] ?? '170',
-      weight: json['weight'] ?? '70',
+      birthYear: json['birthYear'] is int
+          ? json['birthYear']
+          : int.tryParse(json['birthYear']?.toString() ?? '') ?? 1990,
+      height: json['height'] is int
+          ? json['height']
+          : int.tryParse(json['height']?.toString() ?? '') ?? 170,
+      weight: json['weight'] is int
+          ? json['weight']
+          : int.tryParse(json['weight']?.toString() ?? '') ?? 70,
       currentIllness: json['currentIllness'] ?? '',
       chronicDiseases: json['chronicDiseases'] ?? '',
       smokingCigarettes: json['smokingCigarettes'] ?? false,
@@ -44,20 +52,19 @@ class UserProfileModel extends UserProfileEntity {
       otherSubstancesFrequency: json['otherSubstancesFrequency'] ?? '',
       allergies: List<String>.from(json['allergies'] ?? []),
       medications: List<String>.from(json['medications'] ?? []),
-      biologicalSex: json['biologicalSex'] ?? '',
+      biologicalSex: BiologicalSex.fromString(json['biologicalSex'] ?? ''),
       genderIdentity: json['genderIdentity'] ?? '',
       genderIdentityOther: json['genderIdentityOther'] ?? '',
-      education: json['education'] ?? '',
+      education: EducationLevel.fromString(json['education'] ?? ''),
       educationOther: json['educationOther'] ?? '',
       disability: json['disability'] ?? '',
-      // Default is NormalCog; fromString keeps backward compatibility with older values
       type: UserType.fromString(json['type'] ?? 'NormalCog'),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      // NOTE: 'id' and 'lastUpdate' omitted. 'id' is extracted from token.
       'birthYear': birthYear,
       'height': height,
       'weight': weight,
@@ -72,14 +79,13 @@ class UserProfileModel extends UserProfileEntity {
       'otherSubstancesFrequency': otherSubstancesFrequency,
       'allergies': allergies,
       'medications': medications,
-      'biologicalSex': biologicalSex,
+      'biologicalSex': biologicalSex.value,
       'genderIdentity': genderIdentity,
       'genderIdentityOther': genderIdentityOther,
-      'education': education,
+      'education': education.value,
       'educationOther': educationOther,
       'disability': disability,
       'type': type.value,
-      'lastUpdate': DateTime.now().toIso8601String(),
     };
   }
 }

@@ -308,18 +308,17 @@ class UserProfileScreen extends ConsumerWidget {
     );
   }
 
-  int _calculateAge(String? birthYear) {
-    if (birthYear == null || birthYear.isEmpty) return 0;
-    return DateTime.now().year - int.parse(birthYear);
+  int _calculateAge(int? birthYear) {
+    if (birthYear == null) return 0;
+    return DateTime.now().year - birthYear;
   }
 
-  double _calculateBMI(String? height, String? weight) {
-    if (height == null || weight == null || height.isEmpty || weight.isEmpty) {
+  double _calculateBMI(int? height, int? weight) {
+    if (height == null || weight == null || height == 0) {
       return 0;
     }
-    final heightInMeters = int.parse(height) / 100;
-    final weightInKg = int.parse(weight);
-    return weightInKg / (heightInMeters * heightInMeters);
+    final heightInMeters = height / 100;
+    return weight / (heightInMeters * heightInMeters);
   }
 
   String _getBMICategory(double bmi) {
@@ -551,7 +550,7 @@ class UserProfileScreen extends ConsumerWidget {
           _buildInfoRow(
             context,
             'Płeć\nbiologiczna',
-            sexLabels[profile.biologicalSex] ?? 'Nie podano',
+            sexLabels[profile.biologicalSex.value] ?? 'Nie podano',
           ),
           _buildInfoRow(
             context,
@@ -561,8 +560,8 @@ class UserProfileScreen extends ConsumerWidget {
           _buildInfoRow(
             context,
             'Wykształcenie',
-            educationLabels[profile.education] ??
-                profile.education ??
+            educationLabels[profile.education.value] ??
+                profile.educationOther ??
                 'Nie podano',
           ),
           _buildInfoRow(

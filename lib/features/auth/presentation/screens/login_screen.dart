@@ -391,21 +391,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               vertical: 16,
             ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(
                 color: Color(0xFF9CA3AF),
                 width: 1.5,
               ),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(
                 color: Color(0xFF9CA3AF),
                 width: 1.5,
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
                 color: Theme.of(context).colorScheme.secondary,
                 width: 2,

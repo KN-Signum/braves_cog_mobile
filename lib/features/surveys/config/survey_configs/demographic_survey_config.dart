@@ -71,7 +71,7 @@ class DemographicSurveyConfig {
         SurveyQuestionEntity(
           id: 'gender_identity_other',
           type: QuestionType.text,
-          question: 'Jeśli wybrałeś/-aś "Inna", opisz swoją tożsamość płciową:',
+          question: 'Jeśli wybrano "Inna", opisz swoją tożsamość płciową:',
           required: true,
           options: {
             'placeholder': 'Wpisz tożsamość płciową',
@@ -120,7 +120,7 @@ class DemographicSurveyConfig {
         SurveyQuestionEntity(
           id: 'education_other',
           type: QuestionType.text,
-          question: 'Jeśli wybrałeś/-aś "Inne", opisz swoje wykształcenie:',
+          question: 'Jeśli wybrano "Inne", opisz swoje wykształcenie:',
           required: true,
           options: {
             'placeholder': 'Wpisz wykształcenie',

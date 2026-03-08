@@ -10,7 +10,7 @@ class PHQ9SurveyConfig {
         SurveyQuestionEntity(
           id: 'phq9_info',
           type: QuestionType.text,
-          question: 'Następne pytania dotyczą Twojego samopoczucia psychicznego oraz objawów, których mogłeś/-aś doświadczać w ostatnim czasie. Przeczytaj uważnie każde stwierdzenie i zaznacz, jak często występował u Ciebie dany objaw w ciągu ostatnich 2 tygodni. Odpowiadaj zgodnie z własnym doświadczeniem — nie ma odpowiedzi dobrych ani złych.',
+          question: 'Następne pytania dotyczą Twojego samopoczucia psychicznego oraz objawów, których mogłeś doświadczać w ostatnim czasie. Przeczytaj uważnie każde stwierdzenie i zaznacz, jak często występował u Ciebie dany objaw w ciągu ostatnich 2 tygodni. Odpowiadaj zgodnie z własnym doświadczeniem — nie ma odpowiedzi dobrych ani złych.',
           required: false,
           options: {
             'info': true,
@@ -95,7 +95,7 @@ class PHQ9SurveyConfig {
         SurveyQuestionEntity(
           id: 'phq9_6',
           type: QuestionType.choice,
-          question: 'Poczucie niezadowolenia z siebie — lub uczucie, że jest się do niczego, albo że zawiódł/zawiodła Pan/Pani siebie lub rodzinę',
+          question: 'Poczucie niezadowolenia z siebie — lub uczucie, że jest się do niczego, albo że zawiodłeś siebie lub rodzinę',
           required: true,
           options: {
             'options': [
@@ -154,7 +154,7 @@ class PHQ9SurveyConfig {
         SurveyQuestionEntity(
           id: 'phq9_difficulty',
           type: QuestionType.choice,
-          question: 'Jeżeli zaznaczył/-a Pan/Pani którekolwiek z problemów, jak bardzo utrudniły one Panu/Pani wykonywanie pracy, zajmowanie się domem lub relacje z innymi ludźmi?',
+          question: 'Jeżeli zaznaczyłeś którekolwiek z problemów, jak bardzo utrudniły one wykonywanie pracy, zajmowanie się domem lub relacje z innymi ludźmi?',
           required: true,
           options: {
             'options': [

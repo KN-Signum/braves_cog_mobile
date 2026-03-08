@@ -19,7 +19,7 @@ class Brief2WaySSSSurveyConfig {
         SurveyQuestionEntity(
           id: 'sss_1',
           type: QuestionType.choice,
-          question: 'Gdybym gdzieś utknął/utknęła, jest ktoś, kto mógłby po mnie przyjechać',
+          question: 'Gdybym gdzieś utknął, jest ktoś, kto mógłby po mnie przyjechać',
           required: true,
           options: {
             'options': [
@@ -131,7 +131,7 @@ class Brief2WaySSSSurveyConfig {
         SurveyQuestionEntity(
           id: 'sss_8',
           type: QuestionType.choice,
-          question: 'Pomagałem/pomagałam komuś przejąć jego obowiązki, gdy nie mógł ich wypełnić',
+          question: 'Pomagałem komuś przejąć jego obowiązki, gdy nie mógł ich wypełnić',
           required: true,
           options: {
             'options': [
@@ -179,7 +179,7 @@ class Brief2WaySSSSurveyConfig {
         SurveyQuestionEntity(
           id: 'sss_11',
           type: QuestionType.choice,
-          question: 'Mam kogoś, kto pomoże mi, gdy źle się czuję lub jestem chory/chora',
+          question: 'Mam kogoś, kto pomoże mi, gdy źle się czuję lub jestem chory',
           required: true,
           options: {
             'options': [
@@ -195,7 +195,7 @@ class Brief2WaySSSSurveyConfig {
         SurveyQuestionEntity(
           id: 'sss_12',
           type: QuestionType.choice,
-          question: 'Jest ktoś, kto może pomóc mi z moimi obowiązkami, gdy sam/sama nie dam rady',
+          question: 'Jest ktoś, kto może pomóc mi z moimi obowiązkami, gdy sam nie dam rady',
           required: true,
           options: {
             'options': [

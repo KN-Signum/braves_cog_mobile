@@ -21,7 +21,7 @@ class ScreeningSQSurveyConfig {
         SurveyQuestionEntity(
           id: 'sq_bedtime',
           type: QuestionType.number,
-          question: 'W ciągu ostatniego miesiąca, o której godzinie zazwyczaj kładłeś/-aś się spać w nocy?',
+          question: 'W ciągu ostatniego miesiąca, o której godzinie zazwyczaj kładłeś się spać w nocy?',
           required: true,
           options: {
             'composite': 'hours_minutes',
@@ -33,7 +33,7 @@ class ScreeningSQSurveyConfig {
         SurveyQuestionEntity(
           id: 'sq_waketime',
           type: QuestionType.number,
-          question: 'W ciągu ostatniego miesiąca, o której godzinie zazwyczaj wstawałeś/-aś rano?',
+          question: 'W ciągu ostatniego miesiąca, o której godzinie zazwyczaj wstawałeś rano?',
           required: true,
           options: {
             'composite': 'hours_minutes',
@@ -56,7 +56,7 @@ class ScreeningSQSurveyConfig {
         SurveyQuestionEntity(
           id: 'sq_sleep_hours',
           type: QuestionType.number,
-          question: 'W ciągu ostatniego miesiąca, ile godzin rzeczywistego snu miałeś/-aś każdej nocy?\n(Może to się różnić od liczby godzin spędzonych w łóżku.)',
+          question: 'W ciągu ostatniego miesiąca, ile godzin rzeczywistego snu miałeś każdej nocy?\n(Może to się różnić od liczby godzin spędzonych w łóżku.)',
           required: true,
           options: {
             'composite': 'single_hours',
@@ -67,7 +67,7 @@ class ScreeningSQSurveyConfig {
         SurveyQuestionEntity(
           id: 'sq_sleep_difficulties',
           type: QuestionType.choice,
-          question: 'W ciągu ostatniego miesiąca, czy miałeś/-aś trudności ze snem, ponieważ budziłeś/-aś się w środku nocy lub wcześnie rano?',
+          question: 'W ciągu ostatniego miesiąca, czy miałeś trudności ze snem, ponieważ budziłeś się w środku nocy lub wcześnie rano?',
           required: true,
           options: {
             'options': [

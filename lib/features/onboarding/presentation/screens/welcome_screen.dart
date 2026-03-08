@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:braves_cog/core/theme/app_theme.dart';
 import 'package:braves_cog/features/onboarding/presentation/providers/onboarding_provider.dart';
 
 class WelcomeScreen extends ConsumerStatefulWidget {
@@ -36,15 +37,37 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  ref.read(onboardingProvider.notifier).setStage(OnboardingStage.intro);
+                  ref
+                      .read(onboardingProvider.notifier)
+                      .setStage(OnboardingStage.intro);
                 },
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryColor,
+                  foregroundColor: AppTheme.inverseTextColor,
+                  disabledBackgroundColor: AppTheme.primaryColor,
+                  disabledForegroundColor: AppTheme.inverseTextColor,
                   minimumSize: const Size(double.infinity, 56),
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.zero,
                   ),
                 ),
-                child: const Text('Kontynuuj'),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Kontynuuj',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.inverseTextColor,
+                          ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Icon(
+                      Icons.arrow_forward,
+                      color: AppTheme.inverseTextColor,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -87,15 +110,37 @@ class _IntroScreenState extends ConsumerState<IntroScreen> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  ref.read(onboardingProvider.notifier).setStage(OnboardingStage.profile);
+                  ref
+                      .read(onboardingProvider.notifier)
+                      .setStage(OnboardingStage.profile);
                 },
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryColor,
+                  foregroundColor: AppTheme.inverseTextColor,
+                  disabledBackgroundColor: AppTheme.primaryColor,
+                  disabledForegroundColor: AppTheme.inverseTextColor,
                   minimumSize: const Size(double.infinity, 56),
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.zero,
                   ),
                 ),
-                child: const Text('Kontynuuj'),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Kontynuuj',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.inverseTextColor,
+                          ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Icon(
+                      Icons.arrow_forward,
+                      color: AppTheme.inverseTextColor,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

@@ -481,7 +481,7 @@ class _MedicationsBuilderState extends ConsumerState<MedicationsBuilder> {
                           border: Border.all(color: primary, width: 2),
                         ),
                         child: Text(
-                          'Nie znalazłem mojego leku wśród proponowanych',
+                          'Nie znalazłem mojego leku wśród proponowanych. Wpiszę go ręcznie.',
                           textAlign: TextAlign.center,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w600,

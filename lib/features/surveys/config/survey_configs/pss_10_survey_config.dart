@@ -20,7 +20,7 @@ class PSS10SurveyConfig {
         SurveyQuestionEntity(
           id: 'pss10_1',
           type: QuestionType.choice,
-          question: 'Jak często w ciągu ostatniego miesiąca byłeś/aś zdenerwowany/a, ponieważ zdarzyło się coś niespodziewanego?',
+          question: 'Jak często w ciągu ostatniego miesiąca byłeś zdenerwowany, ponieważ zdarzyło się coś niespodziewanego?',
           required: true,
           options: {
             'options': [
@@ -36,7 +36,7 @@ class PSS10SurveyConfig {
         SurveyQuestionEntity(
           id: 'pss10_2',
           type: QuestionType.choice,
-          question: 'Jak często w ciągu ostatniego miesiąca czułeś/aś, że ważne sprawy w Twoim życiu wymykają się spod kontroli?',
+          question: 'Jak często w ciągu ostatniego miesiąca czułeś, że ważne sprawy w Twoim życiu wymykają się spod kontroli?',
           required: true,
           options: {
             'options': [
@@ -52,7 +52,7 @@ class PSS10SurveyConfig {
         SurveyQuestionEntity(
           id: 'pss10_3',
           type: QuestionType.choice,
-          question: 'Jak często w ciągu ostatniego miesiąca odczuwałeś/aś zdenerwowanie i napięcie?',
+          question: 'Jak często w ciągu ostatniego miesiąca odczuwałeś zdenerwowanie i napięcie?',
           required: true,
           options: {
             'options': [
@@ -68,7 +68,7 @@ class PSS10SurveyConfig {
         SurveyQuestionEntity(
           id: 'pss10_4',
           type: QuestionType.choice,
-          question: 'Jak często w ciągu ostatniego miesiąca byłeś/aś przekonany/a, że jesteś w stanie poradzić sobie z problemami osobistymi?',
+          question: 'Jak często w ciągu ostatniego miesiąca byłeś przekonany, że jesteś w stanie poradzić sobie z problemami osobistymi?',
           required: true,
           options: {
             'options': [
@@ -84,7 +84,7 @@ class PSS10SurveyConfig {
         SurveyQuestionEntity(
           id: 'pss10_5',
           type: QuestionType.choice,
-          question: 'Jak często w ciągu ostatniego miesiąca czułeś/aś, że sprawy układają się po Twojej myśli?',
+          question: 'Jak często w ciągu ostatniego miesiąca czułeś, że sprawy układają się po Twojej myśli?',
           required: true,
           options: {
             'options': [
@@ -100,7 +100,7 @@ class PSS10SurveyConfig {
         SurveyQuestionEntity(
           id: 'pss10_6',
           type: QuestionType.choice,
-          question: 'Jak często w ciągu ostatniego miesiąca stwierdzałeś/aś, że nie radzisz sobie ze wszystkimi obowiązkami?',
+          question: 'Jak często w ciągu ostatniego miesiąca stwierdzałeś, że nie radzisz sobie ze wszystkimi obowiązkami?',
           required: true,
           options: {
             'options': [
@@ -116,7 +116,7 @@ class PSS10SurveyConfig {
         SurveyQuestionEntity(
           id: 'pss10_7',
           type: QuestionType.choice,
-          question: 'Jak często w ciągu ostatniego miesiąca potrafiłeś/aś opanować swoje rozdrażnienie?',
+          question: 'Jak często w ciągu ostatniego miesiąca potrafiłeś opanować swoje rozdrażnienie?',
           required: true,
           options: {
             'options': [
@@ -132,7 +132,7 @@ class PSS10SurveyConfig {
         SurveyQuestionEntity(
           id: 'pss10_8',
           type: QuestionType.choice,
-          question: 'Jak często w ciągu ostatniego miesiąca czułeś/aś, że wszystko Ci wychodzi?',
+          question: 'Jak często w ciągu ostatniego miesiąca czułeś, że wszystko Ci wychodzi?',
           required: true,
           options: {
             'options': [
@@ -148,7 +148,7 @@ class PSS10SurveyConfig {
         SurveyQuestionEntity(
           id: 'pss10_9',
           type: QuestionType.choice,
-          question: 'Jak często w ciągu ostatniego miesiąca złościłeś/aś się, ponieważ nie miałeś/aś wpływu na to, co się zdarzyło?',
+          question: 'Jak często w ciągu ostatniego miesiąca złościłeś się, ponieważ nie miałeś wpływu na to, co się zdarzyło?',
           required: true,
           options: {
             'options': [
@@ -164,7 +164,7 @@ class PSS10SurveyConfig {
         SurveyQuestionEntity(
           id: 'pss10_10',
           type: QuestionType.choice,
-          question: 'Jak często w ciągu ostatniego miesiąca czułeś/aś, że nie możesz przezwyciężyć narastających trudności?',
+          question: 'Jak często w ciągu ostatniego miesiąca czułeś, że nie możesz przezwyciężyć narastających trudności?',
           required: true,
           options: {
             'options': [

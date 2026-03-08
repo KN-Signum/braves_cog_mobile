@@ -11,7 +11,7 @@ class AQSurveyConfig {
           id: 'aq_info',
           type: QuestionType.text,
           question:
-              'Proszę odpowiedzieć na wszystkie pytania, nawet jeśli nie jesteś pewien/pewna odpowiedzi. Dla każdego pytania zaznacz odpowiedź, która najlepiej opisuje Ciebie.',
+              'Proszę odpowiedzieć na wszystkie pytania, nawet jeśli nie jesteś pewien odpowiedzi. Dla każdego pytania zaznacz odpowiedź, która najlepiej opisuje Ciebie.',
           required: false,
           options: {'info': true},
         ),
@@ -84,7 +84,7 @@ class AQSurveyConfig {
           id: 'aq_4',
           type: QuestionType.choice,
           question:
-              'Często jestem czymś tak bardzo pochłonięty/a, że zapominam o innych sprawach',
+              'Często jestem czymś tak bardzo pochłonięty, że zapominam o innych sprawach',
           required: true,
           options: {
             'options': [
@@ -150,7 +150,7 @@ class AQSurveyConfig {
           id: 'aq_7',
           type: QuestionType.choice,
           question:
-              'Inni ludzie często mówią mi, że to, co powiedziałem/am było niegrzeczne, chociaż ja tego nie dostrzegam',
+              'Inni ludzie często mówią mi, że to, co powiedziałem było niegrzeczne, chociaż ja tego nie dostrzegam',
           required: true,
           options: {
             'options': [
@@ -515,7 +515,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_24',
           type: QuestionType.choice,
-          question: 'Wolałbym/ałabym raczej pójść do teatru niż do muzeum',
+          question: 'Wolałbym raczej pójść do teatru niż do muzeum',
           required: true,
           options: {
             'options': [

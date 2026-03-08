@@ -11,7 +11,7 @@ class ScreeningSUSurveyConfig {
         SurveyQuestionEntity(
           id: 'su_alcohol',
           type: QuestionType.boolean,
-          question: 'Czy w ciągu ostatnich 30 dni używałeś(aś) poniższych używek?',
+          question: 'Czy w ciągu ostatnich 30 dni używałeś poniższych używek?',
           required: true,
           options: {
             'composite': 'substance_use',
@@ -30,7 +30,7 @@ class ScreeningSUSurveyConfig {
         SurveyQuestionEntity(
           id: 'su_nicotine',
           type: QuestionType.boolean,
-          question: 'Czy w ciągu ostatnich 30 dni używałeś(aś) poniższych używek?',
+          question: 'Czy w ciągu ostatnich 30 dni używałeś poniższych używek?',
           required: true,
           options: {
             'composite': 'substance_use',
@@ -49,7 +49,7 @@ class ScreeningSUSurveyConfig {
         SurveyQuestionEntity(
           id: 'su_caffeine',
           type: QuestionType.boolean,
-          question: 'Czy w ciągu ostatnich 30 dni używałeś(aś) poniższych używek?',
+          question: 'Czy w ciągu ostatnich 30 dni używałeś poniższych używek?',
           required: true,
           options: {
             'composite': 'substance_use',
@@ -68,7 +68,7 @@ class ScreeningSUSurveyConfig {
         SurveyQuestionEntity(
           id: 'su_cannabinoids',
           type: QuestionType.boolean,
-          question: 'Czy w ciągu ostatnich 30 dni używałeś(aś) poniższych używek?',
+          question: 'Czy w ciągu ostatnich 30 dni używałeś poniższych używek?',
           required: true,
           options: {
             'composite': 'substance_use',
@@ -87,7 +87,7 @@ class ScreeningSUSurveyConfig {
         SurveyQuestionEntity(
           id: 'su_sedatives',
           type: QuestionType.boolean,
-          question: 'Czy w ciągu ostatnich 30 dni używałeś(aś) poniższych używek?',
+          question: 'Czy w ciągu ostatnich 30 dni używałeś poniższych używek?',
           required: true,
           options: {
             'composite': 'substance_use',
@@ -106,7 +106,7 @@ class ScreeningSUSurveyConfig {
         SurveyQuestionEntity(
           id: 'su_stimulants',
           type: QuestionType.boolean,
-          question: 'Czy w ciągu ostatnich 30 dni używałeś(aś) poniższych używek?',
+          question: 'Czy w ciągu ostatnich 30 dni używałeś poniższych używek?',
           required: true,
           options: {
             'composite': 'substance_use',
@@ -125,7 +125,7 @@ class ScreeningSUSurveyConfig {
         SurveyQuestionEntity(
           id: 'su_opioids',
           type: QuestionType.boolean,
-          question: 'Czy w ciągu ostatnich 30 dni używałeś(aś) poniższych używek?',
+          question: 'Czy w ciągu ostatnich 30 dni używałeś poniższych używek?',
           required: true,
           options: {
             'composite': 'substance_use',
@@ -144,7 +144,7 @@ class ScreeningSUSurveyConfig {
         SurveyQuestionEntity(
           id: 'su_hallucinogens',
           type: QuestionType.boolean,
-          question: 'Czy w ciągu ostatnich 30 dni używałeś(aś) poniższych używek?',
+          question: 'Czy w ciągu ostatnich 30 dni używałeś poniższych używek?',
           required: true,
           options: {
             'composite': 'substance_use',

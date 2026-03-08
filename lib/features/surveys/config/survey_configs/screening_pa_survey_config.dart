@@ -11,7 +11,7 @@ class ScreeningPASurveyConfig {
           id: 'pa_light',
           type: QuestionType.choice,
           question:
-              'Ile łącznie minut w ciągu ostatnich 30 dni poświęciłeś(aś) na lekką aktywność fizyczną?',
+              'Ile łącznie minut w ciągu ostatnich 30 dni poświęciłeś na lekką aktywność fizyczną?',
           description: '(np. spokojny spacer, prace domowe, rozciąganie)',
           required: true,
           genderForm: 'poświęciłeś',
@@ -48,7 +48,7 @@ class ScreeningPASurveyConfig {
           id: 'pa_vigorous',
           type: QuestionType.choice,
           question:
-              'Ile łącznie minut w ciągu ostatnich 30 dni poświęciłeś(aś) na wysoką aktywność fizyczną?',
+              'Ile łącznie minut w ciągu ostatnich 30 dni poświęciłeś na wysoką aktywność fizyczną?',
           description:
               '(np. bieganie, intensywny rower, pływanie, trening siłowy, sport zespołowy)',
           required: true,

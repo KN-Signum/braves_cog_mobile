@@ -20,9 +20,9 @@ class GAD2SurveyConfig {
           id: 'gad2_1',
           type: QuestionType.choice,
           question:
-              'Jak często w ciągu ostatnich 2 tygodni odczuwałaś/eś zdenerwowanie, lęk lub irytację?',
+              'Jak często w ciągu ostatnich 2 tygodni odczuwałeś zdenerwowanie, lęk lub irytację?',
           required: true,
-          genderForm: 'odczuwałaś',
+          genderForm: 'odczuwałeś',
           options: {
             'options': [
               {'value': 0, 'label': 'Wcale'},
@@ -36,9 +36,9 @@ class GAD2SurveyConfig {
           id: 'gad2_2',
           type: QuestionType.choice,
           question:
-              'Jak często w ciągu ostatnich 2 tygodni miałaś/eś trudności z opanowaniem zamartwiania się?',
+              'Jak często w ciągu ostatnich 2 tygodni miałeś trudności z opanowaniem zamartwiania się?',
           required: true,
-          genderForm: 'odczuwałaś',
+          genderForm: 'miałeś',
           options: {
             'options': [
               {'value': 0, 'label': 'Wcale'},

@@ -56,8 +56,9 @@ class _NumberQuestionBuilderState extends ConsumerState<NumberQuestionBuilder> {
       final dontKnowKey = '${widget.question.id}_dont_know';
       final dontKnowValue = state.answers[dontKnowKey] as bool? ?? false;
       final primary = Theme.of(context).colorScheme.primary;
+      final progressColor = Theme.of(context).colorScheme.secondary;
       final selectedBg =
-          Color.lerp(primary, Colors.white, 0.5) ??
+          Color.lerp(progressColor, Colors.white, 0.5) ??
           Theme.of(context).scaffoldBackgroundColor;
 
       final maxHours = widget.question.options?['maxHours'] as int? ?? 23;
@@ -81,7 +82,7 @@ class _NumberQuestionBuilderState extends ConsumerState<NumberQuestionBuilder> {
         minutesValue = minMinutesIfZeroHours;
       }
 
-      // Initialize if not set
+      // Initialize if not set – domyślnie 0h + minimalne minuty.
       if (!dontKnowValue) {
         if (!state.answers.containsKey('${widget.question.id}_hours')) {
           Future.microtask(
@@ -108,16 +109,22 @@ class _NumberQuestionBuilderState extends ConsumerState<NumberQuestionBuilder> {
               maxHours: maxHours,
               maxMinutes: maxMinutes,
               minMinutesIfZeroHours: minMinutesIfZeroHours,
+              openOnInit: !state.answers
+                      .containsKey('${widget.question.id}_hours') &&
+                  !state.answers
+                      .containsKey('${widget.question.id}_minutes'),
               onChanged: (hours, minutes) {
                 final h = hours ?? 0;
                 final m = minutes ?? 0;
                 _hoursMinutesCache = [h, m];
-                notifier.updateAnswer('${widget.question.id}_hours', h);
-                notifier.updateAnswer('${widget.question.id}_minutes', m);
-                notifier.updateAnswer(widget.question.id, h * 60 + m);
-                if (showDontKnow) {
-                  notifier.updateAnswer(dontKnowKey, false);
-                }
+                Future.microtask(() {
+                  notifier.updateAnswer('${widget.question.id}_hours', h);
+                  notifier.updateAnswer('${widget.question.id}_minutes', m);
+                  notifier.updateAnswer(widget.question.id, h * 60 + m);
+                  if (showDontKnow) {
+                    notifier.updateAnswer(dontKnowKey, false);
+                  }
+                });
               },
             ),
           if (!dontKnowValue) const SizedBox(height: 16),
@@ -128,7 +135,7 @@ class _NumberQuestionBuilderState extends ConsumerState<NumberQuestionBuilder> {
                 final newValue = !dontKnowValue;
                 notifier.updateAnswer(dontKnowKey, newValue);
 
-                _hoursMinutesCache = [hoursValue, minutesValue];
+                _hoursMinutesCache = [hoursValue ?? 0, minutesValue ?? 0];
 
                 if (newValue) {
                   notifier.removeAnswer('${widget.question.id}_hours');

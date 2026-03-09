@@ -91,35 +91,47 @@ class SubstanceUseBuilder extends ConsumerWidget {
                       context,
                     ).textTheme.bodySmall?.copyWith(color: primary),
                   ),
-                  Switch(
-                    value: enabled,
-                    onChanged: (value) {
-                      notifier.updateAnswer(enabledKey, value);
-                      if (!value) {
-                        notifier.updateAnswer(frequencyKey, '0');
-                        notifier.updateAnswer(question.id, '0');
-                      } else {
-                        notifier.removeAnswer(frequencyKey);
-                        notifier.removeAnswer(question.id);
-                      }
-                    },
-                    thumbColor: WidgetStateProperty.resolveWith<Color?>((
-                      states,
-                    ) {
-                      return primary;
-                    }),
-                    trackColor: WidgetStateProperty.resolveWith<Color?>((
-                      states,
-                    ) {
-                      return Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerHighest;
-                    }),
-                    trackOutlineColor: WidgetStateProperty.resolveWith<Color?>((
-                      states,
-                    ) {
-                      return primary;
-                    }),
+                  const SizedBox(height: 4),
+                  SizedBox(
+                    height: 28,
+                    child: GestureDetector(
+                      onTap: () {
+                        final newValue = !enabled;
+                        notifier.updateAnswer(enabledKey, newValue);
+                        if (!newValue) {
+                          notifier.updateAnswer(frequencyKey, '0');
+                          notifier.updateAnswer(question.id, '0');
+                        } else {
+                          notifier.removeAnswer(frequencyKey);
+                          notifier.removeAnswer(question.id);
+                        }
+                      },
+                      child: Container(
+                        width: 74,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(color: primary, width: 2),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest,
+                        ),
+                        child: AnimatedAlign(
+                          duration: const Duration(milliseconds: 150),
+                          alignment: enabled
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          child: Container(
+                            margin: const EdgeInsets.all(3),
+                            width: 18,
+                            height: 18,
+                            decoration: BoxDecoration(
+                              color: primary,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),

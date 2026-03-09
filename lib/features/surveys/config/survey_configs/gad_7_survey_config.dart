@@ -19,7 +19,7 @@ class GAD7SurveyConfig {
         SurveyQuestionEntity(
           id: 'gad7_info',
           type: QuestionType.text,
-          question: 'Jak często w ciągu ostatnich 2 tygodni dokuczały Panu(i) następujące problemy?',
+          question: 'Jak często w ciągu ostatnich 2 tygodni dokuczały ci następujące problemy?',
           required: false,
           options: {
             'info': true,
@@ -29,7 +29,7 @@ class GAD7SurveyConfig {
         SurveyQuestionEntity(
           id: 'gad7_1',
           type: QuestionType.choice,
-          question: 'Czuł(a) się Pan(i) podenerwowany(a), niespokojny(a), mocno spięty(a).',
+          question: 'Czułeś się podenerwowany, niespokojny, mocno spięty',
           required: true,
           options: {
             'options': [
@@ -44,7 +44,7 @@ class GAD7SurveyConfig {
         SurveyQuestionEntity(
           id: 'gad7_2',
           type: QuestionType.choice,
-          question: 'Nie mógł(a) Pan(i) przestać się martwić albo zapanować nad tym.',
+          question: 'Nie mogłeś przestać się martwić albo zapanować nad tym',
           required: true,
           options: {
             'options': [
@@ -59,7 +59,7 @@ class GAD7SurveyConfig {
         SurveyQuestionEntity(
           id: 'gad7_3',
           type: QuestionType.choice,
-          question: 'Za bardzo się Pan(i) martwił(a) różnymi rzeczami.',
+          question: 'Za bardzo się martwiłeś różnymi rzeczami',
           required: true,
           options: {
             'options': [
@@ -74,7 +74,7 @@ class GAD7SurveyConfig {
         SurveyQuestionEntity(
           id: 'gad7_4',
           type: QuestionType.choice,
-          question: 'Miał(a) Pan(i) trudności z relaksowaniem się.',
+          question: 'Miałeś trudności z relaksowaniem się',
           required: true,
           options: {
             'options': [
@@ -89,7 +89,7 @@ class GAD7SurveyConfig {
         SurveyQuestionEntity(
           id: 'gad7_5',
           type: QuestionType.choice,
-          question: 'Był(a) Pan(i) tak niespokojny(a), że nie mógł(a) usiedzieć na miejscu.',
+          question: 'Byłeś tak niespokojny, że nie mogłeś usiedzieć na miejscu',
           required: true,
           options: {
             'options': [
@@ -104,7 +104,7 @@ class GAD7SurveyConfig {
         SurveyQuestionEntity(
           id: 'gad7_6',
           type: QuestionType.choice,
-          question: 'Łatwo stawał(a) się Pan(i) rozdrażniony(a) lub poirytowany(a).',
+          question: 'Łatwo stawałeś się rozdrażniony lub poirytowany',
           required: true,
           options: {
             'options': [
@@ -119,7 +119,7 @@ class GAD7SurveyConfig {
         SurveyQuestionEntity(
           id: 'gad7_7',
           type: QuestionType.choice,
-          question: 'Obawiał(a) się Pan(i), tak jakby miało się stać coś strasznego.',
+          question: 'Obawiałeś się, tak jakby miało się stać coś strasznego',
           required: true,
           options: {
             'options': [

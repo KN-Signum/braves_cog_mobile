@@ -35,7 +35,7 @@ class SurveyAlertManager {
         return SurveyAlert(
           title: 'Alert ostrzegawczy',
           message:
-              'Twój wynik wykonanego testu sugeruje podwyższone objawy obniżonego nastroju w ostatnich dwóch tygodniach. Nie jest to diagnoza, ale sygnał, że warto rozważyć dalszą ocenę lub rozmowę ze specjalistą. Jeśli potrzebujesz wsparcia już teraz, przejdź do zakładki „Uzyskaj pomoc".',
+              'Twój wynik wykonanego testu sugeruje podwyższone objawy obniżonego nastroju w ostatnich dwóch tygodniach. Nie jest to diagnoza, ale sygnał, że warto rozważyć dalszą ocenę lub rozmowę ze specjalistą. Jeśli potrzebujesz wsparcia, przejdź do ustawień i zakładki „Uzyskaj pomoc".',
         );
       }
     }
@@ -53,7 +53,7 @@ class SurveyAlertManager {
         return SurveyAlert(
           title: 'Alert ostrzegawczy',
           message:
-              'Twój wynik wykonanego testu sugeruje podwyższony poziom objawów lękowych w ostatnich dwóch tygodniach. Nie jest to diagnoza, ale sygnał, że warto rozważyć dalszą ocenę lub kontakt ze specjalistą. W zakładce „Uzyskaj pomoc" znajdziesz dostępne formy wsparcia.',
+              'Twój wynik wykonanego testu sugeruje podwyższony poziom objawów lękowych w ostatnich dwóch tygodniach. Nie jest to diagnoza, ale sygnał, że warto rozważyć dalszą ocenę lub kontakt ze specjalistą. W ustawieniach w zakładce „Uzyskaj pomoc" znajdziesz dostępne formy wsparcia.',
         );
       }
     }
@@ -72,31 +72,31 @@ class SurveyAlertManager {
         return SurveyAlert(
           title: 'Alert krytyczny',
           message:
-              'Jedna z twoich odpowiedzi wykonanego testu sugeruje obecność myśli o zrobieniu sobie krzywdy lub odebraniu sobie życia. Ten wynik nie jest diagnozą, ale sygnałem wymagającym natychmiastowego działania. Jeśli czujesz, że możesz być w niebezpieczeństwie, zadzwoń 112 lub 999. Szczegółowe numery wsparcia znajdziesz w zakładce „Uzyskaj pomoc".',
+              'Jedna z twoich odpowiedzi wykonanego testu sugeruje obecność myśli o zrobieniu sobie krzywdy lub odebraniu sobie życia. Ten wynik nie jest diagnozą, ale sygnałem wymagającym natychmiastowego działania. Jeśli czujesz, że możesz być w niebezpieczeństwie, zadzwoń 112 lub 999. Szczegółowe numery wsparcia znajdziesz w ustawieniach w zakładce „Uzyskaj pomoc".',
         );
       } else if (score >= 20) {
         return SurveyAlert(
           title: 'Alert krytyczny',
           message:
-              'Twój wynik wykonanego testu wskazuje na bardzo nasilone objawy depresyjne. Nie jest to diagnoza, jednak zalecany jest pilny kontakt ze specjalistą. W sytuacji nagłej skorzystaj z numerów dostępnych w zakładce „Uzyskaj pomoc" lub zadzwoń 112 / 999.',
+              'Twój wynik wykonanego testu wskazuje na bardzo nasilone objawy depresyjne. Nie jest to diagnoza, jednak zalecany jest pilny kontakt ze specjalistą. W sytuacji nagłej skorzystaj z numerów dostępnych w ustawieniach wzakładce „Uzyskaj pomoc" lub zadzwoń 112 / 999.',
         );
       } else if (score >= 15) {
         return SurveyAlert(
           title: 'Alert wysoki',
           message:
-              'Twój wynik wykonanego testu wskazuje na nasilone objawy depresyjne. Nie jest to diagnoza, ale zalecany jest kontakt ze specjalistą zdrowia psychicznego. Skorzystaj z informacji dostępnych w zakładce „Uzyskaj pomoc".',
+              'Twój wynik wykonanego testu wskazuje na nasilone objawy depresyjne. Nie jest to diagnoza, ale zalecany jest kontakt ze specjalistą zdrowia psychicznego. Skorzystaj z informacji dostępnych w ustawieniach w zakładce „Uzyskaj pomoc".',
         );
       } else if (score >= 10) {
         return SurveyAlert(
           title: 'Alert podwyższony',
           message:
-              'Twój wynik wykonanego testu wskazuje na umiarkowane objawy depresyjne. Nie jest to diagnoza, jednak zalecany jest kontakt ze specjalistą. W zakładce „Uzyskaj pomoc" znajdziesz numery i kontakty do wsparcia.',
+              'Twój wynik wykonanego testu wskazuje na umiarkowane objawy depresyjne. Nie jest to diagnoza, jednak zalecany jest kontakt ze specjalistą. W ustawieniach wzakładce „Uzyskaj pomoc" znajdziesz numery i kontakty do wsparcia.',
         );
       } else if (score >= 5) {
         return SurveyAlert(
           title: 'Alert ostrzegawczy',
           message:
-              'Twój wynik wykonanego testu sugeruje łagodne objawy depresyjne. Nie jest to diagnoza. Jeśli objawy utrzymują się lub wpływają na codzienne funkcjonowanie, warto je monitorować lub skonsultować ze specjalistą. W razie potrzeby zajrzyj do zakładki „Uzyskaj pomoc".',
+              'Twój wynik wykonanego testu sugeruje łagodne objawy depresyjne. Nie jest to diagnoza. Jeśli objawy utrzymują się lub wpływają na codzienne funkcjonowanie, warto je monitorować lub skonsultować ze specjalistą. W razie potrzeby zajrzyj do ustawień do zakładki „Uzyskaj pomoc".',
         );
       } else {
         return SurveyAlert(
@@ -120,19 +120,19 @@ class SurveyAlertManager {
         return SurveyAlert(
           title: 'Alert wysoki',
           message:
-              'Twój wynik wykonanego testu wskazuje na wysoki poziom objawów lękowych. Nie jest to diagnoza, ale zalecany jest kontakt z psychologiem lub psychiatrą. Skorzystaj z informacji dostępnych w zakładce „Uzyskaj pomoc".',
+              'Twój wynik wykonanego testu wskazuje na wysoki poziom objawów lękowych. Nie jest to diagnoza, ale zalecany jest kontakt z psychologiem lub psychiatrą. Skorzystaj z informacji dostępnych w ustawieniach w zakładce „Uzyskaj pomoc".',
         );
       } else if (score >= 10) {
         return SurveyAlert(
           title: 'Alert podwyższony',
           message:
-              'Twój wynik wykonanego testu wskazuje na umiarkowany poziom objawów lękowych. Nie jest to diagnoza, jednak zaleca się kontakt ze specjalistą. Pomocne kontakty znajdziesz w zakładce „Uzyskaj pomoc".',
+              'Twój wynik wykonanego testu wskazuje na umiarkowany poziom objawów lękowych. Nie jest to diagnoza, jednak zaleca się kontakt ze specjalistą. Pomocne kontakty znajdziesz w ustawieniach w zakładce „Uzyskaj pomoc".',
         );
       } else if (score >= 5) {
         return SurveyAlert(
           title: 'Alert ostrzegawczy',
           message:
-              'Twój wynik wykonanego testu sugeruje łagodny poziom objawów lękowych. Nie jest to diagnoza. Warto obserwować objawy i rozważyć strategie radzenia sobie ze stresem. Jeśli potrzebujesz wsparcia, zajrzyj do zakładki „Uzyskaj pomoc".',
+              'Twój wynik wykonanego testu sugeruje łagodny poziom objawów lękowych. Nie jest to diagnoza. Warto obserwować objawy i rozważyć strategie radzenia sobie ze stresem. Jeśli potrzebujesz wsparcia, zajrzyj do ustawień do zakładki „Uzyskaj pomoc".',
         );
       } else {
         return SurveyAlert(

@@ -70,7 +70,7 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
             decoration: BoxDecoration(
               color: Theme.of(context).scaffoldBackgroundColor,
               border: Border.all(
-                color: Theme.of(context).colorScheme.secondary,
+                color: Theme.of(context).colorScheme.primary,
                 width: 2,
               ),
               borderRadius: BorderRadius.zero,
@@ -81,7 +81,7 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
                 Text(
                   _selectedTime != null
                       ? '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}'
-                      : 'Wybierz godzinę',
+                      : 'Wybierz czas',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: _selectedTime != null
                         ? Theme.of(context).colorScheme.primary

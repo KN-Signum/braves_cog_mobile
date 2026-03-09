@@ -73,6 +73,8 @@ class SurveyValidationManager {
 
     if (compositeType == 'medications') {
       final medsChanged = answers[question.id];
+      // Użytkownik musi wybrać Nie lub Tak – bez wyboru nie można przejść dalej
+      if (medsChanged == null) return false;
       if (medsChanged == true) {
         final medications = answers['${question.id}_medications'] as List?;
         if (medications == null || medications.isEmpty) return false;

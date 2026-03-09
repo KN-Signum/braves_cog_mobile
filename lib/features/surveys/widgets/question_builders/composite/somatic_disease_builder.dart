@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:braves_cog/features/surveys/domain/entities/survey_question_entity.dart';
 import 'package:braves_cog/features/surveys/presentation/providers/survey_provider.dart';
 
-class SomaticDiseaseBuilder extends ConsumerWidget {
+class SomaticDiseaseBuilder extends ConsumerStatefulWidget {
   final String surveyId;
   final SurveyQuestionEntity question;
 
@@ -14,14 +14,39 @@ class SomaticDiseaseBuilder extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(surveyProvider(surveyId));
-    final notifier = ref.read(surveyProvider(surveyId).notifier);
+  ConsumerState<SomaticDiseaseBuilder> createState() =>
+      _SomaticDiseaseBuilderState();
+}
 
-    final enabledKey = '${question.id}_enabled';
-    final dontKnowKey = '${question.id}_dont_know';
-    final subtypesKey = '${question.id}_subtypes';
-    final otherTextKey = '${question.id}_other_text';
+class _SomaticDiseaseBuilderState
+    extends ConsumerState<SomaticDiseaseBuilder> {
+  late final TextEditingController _otherTextController;
+
+  @override
+  void initState() {
+    super.initState();
+    final state = ref.read(surveyProvider(widget.surveyId));
+    final otherTextKey = '${widget.question.id}_other_text';
+    final initialText = state.answers[otherTextKey]?.toString() ?? '';
+    _otherTextController = TextEditingController(text: initialText);
+  }
+
+  @override
+  void dispose() {
+    _otherTextController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(surveyProvider(widget.surveyId));
+    final notifier =
+        ref.read(surveyProvider(widget.surveyId).notifier);
+
+    final enabledKey = '${widget.question.id}_enabled';
+    final dontKnowKey = '${widget.question.id}_dont_know';
+    final subtypesKey = '${widget.question.id}_subtypes';
+    final otherTextKey = '${widget.question.id}_other_text';
 
     final enabled = (state.answers[enabledKey] as bool?) ?? false;
     final dontKnow = (state.answers[dontKnowKey] as bool?) ?? false;
@@ -29,7 +54,8 @@ class SomaticDiseaseBuilder extends ConsumerWidget {
       state.answers[subtypesKey] as List<dynamic>? ?? const [],
     );
 
-    final subtypes = (question.options?['subtypes'] as List<dynamic>? ?? [])
+    final subtypes = (widget.question.options?['subtypes'] as List<dynamic>? ??
+            [])
         .map<Map<String, dynamic>>((s) {
           if (s is Map) {
             return {
@@ -46,21 +72,18 @@ class SomaticDiseaseBuilder extends ConsumerWidget {
         })
         .toList();
 
-    final diseaseLabel =
-        question.options?['diseaseLabel'] as String? ?? question.question;
+    final diseaseLabel = widget.question.options?['diseaseLabel'] as String? ??
+        widget.question.question;
     final diseaseDescription =
-        question.options?['diseaseDescription'] as String?;
-    final hasDontKnow = question.options?['hasDontKnow'] == true;
-    final rowKey = question.options?['rowKey'] as String?;
+        widget.question.options?['diseaseDescription'] as String?;
+    final hasDontKnow = widget.question.options?['hasDontKnow'] == true;
+    final rowKey = widget.question.options?['rowKey'] as String?;
 
     final primary = Theme.of(context).colorScheme.primary;
     final secondary = Theme.of(context).colorScheme.secondary;
     final selectedBg =
         Color.lerp(secondary, Colors.white, 0.5) ??
         Theme.of(context).scaffoldBackgroundColor;
-
-    final otherTextInitial = state.answers[otherTextKey]?.toString() ?? '';
-    final otherTextController = TextEditingController(text: otherTextInitial);
 
     // Special case: "Inne choroby somatyczne" - show text field directly when enabled
     if (rowKey == 'other') {
@@ -86,50 +109,69 @@ class SomaticDiseaseBuilder extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      'Nie    Tak',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodySmall?.copyWith(color: primary),
-                    ),
-                    Switch(
-                      value: enabled,
-                      onChanged: (value) {
-                        notifier.updateAnswer(enabledKey, value);
-                        if (value) {
-                          // "Tak" – resetuj status "Nie wiem".
-                          notifier.updateAnswer(dontKnowKey, false);
-                          notifier.updateAnswer(question.id, 'yes');
-                          notifier.updateAnswer('${question.id}_status', 'yes');
-                        } else {
-                          // "Nie" – brak choroby.
-                          notifier.updateAnswer(question.id, 'no');
-                          notifier.updateAnswer('${question.id}_status', 'no');
-                          notifier.updateAnswer(otherTextKey, '');
-                        }
-                      },
-                      thumbColor: WidgetStateProperty.resolveWith<Color?>((
-                        states,
-                      ) {
-                        return primary;
-                      }),
-                      trackColor: WidgetStateProperty.resolveWith<Color?>((
-                        states,
-                      ) {
-                        return Theme.of(
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Nie    Tak',
+                        style: Theme.of(
                           context,
-                        ).colorScheme.surfaceContainerHighest;
-                      }),
-                      trackOutlineColor:
-                          WidgetStateProperty.resolveWith<Color?>((states) {
-                            return primary;
-                          }),
-                    ),
-                  ],
-                ),
+                        ).textTheme.bodySmall?.copyWith(color: primary),
+                      ),
+                      const SizedBox(height: 4),
+                      SizedBox(
+                        height: 28,
+                        child: GestureDetector(
+                          onTap: () {
+                            final newValue = !enabled;
+                            notifier.updateAnswer(enabledKey, newValue);
+                            if (newValue) {
+                              // "Tak" – resetuj status "Nie wiem".
+                              notifier.updateAnswer(dontKnowKey, false);
+                              notifier.updateAnswer(widget.question.id, 'yes');
+                              notifier.updateAnswer(
+                                '${widget.question.id}_status',
+                                'yes',
+                              );
+                            } else {
+                              // "Nie" – brak choroby.
+                              notifier.updateAnswer(widget.question.id, 'no');
+                              notifier.updateAnswer(
+                                '${widget.question.id}_status',
+                                'no',
+                              );
+                              notifier.updateAnswer(otherTextKey, '');
+                            }
+                          },
+                          child: Container(
+                            width: 74,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(999),
+                              border: Border.all(color: primary, width: 2),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
+                            ),
+                            child: AnimatedAlign(
+                              duration: const Duration(milliseconds: 150),
+                              alignment: enabled
+                                  ? Alignment.centerRight
+                                  : Alignment.centerLeft,
+                              child: Container(
+                                margin: const EdgeInsets.all(3),
+                                width: 18,
+                                height: 18,
+                                decoration: BoxDecoration(
+                                  color: primary,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
             if (hasDontKnow) ...[
@@ -140,12 +182,15 @@ class SomaticDiseaseBuilder extends ConsumerWidget {
                   notifier.updateAnswer(dontKnowKey, newValue);
                   if (newValue) {
                     notifier.updateAnswer(enabledKey, false);
-                    notifier.updateAnswer(question.id, 'dont_know');
-                    notifier.updateAnswer('${question.id}_status', 'dont_know');
+                    notifier.updateAnswer(widget.question.id, 'dont_know');
+                    notifier.updateAnswer(
+                      '${widget.question.id}_status',
+                      'dont_know',
+                    );
                     notifier.updateAnswer(otherTextKey, '');
                   } else {
-                    notifier.removeAnswer(question.id);
-                    notifier.removeAnswer('${question.id}_status');
+                    notifier.removeAnswer(widget.question.id);
+                    notifier.removeAnswer('${widget.question.id}_status');
                   }
                 },
                 child: Container(
@@ -186,7 +231,7 @@ class SomaticDiseaseBuilder extends ConsumerWidget {
             if (enabled && !dontKnow) ...[
               const SizedBox(height: 16),
               TextField(
-                controller: otherTextController,
+                controller: _otherTextController,
                 onChanged: (value) {
                   notifier.updateAnswer(otherTextKey, value);
                 },
@@ -258,39 +303,57 @@ class SomaticDiseaseBuilder extends ConsumerWidget {
                       context,
                     ).textTheme.bodySmall?.copyWith(color: primary),
                   ),
-                  Switch(
-                    value: enabled,
-                    onChanged: (value) {
-                      notifier.updateAnswer(enabledKey, value);
-                      if (value) {
-                        // "Tak" – resetuj status "Nie wiem".
-                        notifier.updateAnswer(dontKnowKey, false);
-                        notifier.updateAnswer(question.id, 'yes');
-                        notifier.updateAnswer('${question.id}_status', 'yes');
-                      } else {
-                        // "Nie" – brak choroby.
-                        notifier.updateAnswer(question.id, 'no');
-                        notifier.updateAnswer('${question.id}_status', 'no');
-                        notifier.updateAnswer(subtypesKey, []);
-                      }
-                    },
-                    thumbColor: WidgetStateProperty.resolveWith<Color?>((
-                      states,
-                    ) {
-                      return primary;
-                    }),
-                    trackColor: WidgetStateProperty.resolveWith<Color?>((
-                      states,
-                    ) {
-                      return Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerHighest;
-                    }),
-                    trackOutlineColor: WidgetStateProperty.resolveWith<Color?>((
-                      states,
-                    ) {
-                      return primary;
-                    }),
+                  const SizedBox(height: 4),
+                  SizedBox(
+                    height: 28,
+                    child: GestureDetector(
+                      onTap: () {
+                        final newValue = !enabled;
+                        notifier.updateAnswer(enabledKey, newValue);
+                        if (newValue) {
+                          // "Tak" – resetuj status "Nie wiem".
+                          notifier.updateAnswer(dontKnowKey, false);
+                          notifier.updateAnswer(widget.question.id, 'yes');
+                          notifier.updateAnswer(
+                            '${widget.question.id}_status',
+                            'yes',
+                          );
+                        } else {
+                          // "Nie" – brak choroby.
+                          notifier.updateAnswer(widget.question.id, 'no');
+                          notifier.updateAnswer(
+                            '${widget.question.id}_status',
+                            'no',
+                          );
+                          notifier.updateAnswer(subtypesKey, []);
+                        }
+                      },
+                      child: Container(
+                        width: 74,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(color: primary, width: 2),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest,
+                        ),
+                        child: AnimatedAlign(
+                          duration: const Duration(milliseconds: 150),
+                          alignment: enabled
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          child: Container(
+                            margin: const EdgeInsets.all(3),
+                            width: 18,
+                            height: 18,
+                            decoration: BoxDecoration(
+                              color: primary,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -304,12 +367,15 @@ class SomaticDiseaseBuilder extends ConsumerWidget {
                 notifier.updateAnswer(dontKnowKey, newValue);
                 if (newValue) {
                   notifier.updateAnswer(enabledKey, false);
-                  notifier.updateAnswer(question.id, 'dont_know');
-                  notifier.updateAnswer('${question.id}_status', 'dont_know');
+                  notifier.updateAnswer(widget.question.id, 'dont_know');
+                  notifier.updateAnswer(
+                    '${widget.question.id}_status',
+                    'dont_know',
+                  );
                   notifier.updateAnswer(subtypesKey, []);
                 } else {
-                  notifier.removeAnswer(question.id);
-                  notifier.removeAnswer('${question.id}_status');
+                  notifier.removeAnswer(widget.question.id);
+                  notifier.removeAnswer('${widget.question.id}_status');
                 }
               },
               child: Container(
@@ -423,7 +489,7 @@ class SomaticDiseaseBuilder extends ConsumerWidget {
                       if (allowFreeText && isSelected) ...[
                         const SizedBox(height: 8),
                         TextField(
-                          controller: otherTextController,
+                          controller: _otherTextController,
                           onChanged: (value) {
                             notifier.updateAnswer(otherTextKey, value);
                           },

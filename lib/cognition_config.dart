@@ -38,7 +38,7 @@ final reactionTime = RPReactionTimeActivity(identifier: 'reaction_time_step');
 
 final rapidVisualInfoProcessing = RPRapidVisualInfoProcessingActivity(
   identifier: 'RVIP_step',
-  lengthOfTest: 10,
+  lengthOfTest: 90,
 );
 
 final trailMaking = RPTrailMakingActivity(

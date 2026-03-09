@@ -1,0 +1,44 @@
+{
+  "surveyId": "Baseline_Stress_And_Anxiety_GAD7",
+  "userId": "normalcog_user",
+  "metadata": {
+    "completedAt": "2026-02-26T20:12:35.656478Z"
+  },
+  "answers": [
+    {
+      "questionId": "gad7_1",
+      "type": "number",
+      "value": 1
+    },
+    {
+      "questionId": "gad7_2",
+      "type": "number",
+      "value": 2
+    },
+    {
+      "questionId": "gad7_3",
+      "type": "number",
+      "value": 2
+    },
+    {
+      "questionId": "gad7_4",
+      "type": "number",
+      "value": 2
+    },
+    {
+      "questionId": "gad7_5",
+      "type": "number",
+      "value": 3
+    },
+    {
+      "questionId": "gad7_6",
+      "type": "number",
+      "value": 1
+    },
+    {
+      "questionId": "gad7_7",
+      "type": "number",
+      "value": 1
+    }
+  ]
+}

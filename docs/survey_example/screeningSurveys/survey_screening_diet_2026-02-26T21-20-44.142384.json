@@ -1,0 +1,14 @@
+{
+  "surveyId": "screening_diet",
+  "userId": "normalcog_user",
+  "metadata": {
+    "completedAt": "2026-02-26T20:20:43.141002Z"
+  },
+  "answers": [
+    {
+      "questionId": "diet_changed",
+      "type": "boolean",
+      "value": false
+    }
+  ]
+}

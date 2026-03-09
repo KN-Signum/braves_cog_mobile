@@ -1,0 +1,54 @@
+{
+  "surveyId": "MINI_EAT",
+  "userId": "normalcog_user",
+  "metadata": {
+    "completedAt": "2026-02-26T20:09:08.440488Z"
+  },
+  "answers": [
+    {
+      "questionId": "me_fruits",
+      "type": "text",
+      "value": "1_2_weekly"
+    },
+    {
+      "questionId": "me_vegetables",
+      "type": "text",
+      "value": "5_6_weekly"
+    },
+    {
+      "questionId": "me_legumes_nuts",
+      "type": "text",
+      "value": "less_than_weekly"
+    },
+    {
+      "questionId": "me_fish",
+      "type": "text",
+      "value": "3_4_weekly"
+    },
+    {
+      "questionId": "me_whole_grains",
+      "type": "text",
+      "value": "less_than_weekly"
+    },
+    {
+      "questionId": "me_refined_grains",
+      "type": "text",
+      "value": "5_6_weekly"
+    },
+    {
+      "questionId": "me_low_fat_dairy",
+      "type": "text",
+      "value": "1_2_weekly"
+    },
+    {
+      "questionId": "me_full_fat_dairy",
+      "type": "text",
+      "value": "1_2_weekly"
+    },
+    {
+      "questionId": "me_sweets",
+      "type": "text",
+      "value": "5_6_weekly"
+    }
+  ]
+}

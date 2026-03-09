@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:braves_cog/core/theme/app_theme.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 
 class SpecializationAutocomplete extends StatefulWidget {
   final String? initialValue;
@@ -9,12 +8,12 @@ class SpecializationAutocomplete extends StatefulWidget {
   final String hint;
 
   const SpecializationAutocomplete({
-    Key? key,
+    super.key,
     this.initialValue,
     required this.onChanged,
     this.label = 'Specjalizacja lekarza',
     this.hint = 'Wpisz specjalizację',
-  }) : super(key: key);
+  });
 
   @override
   State<SpecializationAutocomplete> createState() => _SpecializationAutocompleteState();
@@ -26,7 +25,9 @@ class _SpecializationAutocompleteState extends State<SpecializationAutocomplete>
   static const List<String> _specializations = [
     'Alergologia',
     'Anestezjologia i intensywna terapia',
+    'Angiologia',
     'Audiologia i foniatria',
+    'Balneologia i medycyna fizykalna',
     'Chirurgia dziecięca',
     'Chirurgia klatki piersiowej',
     'Chirurgia naczyniowa',
@@ -35,46 +36,70 @@ class _SpecializationAutocompleteState extends State<SpecializationAutocomplete>
     'Chirurgia plastyczna',
     'Chirurgia szczękowo-twarzowa',
     'Choroby płuc',
+    'Choroby płuc dzieci',
     'Choroby wewnętrzne',
+    'Choroby zakaźne',
     'Dermatologia i wenerologia',
     'Diabetologia',
+    'Diagnostyka laboratoryjna',
     'Endokrynologia',
+    'Endokrynologia ginekologiczna i rozrodczość',
+    'Endokrynologia i diabetologia dziecięca',
+    'Epidemiologia',
+    'Farmakologia kliniczna',
     'Gastroenterologia',
+    'Gastroenterologia dziecięca',
     'Genetyka kliniczna',
     'Geriatria',
     'Ginekologia onkologiczna',
     'Hematologia',
+    'Hipertensjologia',
     'Immunologia kliniczna',
     'Intensywna terapia',
     'Kardiochirurgia',
     'Kardiologia',
+    'Kardiologia dziecięca',
+    'Medycyna lotnicza',
+    'Medycyna morska i tropikalna',
     'Medycyna nuklearna',
     'Medycyna paliatywna',
+    'Medycyna pracy',
     'Medycyna ratunkowa',
     'Medycyna rodzinna',
+    'Medycyna sądowa',
     'Medycyna sportowa',
-    'Medycyna pracy',
+    'Mikrobiologia lekarska',
     'Nefrologia',
+    'Nefrologia dziecięca',
     'Neonatologia',
     'Neurochirurgia',
     'Neurologia',
+    'Neurologia dziecięca',
+    'Neuropatologia',
     'Okulistyka',
     'Onkologia i hematologia dziecięca',
     'Onkologia kliniczna',
-    'Ortopedia i traumatologia',
+    'Ortopedia i traumatologia narządu ruchu',
     'Otorynolaryngologia',
+    'Otorynolaryngologia dziecięca',
+    'Patomorfologia',
     'Pediatria',
+    'Pediatria metaboliczna',
+    'Perinatologia',
     'Położnictwo i ginekologia',
     'Psychiatria',
     'Psychiatria dzieci i młodzieży',
     'Radiologia i diagnostyka obrazowa',
     'Radioterapia onkologiczna',
+    'Rehabilitacja medyczna',
     'Reumatologia',
     'Seksuologia',
     'Toksykologia kliniczna',
+    'Transfuzjologia kliniczna',
     'Transplantologia kliniczna',
     'Urologia',
     'Urologia dziecięca',
+    'Zdrowie publiczne',
   ];
 
   @override
@@ -125,36 +150,39 @@ class _SpecializationAutocompleteState extends State<SpecializationAutocomplete>
           controller: textEditingController,
           focusNode: focusNode,
           onChanged: widget.onChanged,
-          style: GoogleFonts.inter(
-            fontSize: 16,
-            color: AppTheme.primaryColor,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium,
           decoration: InputDecoration(
             labelText: widget.label,
             hintText: widget.hint,
-            hintStyle: GoogleFonts.inter(
-              fontSize: 16,
-              color: AppTheme.primaryColor.withOpacity(0.5),
+            hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
             ),
-            labelStyle: GoogleFonts.inter(
-              fontSize: 14,
+            labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.w600,
-              color: AppTheme.primaryColor,
             ),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: Theme.of(context).scaffoldBackgroundColor,
             contentPadding: const EdgeInsets.all(16),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(24),
-              borderSide: BorderSide(color: AppTheme.lightBackgroundColor, width: 2),
+              borderRadius: BorderRadius.zero,
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary,
+                width: 2,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(24),
-              borderSide: BorderSide(color: AppTheme.lightBackgroundColor, width: 2),
+              borderRadius: BorderRadius.zero,
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary,
+                width: 2,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(24),
-              borderSide: BorderSide(color: AppTheme.accentColor, width: 2),
+              borderRadius: BorderRadius.zero,
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary,
+                width: 2,
+              ),
             ),
           ),
         );
@@ -169,44 +197,41 @@ class _SpecializationAutocompleteState extends State<SpecializationAutocomplete>
           child: Material(
             elevation: 4.0,
             borderRadius: BorderRadius.circular(12),
-            child: Container(
-              constraints: const BoxConstraints(maxHeight: 200, maxWidth: 343),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.lightBackgroundColor, width: 2),
-              ),
-              child: ListView.builder(
-                padding: const EdgeInsets.all(8),
-                itemCount: options.length,
-                shrinkWrap: true,
-                itemBuilder: (BuildContext context, int index) {
-                  final String option = options.elementAt(index);
-                  return Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        onSelected(option);
-                      },
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        child: Text(
-                          option,
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            color: AppTheme.primaryColor,
+              child: Container(
+                constraints: const BoxConstraints(maxHeight: 200, maxWidth: 343),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Theme.of(context).colorScheme.surfaceContainerHighest, width: 2),
+                ),
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: options.length,
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index) {
+                    final String option = options.elementAt(index);
+                    return Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          onSelected(option);
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          child: Text(
+                            option,
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
           ),
         );
       },

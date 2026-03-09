@@ -1,0 +1,44 @@
+{
+  "surveyId": "Demographic",
+  "userId": "normalcog_user",
+  "metadata": {
+    "completedAt": "2026-02-26T20:08:07.375590Z"
+  },
+  "answers": [
+    {
+      "questionId": "birth_year",
+      "type": "text",
+      "value": "1990"
+    },
+    {
+      "questionId": "height",
+      "type": "text",
+      "value": "170"
+    },
+    {
+      "questionId": "weight",
+      "type": "text",
+      "value": "70"
+    },
+    {
+      "questionId": "biological_sex",
+      "type": "text",
+      "value": "male"
+    },
+    {
+      "questionId": "gender_identity",
+      "type": "text",
+      "value": "male"
+    },
+    {
+      "questionId": "disability",
+      "type": "text",
+      "value": "none"
+    },
+    {
+      "questionId": "education",
+      "type": "text",
+      "value": "primary"
+    }
+  ]
+}

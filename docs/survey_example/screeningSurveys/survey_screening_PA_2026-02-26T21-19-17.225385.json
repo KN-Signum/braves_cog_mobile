@@ -1,0 +1,24 @@
+{
+  "surveyId": "screening_PA",
+  "userId": "normalcog_user",
+  "metadata": {
+    "completedAt": "2026-02-26T20:19:16.224343Z"
+  },
+  "answers": [
+    {
+      "questionId": "pa_light",
+      "type": "text",
+      "value": "60"
+    },
+    {
+      "questionId": "pa_moderate",
+      "type": "text",
+      "value": "60"
+    },
+    {
+      "questionId": "pa_vigorous",
+      "type": "text",
+      "value": "120"
+    }
+  ]
+}

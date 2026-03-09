@@ -1,0 +1,931 @@
+openapi: 3.0.3
+
+info:
+  title: BRAVES-Cog API
+  description: |
+    API for submitting cognitive game test results, surveys, and user profiles from the BRAVES-Cog mobile application.
+
+    ## Modules
+    - **Cognitive Results**: Submitting test results (single and sequenced batch).
+    - **Surveys**: Submitting survey answers.
+    - **User Profile**: Fetching and updating user demographic and health data.
+  version: 1.0.0
+  contact:
+    name: BRAVES-Cog Team
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development
+  - url: https://api.bravescog.com/v1
+    description: Production
+
+tags:
+  - name: Cognitive Results
+    description: Submit and manage cognitive test results
+  - name: Survey Results
+    description: Submit and manage survey results
+  - name: User Profile
+    description: Manage user demographic and health profiles
+
+paths:
+
+  /surveys/results:
+    post:
+      tags:
+        - Survey Results
+      summary: Submit a survey result
+      description: |
+        Saves the result of a completed survey.
+        Accepts dynamic answers based on the survey configuration.
+      operationId: saveSurveyResult
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SurveySubmissionRequest'
+            examples:
+              monitoringSurvey:
+                summary: Monitoring Survey example
+                value:
+                  surveyId: "monitoring"
+                  userId: "normalcog_user"
+                  metadata:
+                    completedAt: "2026-02-26T20:21:56.556794Z"
+                  answers:
+                    - questionId: "q1"
+                      type: "number"
+                      value: 8
+                    - questionId: "q4_doctor"
+                      type: "boolean"
+                      value: true
+                    - questionId: "q4_doctor_specialization"
+                      type: "text"
+                      value: "psychiatra"
+      responses:
+        '201':
+          description: Survey result saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaveResultResponse'
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /surveys/last:
+    get:
+      tags:
+        - Survey Results
+      summary: Get the last submitted survey
+      description: |
+        Retrieves metadata about the last survey sent by the authenticated user to determine 
+        when the survey was last completed.
+      operationId: getLastSurveyResult
+      responses:
+        '200':
+          description: Last survey detail retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LastSurveyResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: No surveys found for this user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /profile/me:
+    get:
+      tags:
+        - User Profile
+      summary: Get the current user's profile
+      description: Retrieves the demographic and health profile of the authenticated user.
+      operationId: getUserProfile
+      responses:
+        '200':
+          description: Profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      tags:
+        - User Profile
+      summary: Update the current user's profile
+      description: Updates the demographic and health profile of the authenticated user.
+      operationId: updateUserProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+
+  /cognitive-results:
+    post:
+      tags:
+        - Cognitive Results
+      summary: Submit a single cognitive test result
+      description: |
+        Saves the result of one cognitive test (e.g. Stroop, Trail Making).
+        Used for individual test retries or standalone test runs.
+      operationId: saveCognitiveResult
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CognitiveTestResultRequest'
+            examples:
+              trailMaking:
+                summary: Trail Making Test result
+                value:
+                  id: "1740392845123"
+                  userId: "vascog_user"
+                  testType: "trailMaking"
+                  completedAt: "2026-02-24T12:00:00.000Z"
+                  metrics:
+                    type: "trailMaking"
+                    completionTimeSeconds: 45
+                    score: 87
+                    mistakes: 2
+                  rawData:
+                    startTime: "2026-02-24T11:59:15.000Z"
+                    endTime: "2026-02-24T12:00:00.000Z"
+                    interactions:
+                      - target: "1"
+                        correctness: "Correct gesture"
+                        time: 1200
+                      - target: "A"
+                        correctness: "Wrong gesture"
+                        time: 2400
+              stroop:
+                summary: Stroop Test result
+                value:
+                  id: "1740392999999"
+                  userId: "neurocog_user"
+                  testType: "stroop"
+                  completedAt: "2026-02-24T13:00:00.000Z"
+                  metrics:
+                    type: "stroop"
+                    correctTaps: 18
+                    mistakes: 2
+                    totalTrials: 20
+                  rawData:
+                    result:
+                      correct taps: 18
+                      mistakes: 2
+      responses:
+        '201':
+          description: Result saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaveResultResponse'
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          description: Unprocessable entity (e.g. unknown testType)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /cognitive-results/stats:
+    get:
+      tags:
+        - Cognitive Results
+      summary: Get user cognitive training statistics
+      description: Retrieves summary statistics for the user's cognitive training sessions, such as total completed sessions and the date of the last session.
+      operationId: getCognitiveStats
+      responses:
+        '200':
+          description: Statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CognitiveStats'
+              examples:
+                success:
+                  summary: Example statistics
+                  value:
+                    totalSessions: 12
+                    lastSessionDate: "2026-03-02T15:30:00.000Z"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /cognitive-results/batch:
+    post:
+      tags:
+        - Cognitive Results
+      summary: Submit a full cognitive training sequence (batch)
+      description: |
+        Saves all results from a complete training session (up to 7 tests) atomically.
+        This is the **primary endpoint** called after the user finishes a full sequence.
+        If any individual result fails validation, the entire batch is rejected.
+      operationId: saveCognitiveResultBatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CognitiveTestResultBatchRequest'
+            examples:
+              realSession:
+                summary: Real session — 2026-02-24 (7 tests)
+                value:
+                  userId: "vascog_user"
+                  sessionId: "full_cognitive_sequence"
+                  sessionCompletedAt: "2026-02-24T14:15:23.280178"
+                  results:
+                    - id: "stroop_ffect_step_1771938923301"
+                      userId: "vascog_user"
+                      testType: "stroop"
+                      completedAt: "2026-02-24T14:11:39.685938"
+                      metrics:
+                        type: "stroop"
+                        correctTaps: 16
+                        mistakes: 6
+                        totalTrials: 22
+                      rawData:
+                        identifier: "stroop_ffect_step"
+                        endDate: "2026-02-24T14:11:39.685938"
+                        results:
+                          result:
+                            mistakes: 6
+                            correct taps: 16
+                        stepTimes:
+                          instruction_started: "2026-02-24T14:10:54.454220"
+                          instruction_ended: "2026-02-24T14:10:59.681217"
+                          test_started: "2026-02-24T14:10:59.681332"
+                          test_ended: "2026-02-24T14:11:39.684664"
+
+                    - id: "trail_making_step_1771938923302"
+                      userId: "vascog_user"
+                      testType: "trailMaking"
+                      completedAt: "2026-02-24T14:11:53.165443"
+                      metrics:
+                        type: "trailMaking"
+                        completionTimeSeconds: 4
+                        score: 5
+                        mistakes: 0
+                      rawData:
+                        identifier: "trail_making_step"
+                        endDate: "2026-02-24T14:11:53.165443"
+                        results:
+                          result:
+                            Completion time: 4
+                            score: 5
+                        stepTimes:
+                          test_started: "2026-02-24T14:11:46.767361"
+                          test_ended: "2026-02-24T14:11:53.164497"
+
+                    - id: "flanker_step_1771938923303"
+                      userId: "vascog_user"
+                      testType: "flanker"
+                      completedAt: "2026-02-24T14:12:07.879394"
+                      metrics:
+                        type: "flanker"
+                        correctSwipes: 10
+                        wrongSwipes: 0
+                        totalTimeSeconds: 6
+                        score: 1
+                        meanCongruentTime: 552.75
+                        meanIncongruentTime: 583.8333333333334
+                        congruentTrialsCount: 4
+                        incongruentTrialsCount: 6
+                      rawData:
+                        identifier: "flanker_step"
+                        endDate: "2026-02-24T14:12:07.879394"
+                        results:
+                          result:
+                            wrong swipes: 0
+                            right swipes: 10
+                            time: 6
+                            score: 1
+                            meanCongruent: 552.75
+                            meanIncongruent: 583.8333333333334
+                            numberCardsCongruent: 4
+                            numberCardsIncongruent: 6
+                        stepTimes:
+                          test_started: "2026-02-24T14:12:00.963574"
+                          test_ended: "2026-02-24T14:12:07.878435"
+
+                    - id: "RVIP_step_1771938923304"
+                      userId: "vascog_user"
+                      testType: "rvip"
+                      completedAt: "2026-02-24T14:12:22.584536"
+                      metrics:
+                        type: "rvip"
+                        correctTaps: 0
+                        incorrectTaps: 0
+                        passedSequences: false
+                        delaysOnCorrectTaps: []
+                      rawData:
+                        identifier: "RVIP_step"
+                        endDate: "2026-02-24T14:12:22.584536"
+                        results:
+                          result:
+                            Correct taps: 0
+                            incorrect taps: 0
+                            passed sequences: false
+                            Delay on correct taps: []
+                        stepTimes:
+                          test_started: "2026-02-24T14:12:11.578282"
+                          test_ended: "2026-02-24T14:12:22.584027"
+
+                    - id: "tapping_step_1771938923305"
+                      userId: "vascog_user"
+                      testType: "tapping"
+                      completedAt: "2026-02-24T14:13:00.975436"
+                      metrics:
+                        type: "tapping"
+                        totalTaps: 140
+                      rawData:
+                        identifier: "tapping_step"
+                        endDate: "2026-02-24T14:13:00.975436"
+                        results:
+                          result:
+                            Total taps: 140
+                        stepTimes:
+                          test_started: "2026-02-24T14:12:27.966799"
+                          test_ended: "2026-02-24T14:13:00.975372"
+
+                    - id: "corsi_block_step_1771938923306"
+                      userId: "vascog_user"
+                      testType: "corsiBlock"
+                      completedAt: "2026-02-24T14:14:46.567541"
+                      metrics:
+                        type: "corsiBlock"
+                        maxSequenceLength: 7
+                      rawData:
+                        identifier: "corsi_block_step"
+                        endDate: "2026-02-24T14:14:46.567541"
+                        results:
+                          result: 7
+                        stepTimes:
+                          test_started: "2026-02-24T14:13:17.580279"
+                          test_ended: "2026-02-24T14:14:46.567716"
+
+                    - id: "reaction_time_step_1771938923307"
+                      userId: "vascog_user"
+                      testType: "reactionTime"
+                      completedAt: "2026-02-24T14:15:19.084922"
+                      metrics:
+                        type: "reactionTime"
+                        averageReactionTimeMs: 445
+                        correctTaps: 11
+                        wrongTaps: 0
+                      rawData:
+                        identifier: "reaction_time_step"
+                        endDate: "2026-02-24T14:15:19.084922"
+                        results:
+                          result:
+                            avg. reaction time: 445
+                            Wrong taps: 0
+                            Correct taps: 11
+                        stepTimes:
+                          test_started: "2026-02-24T14:14:49.079688"
+                          test_ended: "2026-02-24T14:15:19.084304"
+      responses:
+        '201':
+          description: All results saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaveBatchResultResponse'
+        '207':
+          description: Partial success — some results saved, some failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartialBatchResultResponse'
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+
+  schemas:
+
+    BiologicalSex:
+      type: string
+      enum: [male, female]
+      description: Biological sex of the user.
+
+    EducationLevel:
+      type: string
+      enum: [primary, vocational, secondary, higher, other]
+      description: Highest attained education level.
+
+    UserProfile:
+      type: object
+      required: [birthYear, height, weight, biologicalSex, education]
+      properties:
+        birthYear:
+          type: integer
+          example: 1990
+        height:
+          type: integer
+          example: 175
+        weight:
+          type: integer
+          example: 70
+        currentIllness:
+          type: string
+          nullable: true
+        chronicDiseases:
+          type: string
+          nullable: true
+        smokingCigarettes:
+          type: boolean
+          nullable: true
+        smokingFrequency:
+          type: string
+          nullable: true
+        drinkingAlcohol:
+          type: boolean
+          nullable: true
+        alcoholFrequency:
+          type: string
+          nullable: true
+        otherSubstances:
+          type: boolean
+          nullable: true
+        otherSubstancesName:
+          type: string
+          nullable: true
+        otherSubstancesFrequency:
+          type: string
+          nullable: true
+        allergies:
+          type: array
+          items:
+            type: string
+        medications:
+          type: array
+          items:
+            type: string
+        biologicalSex:
+          $ref: '#/components/schemas/BiologicalSex'
+        genderIdentity:
+          type: string
+          nullable: true
+        genderIdentityOther:
+          type: string
+          nullable: true
+        education:
+          $ref: '#/components/schemas/EducationLevel'
+        educationOther:
+          type: string
+          nullable: true
+        disability:
+          type: string
+          nullable: true
+        type:
+          type: string
+          enum: [neuroCog, covidCog, vasCog, sccCog, normalCog]
+
+    SurveySubmissionRequest:
+      type: object
+      required:
+        - surveyId
+        - userId
+        - answers
+      properties:
+        surveyId:
+          type: string
+          description: Identifier of the survey
+          example: "monitoring"
+        userId:
+          type: string
+          description: ID of the authenticated user
+          example: "vascog_user"
+        metadata:
+          type: object
+          description: Additional contextual metadata (e.g. completedAt timestamps)
+          additionalProperties: true
+          example:
+            completedAt: "2026-02-26T20:21:56.556794Z"
+        answers:
+          type: array
+          description: List of dynamic answers submitted by the user
+          items:
+            $ref: '#/components/schemas/SurveyAnswer'
+
+    SurveyAnswer:
+      type: object
+      required:
+        - questionId
+        - type
+        - value
+      properties:
+        questionId:
+          type: string
+          example: "q1"
+        type:
+          type: string
+          description: The dynamically inferred data type of the answer
+          enum: [text, number, boolean, list, composite, unknown]
+          example: "number"
+        value:
+          description: The actual value of the answer. Can be a primitive, array, or complex object.
+          example: 8
+
+    LastSurveyResponse:
+      type: object
+      properties:
+        surveyId:
+          type: string
+          example: "monitoring"
+        completedAt:
+          type: string
+          format: date-time
+          example: "2026-02-26T20:21:56.556794Z"
+
+    CognitiveStats:
+      type: object
+      description: Summary statistics for a user's cognitive training history
+      required:
+        - totalSessions
+      properties:
+        totalSessions:
+          type: integer
+          description: Total number of completed full training sessions
+          example: 12
+        lastSessionDate:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp of the most recent completed training session. Can be null if the user has never completed a session.
+          nullable: true
+          example: "2026-03-02T15:30:00.000Z"
+
+    CognitiveTestResultRequest:
+      type: object
+      required:
+        - id
+        - userId
+        - testType
+        - completedAt
+        - metrics
+      properties:
+        id:
+          type: string
+          description: Unique result ID (millisecondsSinceEpoch or UUID)
+          example: "1740392845123"
+        userId:
+          type: string
+          description: ID of the authenticated user
+          example: "vascog_user"
+        testType:
+          $ref: '#/components/schemas/CognitiveTestType'
+        completedAt:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the test was completed
+          example: "2026-02-24T12:00:00.000Z"
+        metrics:
+          $ref: '#/components/schemas/TestMetrics'
+        rawData:
+          type: object
+          description: Full raw JSON from the cognition_package library for researchers
+          additionalProperties: true
+
+    CognitiveTestResultBatchRequest:
+      type: object
+      required:
+        - userId
+        - sessionCompletedAt
+        - results
+      properties:
+        userId:
+          type: string
+          example: "vascog_user"
+        sessionId:
+          type: string
+          description: Optional client-generated session identifier
+          example: "session_1740392845"
+        sessionCompletedAt:
+          type: string
+          format: date-time
+          example: "2026-02-24T12:15:00.000Z"
+        results:
+          type: array
+          minItems: 1
+          maxItems: 7
+          items:
+            $ref: '#/components/schemas/CognitiveTestResultRequest'
+
+    CognitiveTestType:
+      type: string
+      enum:
+        - stroop
+        - trailMaking
+        - flanker
+        - rvip
+        - tapping
+        - corsiBlock
+        - reactionTime
+      description: Type of cognitive test performed
+
+    TestMetrics:
+      type: object
+      required:
+        - type
+      discriminator:
+        propertyName: type
+        mapping:
+          stroop: '#/components/schemas/StroopMetrics'
+          trailMaking: '#/components/schemas/TrailMakingMetrics'
+          flanker: '#/components/schemas/FlankerMetrics'
+          rvip: '#/components/schemas/RvipMetrics'
+          tapping: '#/components/schemas/TappingMetrics'
+          corsiBlock: '#/components/schemas/CorsiBlockMetrics'
+          reactionTime: '#/components/schemas/ReactionTimeMetrics'
+      oneOf:
+        - $ref: '#/components/schemas/StroopMetrics'
+        - $ref: '#/components/schemas/TrailMakingMetrics'
+        - $ref: '#/components/schemas/FlankerMetrics'
+        - $ref: '#/components/schemas/RvipMetrics'
+        - $ref: '#/components/schemas/TappingMetrics'
+        - $ref: '#/components/schemas/CorsiBlockMetrics'
+        - $ref: '#/components/schemas/ReactionTimeMetrics'
+
+    StroopMetrics:
+      type: object
+      required: [type, correctTaps, mistakes, totalTrials]
+      properties:
+        type:
+          type: string
+          enum: [stroop]
+        correctTaps:
+          type: integer
+          minimum: 0
+        mistakes:
+          type: integer
+          minimum: 0
+        totalTrials:
+          type: integer
+          minimum: 0
+
+    TrailMakingMetrics:
+      type: object
+      required: [type, completionTimeSeconds, score, mistakes]
+      properties:
+        type:
+          type: string
+          enum: [trailMaking]
+        completionTimeSeconds:
+          type: integer
+          minimum: 0
+          description: Total time to complete the test in seconds
+        score:
+          type: integer
+          minimum: 0
+        mistakes:
+          type: integer
+          minimum: 0
+          description: Number of wrong gestures / wrong connections
+
+    FlankerMetrics:
+      type: object
+      required: [type, correctSwipes, wrongSwipes, totalTimeSeconds, score, meanCongruentTime, meanIncongruentTime, congruentTrialsCount, incongruentTrialsCount]
+      properties:
+        type:
+          type: string
+          enum: [flanker]
+        correctSwipes:
+          type: integer
+          minimum: 0
+        wrongSwipes:
+          type: integer
+          minimum: 0
+        totalTimeSeconds:
+          type: integer
+          minimum: 0
+        score:
+          type: integer
+          minimum: 0
+        meanCongruentTime:
+          type: number
+          format: double
+          description: Mean response time for congruent trials (ms)
+        meanIncongruentTime:
+          type: number
+          format: double
+          description: Mean response time for incongruent trials (ms)
+        congruentTrialsCount:
+          type: integer
+          minimum: 0
+        incongruentTrialsCount:
+          type: integer
+          minimum: 0
+
+    RvipMetrics:
+      type: object
+      required: [type, correctTaps, incorrectTaps, passedSequences, delaysOnCorrectTaps]
+      properties:
+        type:
+          type: string
+          enum: [rvip]
+        correctTaps:
+          type: integer
+          minimum: 0
+        incorrectTaps:
+          type: integer
+          minimum: 0
+        passedSequences:
+          type: boolean
+          description: Whether the user passed the target sequences (3-5-7 or 2-4-6)
+        delaysOnCorrectTaps:
+          type: array
+          items:
+            type: number
+            format: double
+          description: List of reaction delays (ms) on each correct tap
+
+    TappingMetrics:
+      type: object
+      required: [type, totalTaps]
+      properties:
+        type:
+          type: string
+          enum: [tapping]
+        totalTaps:
+          type: integer
+          minimum: 0
+          description: Total alternating taps during the test
+
+    CorsiBlockMetrics:
+      type: object
+      required: [type, maxSequenceLength]
+      properties:
+        type:
+          type: string
+          enum: [corsiBlock]
+        maxSequenceLength:
+          type: integer
+          minimum: 0
+          description: Maximum sequence length correctly reproduced (Corsi span)
+
+    ReactionTimeMetrics:
+      type: object
+      required: [type, averageReactionTimeMs, correctTaps, wrongTaps]
+      properties:
+        type:
+          type: string
+          enum: [reactionTime]
+        averageReactionTimeMs:
+          type: integer
+          minimum: 0
+          description: Average reaction time in milliseconds
+        correctTaps:
+          type: integer
+          minimum: 0
+        wrongTaps:
+          type: integer
+          minimum: 0
+
+    SaveResultResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the saved result (echoed back)
+          example: "1740392845123"
+        savedAt:
+          type: string
+          format: date-time
+          example: "2026-02-24T12:00:01.000Z"
+
+    SaveBatchResultResponse:
+      type: object
+      properties:
+        savedCount:
+          type: integer
+          example: 7
+        sessionId:
+          type: string
+          example: "session_1740392845"
+        savedAt:
+          type: string
+          format: date-time
+
+    PartialBatchResultResponse:
+      type: object
+      properties:
+        savedCount:
+          type: integer
+        failedCount:
+          type: integer
+        failures:
+          type: array
+          items:
+            type: object
+            properties:
+              resultId:
+                type: string
+              reason:
+                type: string
+
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: "INVALID_TEST_TYPE"
+        message:
+          type: string
+          example: "Unknown testType: 'unknown'"
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: "UNAUTHORIZED"
+            message: "Valid Bearer token required"
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: "INTERNAL_SERVER_ERROR"
+            message: "Unexpected server error"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from the auth endpoint
+
+security:
+  - bearerAuth: []

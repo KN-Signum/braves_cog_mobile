@@ -1,0 +1,44 @@
+════════════════════════════════════════════════════════════════════════════════
+COGNITIVE TEST RESULT
+════════════════════════════════════════════════════════════════════════════════
+Timestamp: 2026-02-24 15:49:21.451988
+
+TEST INFORMATION:
+--------------------------------------------------------------------------------
+id: corsi_block_step_1771944556368
+userId: covidcog_user
+testType: corsiBlock
+completedAt: 2026-02-24T15:48:21.696416
+
+METRICS:
+--------------------------------------------------------------------------------
+type: corsiBlock
+maxSequenceLength: 0
+
+RAW DATA:
+--------------------------------------------------------------------------------
+__type: RPActivityResult
+identifier: corsi_block_step
+endDate: 2026-02-24T15:48:21.696416
+results:
+  result: 0
+stepTimes:
+  instruction_started: 2026-02-24T15:48:09.593828
+  instruction_ended: 2026-02-24T15:48:11.362424
+  test_started: 2026-02-24T15:48:11.362433
+  test_ended: 2026-02-24T15:48:21.696621
+  results_shown: 2026-02-24T15:48:21.696661
+interactions: [
+  time: 2026-02-24T15:48:15.714718
+  correctness: Wrong gesture
+  type: Button tap
+  description: Failed first try - Tapped the order: [5, 3]. The correct order was: (7, 2)
+  time: 2026-02-24T15:48:20.994074
+  correctness: Wrong gesture
+  type: Button tap
+  description: Test Finished after second fail - Tapped the order: [5, 3]. The correct order was: (6, 1)
+]
+
+════════════════════════════════════════════════════════════════════════════════
+END OF RESULT
+════════════════════════════════════════════════════════════════════════════════

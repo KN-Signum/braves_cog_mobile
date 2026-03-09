@@ -1,0 +1,76 @@
+════════════════════════════════════════════════════════════════════════════════
+COGNITIVE TEST RESULT
+════════════════════════════════════════════════════════════════════════════════
+Timestamp: 2026-02-24 15:49:17.414397
+
+TEST INFORMATION:
+--------------------------------------------------------------------------------
+id: trail_making_step_1771944556366
+userId: covidcog_user
+testType: trailMaking
+completedAt: 2026-02-24T15:44:24.624604
+
+METRICS:
+--------------------------------------------------------------------------------
+type: trailMaking
+completionTimeSeconds: 4
+score: 5
+mistakes: 0
+
+RAW DATA:
+--------------------------------------------------------------------------------
+__type: RPActivityResult
+identifier: trail_making_step
+endDate: 2026-02-24T15:44:24.624604
+results:
+  result:
+    Completion time: 4
+    score: 5
+stepTimes:
+  instruction_started: 2026-02-24T15:43:38.944316
+  instruction_ended: 2026-02-24T15:44:19.195921
+  test_started: 2026-02-24T15:44:19.195931
+  test_ended: 2026-02-24T15:44:24.623804
+  results_shown: 2026-02-24T15:44:24.623817
+interactions: [
+  time: 2026-02-24T15:44:20.690529
+  correctness: Correct gesture
+  type: Draw path
+  description: Drew a correct path from 1 to A
+  time: 2026-02-24T15:44:20.956592
+  correctness: Correct gesture
+  type: Draw path
+  description: Drew a correct path from A to 2
+  time: 2026-02-24T15:44:21.390664
+  correctness: Correct gesture
+  type: Draw path
+  description: Drew a correct path from 2 to B
+  time: 2026-02-24T15:44:21.707735
+  correctness: Correct gesture
+  type: Draw path
+  description: Drew a correct path from B to 3
+  time: 2026-02-24T15:44:22.374351
+  correctness: Correct gesture
+  type: Draw path
+  description: Drew a correct path from 3 to C
+  time: 2026-02-24T15:44:22.940386
+  correctness: Correct gesture
+  type: Draw path
+  description: Drew a correct path from C to 4
+  time: 2026-02-24T15:44:23.756411
+  correctness: Correct gesture
+  type: Draw path
+  description: Drew a correct path from 4 to D
+  time: 2026-02-24T15:44:24.239084
+  correctness: Correct gesture
+  type: Draw path
+  description: Drew a correct path from D to 5
+  time: 2026-02-24T15:44:24.623605
+  correctness: Correct gesture
+  type: Draw path
+  description: Drew a correct path from 5 to E
+]
+
+════════════════════════════════════════════════════════════════════════════════
+END OF RESULT
+════════════════════════════════════════════════════════════════════════════════

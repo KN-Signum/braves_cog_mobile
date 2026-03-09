@@ -1,25 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:braves_cog/core/theme/app_theme.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../auth/login_screen.dart';
+
+import 'package:braves_cog/core/widgets/app_bottom_nav_bar.dart';
+import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
+import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
+import 'package:braves_cog/features/auth/presentation/screens/login_screen.dart';
 import '../onboarding/onboarding_screen.dart';
 import '../home/home_screen.dart';
 import '../health/health_module_screen.dart';
-import '../psychological_tests/psychological_tests_screen.dart';
+import '../surveys/widgets/universal_survey_widget.dart';
+import '../surveys/widgets/screening_flow_widget.dart';
+import '../surveys/config/survey_configs/monitoring_survey_config.dart';
 import '../profile/user_profile_screen.dart';
-import '../games/games_screen.dart';
+import '../cognitive_games/presentation/games_screen.dart';
+import '../settings/settings_screen.dart';
 
-class MainScreenNew extends StatefulWidget {
-  const MainScreenNew({Key? key}) : super(key: key);
+class MainScreenNew extends ConsumerStatefulWidget {
+  const MainScreenNew({super.key});
 
   @override
-  State<MainScreenNew> createState() => _MainScreenNewState();
+  ConsumerState<MainScreenNew> createState() => _MainScreenNewState();
 }
 
-class _MainScreenNewState extends State<MainScreenNew> {
+class _MainScreenNewState extends ConsumerState<MainScreenNew> {
   String _currentView = 'splash';
   bool _isLoading = true;
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -29,7 +36,6 @@ class _MainScreenNewState extends State<MainScreenNew> {
 
   Future<void> _checkOnboardingStatus() async {
     await Future.delayed(const Duration(milliseconds: 500));
-
     final prefs = await SharedPreferences.getInstance();
     final isRegistered = prefs.getBool('user-registered') ?? false;
     final onboardingCompleted = prefs.getBool('onboarding-completed') ?? false;
@@ -46,226 +52,208 @@ class _MainScreenNewState extends State<MainScreenNew> {
     });
   }
 
-  void _handleLoginComplete() {
-    setState(() => _currentView = 'onboarding');
+  void _handleLoginComplete() async {
+    final prefs = await SharedPreferences.getInstance();
+    final justRegistered = prefs.getBool('just-registered') ?? false;
+
+    // Only load profile data for returning users
+    if (!justRegistered) {
+      final authState = ref.read(authProvider);
+      if (authState.user?.email != null) {
+        await ref
+            .read(profileProvider.notifier)
+            .loadProfile(email: authState.user!.email);
+      }
+    }
+
+    if (justRegistered) {
+      // New user - show onboarding
+      await prefs.setBool('just-registered', false); // Clear flag
+      setState(() => _currentView = 'onboarding');
+    } else {
+      // Returning user - skip onboarding and go to home
+      setState(() {
+        _currentView = 'home';
+        _currentIndex = 0;
+      });
+    }
+  }
+
+  void _handleBackFromOnboarding() {
+    setState(() => _currentView = 'login');
   }
 
   void _handleOnboardingComplete() {
-    setState(() => _currentView = 'home');
+    setState(() {
+      _currentView = 'home';
+      _currentIndex = 0;
+    });
+  }
+
+  void _onBottomNavTap(int index) {
+    setState(() {
+      _currentIndex = index;
+      switch (index) {
+        case 0:
+          _currentView = 'home';
+          break;
+        case 1:
+          _currentView = 'health';
+          break;
+        case 2:
+          _currentView = 'games';
+          break;
+        case 3:
+          _currentView = 'profile';
+          break;
+        case 4:
+          _currentView = 'settings';
+          break;
+      }
+    });
   }
 
   void _navigateToHome() {
-    setState(() => _currentView = 'home');
-  }
-
-  void _navigateToProfile() {
-    setState(() => _currentView = 'profile');
-  }
-
-  void _navigateToGames() {
-    setState(() => _currentView = 'games');
-  }
-
-  void _navigateToHealth() {
-    setState(() => _currentView = 'health');
+    setState(() {
+      _currentView = 'home';
+      _currentIndex = 0;
+    });
   }
 
   void _navigateToTests() {
     setState(() => _currentView = 'tests');
+    // Tests doesn't have a bottom nav item, keep current index or deselect?
+    // Keeping current index might be confusing if we show nav bar.
+    // Let's assume Tests is a sub-screen of Home or standalone.
   }
 
-  void _navigateToSettings() {
-    setState(() => _currentView = 'settings');
+  void _navigateToMonitoring() {
+    setState(() {
+      _currentView = 'monitoring';
+      _currentIndex = 1; // Assuming health is index 1
+    });
   }
+
+  void _navigateToScreening() {
+    setState(() {
+      _currentView = 'screening';
+      _currentIndex = 1; // Assuming health is index 1
+    });
+  }
+
+  // Handlers for specific back navigations if needed, but generic to home is usually fine
+  // for top level items, but if we are deep in stack...
+  // Here we are doing flat navigation mostly.
 
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: AppTheme.backgroundColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/braves_logo.png',
-                width: 200,
-                height: 200,
-              ),
-              const SizedBox(height: 32),
-              CircularProgressIndicator(
-                color: AppTheme.accentColor,
-                strokeWidth: 3,
-              ),
-            ],
+          child: CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.secondary,
           ),
         ),
       );
     }
 
+    if (_currentView == 'login') {
+      return LoginScreen(onLogin: _handleLoginComplete);
+    }
+
+    if (_currentView == 'onboarding') {
+      return OnboardingScreen(
+        onComplete: _handleOnboardingComplete,
+        onBackToLogin: _handleBackFromOnboarding,
+      );
+    }
+
+    // Check if we should show bottom nav.
+    // We show it for: home, health, games, profile, settings.
+    // What about tests? If tests is a full screen flow, maybe hide it?
+    // User asked for bottom nav to be accessed from main health, home, games and settings.
+    // Let's show it for all these "main" views.
+    final bool showBottomNav = [
+      'home',
+      'health',
+      'games',
+      'profile',
+      'settings',
+      'monitoring',
+      'screening',
+    ].contains(_currentView);
+
+    return Scaffold(
+      body: _buildBody(),
+      bottomNavigationBar: showBottomNav
+          ? AppBottomNavigationBar(
+              currentIndex: _currentIndex,
+              onTap: _onBottomNavTap,
+            )
+          : null,
+    );
+  }
+
+  Widget _buildBody() {
     switch (_currentView) {
-      case 'login':
-        return LoginScreen(onLogin: _handleLoginComplete);
-
-      case 'onboarding':
-        return OnboardingScreen(onComplete: _handleOnboardingComplete);
-
       case 'home':
         return HomeScreen(
-          onUserProfileClick: _navigateToProfile,
-          onSettingsClick: _navigateToSettings,
-          onHealthClick: _navigateToHealth,
+          key: const ValueKey('home'),
+          onMonitoringClick: _navigateToMonitoring,
+          onScreeningClick: _navigateToScreening,
           onTestsClick: _navigateToTests,
-          onGamesClick: _navigateToGames,
         );
-
-      case 'profile':
-        return UserProfileScreen(onBack: _navigateToHome);
-
       case 'health':
-        return HealthModuleScreen(onBack: _navigateToHome);
-
-      case 'tests':
-        return PsychologicalTestsScreen(onBack: _navigateToHome);
-
+        return HealthModuleScreen(
+          key: const ValueKey('health'),
+          onBack: _navigateToHome,
+        );
+      case 'monitoring':
+        return UniversalSurveyWidget(
+          key: const ValueKey('monitoring'),
+          survey: MonitoringSurveyConfig.getSurvey(),
+          onComplete: (answers, {isBackNavigation = false}) {
+            // TODO: Save answers
+            if (!isBackNavigation) {
+              _navigateToHome();
+            }
+          },
+          onBack: _navigateToHome,
+          startAtLastQuestion: false,
+          showFinishLabel: true,
+        );
+      case 'screening':
+        return ScreeningFlowWidget(
+          key: const ValueKey('screening'),
+          onComplete: (Map<String, dynamic> allAnswers) {
+            // TODO: Save all answers from all screening surveys
+            _navigateToHome();
+          },
+          onBack: _navigateToHome,
+        );
       case 'games':
-        return GamesScreen(onBack: _navigateToHome);
-
+        return GamesScreen(key: const ValueKey('games'));
+      case 'profile':
+        return UserProfileScreen(key: const ValueKey('profile'));
       case 'settings':
-        return _buildSettingsScreen();
-
+        return SettingsScreen(
+          key: const ValueKey('settings'),
+          onLogout: () {
+            setState(() {
+              _currentView = 'login';
+              _currentIndex = 0;
+            });
+          },
+        );
       default:
+        // Fallback to home
         return HomeScreen(
-          onUserProfileClick: _navigateToProfile,
-          onSettingsClick: _navigateToSettings,
-          onHealthClick: _navigateToHealth,
+          key: const ValueKey('default_home'),
+          onMonitoringClick: _navigateToMonitoring,
+          onScreeningClick: _navigateToScreening,
           onTestsClick: _navigateToTests,
-          onGamesClick: _navigateToGames,
         );
     }
-  }
-
-  Widget _buildSettingsScreen() {
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: AppTheme.backgroundColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.chevron_left,
-            color: AppTheme.primaryColor,
-            size: 28,
-          ),
-          onPressed: _navigateToHome,
-        ),
-        title: Text(
-          'Ustawienia',
-          style: GoogleFonts.spaceGrotesk(
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-            color: AppTheme.primaryColor,
-          ),
-        ),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _buildSettingsTile(
-            icon: Icons.notifications,
-            title: 'Powiadomienia',
-            subtitle: 'Zarządzaj powiadomieniami',
-            onTap: () {},
-          ),
-          _buildSettingsTile(
-            icon: Icons.privacy_tip,
-            title: 'Prywatność',
-            subtitle: 'Zarządzaj danymi osobowymi',
-            onTap: () {},
-          ),
-          _buildSettingsTile(
-            icon: Icons.info,
-            title: 'O aplikacji',
-            subtitle: 'Wersja 1.0.0',
-            onTap: () {},
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () async {
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.clear();
-              setState(() => _currentView = 'login');
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFEF5350),
-              minimumSize: const Size(double.infinity, 56),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-            ),
-            child: Text(
-              'Wyloguj się',
-              style: GoogleFonts.inter(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSettingsTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppTheme.lightBackgroundColor, width: 2),
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        minVerticalPadding: 16,
-        leading: Container(
-          width: 44,
-          height: 44,
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: AppTheme.accentColor.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(icon, color: AppTheme.accentColor, size: 24),
-        ),
-        title: Text(
-          title,
-          style: GoogleFonts.inter(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: AppTheme.primaryColor,
-          ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: GoogleFonts.inter(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppTheme.primaryColor.withOpacity(0.6),
-          ),
-        ),
-        trailing: Icon(
-          Icons.chevron_right,
-          color: AppTheme.primaryColor,
-          size: 24,
-        ),
-        onTap: onTap,
-      ),
-    );
   }
 }

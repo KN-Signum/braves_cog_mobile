@@ -1,0 +1,69 @@
+{
+  "surveyId": "Baseline_Social_Support",
+  "userId": "normalcog_user",
+  "metadata": {
+    "completedAt": "2026-02-26T20:09:44.972605Z"
+  },
+  "answers": [
+    {
+      "questionId": "sss_1",
+      "type": "number",
+      "value": 2
+    },
+    {
+      "questionId": "sss_2",
+      "type": "number",
+      "value": 3
+    },
+    {
+      "questionId": "sss_3",
+      "type": "number",
+      "value": 4
+    },
+    {
+      "questionId": "sss_4",
+      "type": "number",
+      "value": 4
+    },
+    {
+      "questionId": "sss_5",
+      "type": "number",
+      "value": 2
+    },
+    {
+      "questionId": "sss_6",
+      "type": "number",
+      "value": 1
+    },
+    {
+      "questionId": "sss_7",
+      "type": "number",
+      "value": 1
+    },
+    {
+      "questionId": "sss_8",
+      "type": "number",
+      "value": 3
+    },
+    {
+      "questionId": "sss_9",
+      "type": "number",
+      "value": 2
+    },
+    {
+      "questionId": "sss_10",
+      "type": "number",
+      "value": 4
+    },
+    {
+      "questionId": "sss_11",
+      "type": "number",
+      "value": 4
+    },
+    {
+      "questionId": "sss_12",
+      "type": "number",
+      "value": 3
+    }
+  ]
+}

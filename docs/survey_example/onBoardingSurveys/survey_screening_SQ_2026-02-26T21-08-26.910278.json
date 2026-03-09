@@ -1,0 +1,49 @@
+{
+  "surveyId": "screening_SQ",
+  "userId": "normalcog_user",
+  "metadata": {
+    "completedAt": "2026-02-26T20:08:25.907454Z"
+  },
+  "answers": [
+    {
+      "questionId": "sq_bedtime_hours",
+      "type": "number",
+      "value": 0
+    },
+    {
+      "questionId": "sq_bedtime_minutes",
+      "type": "number",
+      "value": 0
+    },
+    {
+      "questionId": "sq_waketime_hours",
+      "type": "number",
+      "value": 0
+    },
+    {
+      "questionId": "sq_waketime_minutes",
+      "type": "number",
+      "value": 0
+    },
+    {
+      "questionId": "sq_sleep_latency",
+      "type": "number",
+      "value": 0
+    },
+    {
+      "questionId": "sq_sleep_hours",
+      "type": "number",
+      "value": 0
+    },
+    {
+      "questionId": "sq_sleep_difficulties",
+      "type": "text",
+      "value": "rarely"
+    },
+    {
+      "questionId": "sq_sleep_quality",
+      "type": "text",
+      "value": "fairly_bad"
+    }
+  ]
+}

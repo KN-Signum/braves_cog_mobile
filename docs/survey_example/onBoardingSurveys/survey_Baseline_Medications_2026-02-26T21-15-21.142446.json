@@ -1,0 +1,28 @@
+{
+  "surveyId": "Baseline_Medications",
+  "userId": "normalcog_user",
+  "metadata": {
+    "completedAt": "2026-02-26T20:15:20.141122Z"
+  },
+  "answers": [
+    {
+      "questionId": "medications",
+      "type": "boolean",
+      "value": true
+    },
+    {
+      "questionId": "medications_medications",
+      "type": "list",
+      "value": [
+        {
+          "name": "Benzacne Duo",
+          "dose": null,
+          "dosage": null,
+          "doseDontKnow": false,
+          "selectedStrength": null,
+          "manual": false
+        }
+      ]
+    }
+  ]
+}

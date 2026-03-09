@@ -4,15 +4,25 @@ import 'package:http/http.dart' as http;
 class ApiClient {
   final String baseUrl;
   final http.Client client;
+  final Future<String?> Function()? tokenProvider;
 
-  ApiClient({required this.baseUrl, http.Client? client})
+  ApiClient({required this.baseUrl, http.Client? client, this.tokenProvider})
     : client = client ?? http.Client();
 
-  Map<String, String> _getHeaders({Map<String, String>? additionalHeaders}) {
+  Future<Map<String, String>> _getHeaders({
+    Map<String, String>? additionalHeaders,
+  }) async {
     final headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
+
+    if (tokenProvider != null) {
+      final token = await tokenProvider!();
+      if (token != null && token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+    }
 
     if (additionalHeaders != null) {
       headers.addAll(additionalHeaders);
@@ -31,10 +41,9 @@ class ApiClient {
         '$baseUrl$endpoint',
       ).replace(queryParameters: queryParameters);
 
-      final response = await client.get(
-        uri,
-        headers: _getHeaders(additionalHeaders: headers),
-      );
+      final resolvedHeaders = await _getHeaders(additionalHeaders: headers);
+
+      final response = await client.get(uri, headers: resolvedHeaders);
 
       return _handleResponse(response);
     } catch (e) {
@@ -49,10 +58,11 @@ class ApiClient {
   }) async {
     try {
       final uri = Uri.parse('$baseUrl$endpoint');
+      final resolvedHeaders = await _getHeaders(additionalHeaders: headers);
 
       final response = await client.post(
         uri,
-        headers: _getHeaders(additionalHeaders: headers),
+        headers: resolvedHeaders,
         body: body != null ? jsonEncode(body) : null,
       );
 
@@ -69,10 +79,11 @@ class ApiClient {
   }) async {
     try {
       final uri = Uri.parse('$baseUrl$endpoint');
+      final resolvedHeaders = await _getHeaders(additionalHeaders: headers);
 
       final response = await client.put(
         uri,
-        headers: _getHeaders(additionalHeaders: headers),
+        headers: resolvedHeaders,
         body: body != null ? jsonEncode(body) : null,
       );
 
@@ -88,11 +99,9 @@ class ApiClient {
   }) async {
     try {
       final uri = Uri.parse('$baseUrl$endpoint');
+      final resolvedHeaders = await _getHeaders(additionalHeaders: headers);
 
-      final response = await client.delete(
-        uri,
-        headers: _getHeaders(additionalHeaders: headers),
-      );
+      final response = await client.delete(uri, headers: resolvedHeaders);
 
       return _handleResponse(response);
     } catch (e) {
@@ -106,6 +115,10 @@ class ApiClient {
         return {};
       }
       return jsonDecode(response.body) as Map<String, dynamic>;
+    } else if (response.statusCode == 401) {
+      throw UnauthorizedException(
+        'Unauthorized: Token may be expired or invalid.',
+      );
     } else {
       throw ApiException(
         'Request failed with status ${response.statusCode}: ${response.body}',
@@ -127,4 +140,11 @@ class ApiException implements Exception {
 
   @override
   String toString() => 'ApiException: $message';
+}
+
+class UnauthorizedException extends ApiException {
+  UnauthorizedException(String message) : super(message, statusCode: 401);
+
+  @override
+  String toString() => 'UnauthorizedException: $message';
 }

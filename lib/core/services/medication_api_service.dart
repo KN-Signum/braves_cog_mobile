@@ -1,148 +1,81 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/foundation.dart';
+
+/// Struktura opisująca lek i dostępne dawki (moce preparatu).
+class MedicationEntry {
+  final String name;
+  final List<String> strengths;
+
+  const MedicationEntry({
+    required this.name,
+    required this.strengths,
+  });
+}
 
 class MedicationApiService {
-  static const String _cacheKey = 'medications_cache';
-  static const String _cacheTimestampKey = 'medications_cache_timestamp';
-  static const int _cacheDurationDays = 7;
+  static const String _assetPath = 'lib/features/health/drugs.json';
 
+  static List<MedicationEntry>? _cachedEntries;
+
+  /// Zwraca listę unikalnych nazw leków (Nazwy powszechnie stosowane – kolumna C).
   Future<List<String>> getMedications() async {
-    try {
-      final cachedMedications = await _getCachedMedications();
-      if (cachedMedications != null && cachedMedications.isNotEmpty) {
-        return cachedMedications;
+    final entries = await _loadEntries();
+    final names = entries.map((e) => e.name).toSet().toList()..sort();
+    return names;
+  }
+
+  /// Zwraca listę dawek (mocy preparatu – kolumna H) dla podanej nazwy leku.
+  Future<List<String>> getStrengthsFor(String name) async {
+    final entries = await _loadEntries();
+    final normalizedName = name.trim().toLowerCase();
+
+    final strengths = <String>{};
+    for (final entry in entries) {
+      if (entry.name.toLowerCase() == normalizedName) {
+        strengths.addAll(entry.strengths);
       }
-
-      final apiMedications = await _fetchFromApi();
-      if (apiMedications.isNotEmpty) {
-        await _cacheMedications(apiMedications);
-        return apiMedications;
-      }
-
-      return _getStaticMedications();
-    } catch (e) {
-      print('Error fetching medications: $e');
-      final cachedMedications = await _getCachedMedicationsIgnoreExpiry();
-      if (cachedMedications != null && cachedMedications.isNotEmpty) {
-        return cachedMedications;
-      }
-      return _getStaticMedications();
     }
+
+    final list = strengths.toList()..sort();
+    return list;
   }
 
-  Future<List<String>> _fetchFromApi() async {
+  Future<List<MedicationEntry>> _loadEntries() async {
+    if (_cachedEntries != null) {
+      return _cachedEntries!;
+    }
+
     try {
-      final response = await http.get(
-        Uri.parse('https://api.example.com/medications'),
-        headers: {'Accept': 'application/json'},
-      ).timeout(const Duration(seconds: 10));
+      final jsonString = await rootBundle.loadString(_assetPath);
+      final Map<String, dynamic> data = json.decode(jsonString);
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(utf8.decode(response.bodyBytes));
-        
-        if (data is List) {
-          final medications = <String>{};
-          for (var item in data) {
-            if (item is Map && item.containsKey('name')) {
-              medications.add(item['name'].toString().trim());
-            }
-          }
-          return medications.toList()..sort();
-        }
-      }
+      final entries = <MedicationEntry>[];
+      data.forEach((key, value) {
+        final name = key.toString().trim();
+        if (name.isEmpty) return;
+        final strengthsList = (value as List)
+            .map((v) => v.toString().trim())
+            .where((s) => s.isNotEmpty)
+            .toList();
+        if (strengthsList.isEmpty) return;
+        strengthsList.sort();
+        entries.add(
+          MedicationEntry(
+            name: name,
+            strengths: strengthsList,
+          ),
+        );
+      });
 
-      return [];
+      entries.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+
+      _cachedEntries = entries;
+      return _cachedEntries!;
     } catch (e) {
-      print('API fetch error: $e');
-      return [];
+      debugPrint('MedicationApiService: błąd podczas odczytu JSON: $e');
+      _cachedEntries = const [];
+      return _cachedEntries!;
     }
-  }
-
-  Future<List<String>?> _getCachedMedications() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final timestamp = prefs.getInt(_cacheTimestampKey);
-      
-      if (timestamp != null) {
-        final cacheDate = DateTime.fromMillisecondsSinceEpoch(timestamp);
-        final now = DateTime.now();
-        final difference = now.difference(cacheDate).inDays;
-        
-        if (difference < _cacheDurationDays) {
-          final cached = prefs.getStringList(_cacheKey);
-          if (cached != null && cached.isNotEmpty) {
-            return cached;
-          }
-        }
-      }
-      
-      return null;
-    } catch (e) {
-      print('Cache read error: $e');
-      return null;
-    }
-  }
-
-  Future<List<String>?> _getCachedMedicationsIgnoreExpiry() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      return prefs.getStringList(_cacheKey);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  Future<void> _cacheMedications(List<String> medications) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList(_cacheKey, medications);
-      await prefs.setInt(_cacheTimestampKey, DateTime.now().millisecondsSinceEpoch);
-    } catch (e) {
-      print('Cache write error: $e');
-    }
-  }
-
-  Future<void> clearCache() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_cacheKey);
-    await prefs.remove(_cacheTimestampKey);
-  }
-
-  List<String> _getStaticMedications() {
-    return [
-      'Acard', 'Acenokumarol', 'Acetaminophen', 'Aescin',
-      'Amoksycylina', 'Amotaks', 'Amoksiklav', 'Amlodipina',
-      'Apap', 'Aspirin', 'Atoris', 'Atorwastatyna',
-      'Betaloc', 'Betahistyna', 'Biofenac', 'Biosotal',
-      'Bisocard', 'Bisoprolol', 'Bondronat',
-      'Captopril', 'Carvedilol', 'Cefuroxim', 'Citalopram',
-      'Claritine', 'Clopidogrel', 'Concor',
-      'Dexamethason', 'Dexamethasone', 'Diclofenac',
-      'Digoxin', 'Duspatalin',
-      'Edarbi', 'Enalapril', 'Entresto', 'Espumisan', 'Euthyrox',
-      'Flegamina', 'Fluconazole', 'Furosemid',
-      'Gabapentin', 'Glucophage', 'Groprinosin',
-      'Hydrochlorothiazid', 'Hydroxyzine',
-      'Ibuprofen', 'Ibufen', 'Insulin', 'Irbesartan', 'Isoptin',
-      'Ketonal',
-      'Lacidofil', 'Lamotrigine', 'Lantus', 'Letrox',
-      'Levothyroxine', 'Lipanthyl', 'Lisinopril', 'Losartan', 'Lozap',
-      'Metformax', 'Metformin', 'Metformina', 'Metoprolol', 'Milurit',
-      'Nalgesin', 'Nebilet', 'Nebivolol', 'Nolpaza', 'Noliprel',
-      'Omeprazol', 'Omnic',
-      'Panangin', 'Pantoprazol', 'Paracetamol', 'Perindopril',
-      'Polopiryna', 'Polprazol', 'Prestarium', 'Propranolol',
-      'Ramipril', 'Ranitidin', 'Roswera', 'Rosuvastatin',
-      'Rosuvastatyna', 'Rutinoscorbin',
-      'Salbutamol', 'Sertraline', 'Siofor', 'Simvastatin',
-      'Simvastatyna', 'Spironolacton', 'Stadorm',
-      'Tamsulosin', 'Telmisartan', 'Torasemid', 'Tolperison',
-      'Tramadol', 'Tritace',
-      'Valsartan', 'Ventolin', 'Vitamin D', 'Vitamin B12', 'Vitamin C',
-      'Warfarin',
-      'Xarelto',
-      'Zoloft',
-    ];
   }
 }

@@ -1,0 +1,41 @@
+════════════════════════════════════════════════════════════════════════════════
+COGNITIVE TEST RESULT
+════════════════════════════════════════════════════════════════════════════════
+Timestamp: 2026-02-24 15:49:22.460114
+
+TEST INFORMATION:
+--------------------------------------------------------------------------------
+id: reaction_time_step_1771944556369
+userId: covidcog_user
+testType: reactionTime
+completedAt: 2026-02-24T15:48:55.497953
+
+METRICS:
+--------------------------------------------------------------------------------
+type: reactionTime
+averageReactionTimeMs: 0
+correctTaps: 0
+wrongTaps: 0
+
+RAW DATA:
+--------------------------------------------------------------------------------
+__type: RPActivityResult
+identifier: reaction_time_step
+endDate: 2026-02-24T15:48:55.497953
+results:
+  result:
+    avg. reaction time: 0
+    Wrong taps: 0
+    Correct taps: 0
+stepTimes:
+  instruction_started: 2026-02-24T15:48:23.361308
+  instruction_ended: 2026-02-24T15:48:25.492860
+  test_started: 2026-02-24T15:48:25.492863
+  test_ended: 2026-02-24T15:48:55.497132
+  results_shown: 2026-02-24T15:48:55.498185
+interactions: [
+]
+
+════════════════════════════════════════════════════════════════════════════════
+END OF RESULT
+════════════════════════════════════════════════════════════════════════════════

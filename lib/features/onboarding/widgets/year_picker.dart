@@ -1,40 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../core/theme/app_theme.dart';
 
 class YearPicker extends StatelessWidget {
-  final String value;
-  final Function(String) onChange;
+  final int value;
+  final Function(int) onChange;
   final int minYear;
   final int maxYear;
   final int defaultYear;
 
   const YearPicker({
-    Key? key,
+    super.key,
     required this.value,
     required this.onChange,
     this.minYear = 1925,
     required this.maxYear,
     this.defaultYear = 1990,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final years = List.generate(
       maxYear - minYear + 1,
-      (index) => (maxYear - index).toString(),
+      (index) => maxYear - index,
     );
 
     final initialIndex = years.indexOf(value);
 
-    return Container(
-      height: 200,
-      width: 150,
+    return SizedBox(
+      height: 300,
+      width: double.infinity,
       child: ListWheelScrollView.useDelegate(
         itemExtent: 50,
         diameterRatio: 1.5,
         controller: FixedExtentScrollController(
-          initialItem: initialIndex >= 0 ? initialIndex : years.indexOf(defaultYear.toString()),
+          initialItem: initialIndex >= 0
+              ? initialIndex
+              : years.indexOf(defaultYear),
         ),
         onSelectedItemChanged: (index) {
           onChange(years[index]);
@@ -44,14 +44,19 @@ class YearPicker extends StatelessWidget {
             if (index < 0 || index >= years.length) return null;
             final year = years[index];
             final isSelected = year == value;
-            
-            return Center(
-              child: Text(
-                year,
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: isSelected ? 32 : 24,
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  color: isSelected ? AppTheme.primaryColor : AppTheme.primaryColor.withOpacity(0.5),
+
+            return SizedBox(
+              width: double.infinity,
+              child: Center(
+                child: Text(
+                  year.toString(),
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    fontSize: isSelected ? 32 : 24,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    color: isSelected
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.primary.withAlpha(128),
+                  ),
                 ),
               ),
             );
@@ -62,4 +67,3 @@ class YearPicker extends StatelessWidget {
     );
   }
 }
-

@@ -1,8 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:braves_cog/core/config/env_config.dart';
 import 'package:braves_cog/core/providers/shared_preferences_provider.dart';
 import 'package:braves_cog/features/profile/data/datasources/profile_local_data_source.dart';
 import 'package:braves_cog/features/profile/data/datasources/profile_mock_data_source.dart';
 import 'package:braves_cog/features/profile/data/datasources/profile_remote_data_source.dart';
+import 'package:braves_cog/features/profile/data/datasources/profile_remote_data_source_impl.dart';
 import 'package:braves_cog/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:braves_cog/features/profile/domain/entities/user_profile_entity.dart';
 import 'package:braves_cog/features/profile/domain/repositories/profile_repository.dart';
@@ -15,11 +18,18 @@ final profileLocalDataSourceProvider = Provider<ProfileLocalDataSource>((ref) {
   return ProfileLocalDataSourceImpl(prefs);
 });
 
+final supabaseClientProvider = Provider<SupabaseClient>((ref) {
+  return Supabase.instance.client;
+});
+
 final profileRemoteDataSourceProvider = Provider<ProfileRemoteDataSource>((
   ref,
 ) {
-  // Logic to switch between mock and real
-  return ProfileMockDataSource();
+  if (EnvConfig.useMockData) {
+    return ProfileMockDataSource();
+  }
+  final supabase = ref.watch(supabaseClientProvider);
+  return ProfileRemoteDataSourceImpl(supabaseClient: supabase);
 });
 
 // Repository

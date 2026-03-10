@@ -45,6 +45,8 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
         email: userModel.email,
         name: userModel.name,
         token: token,
+        isActivated: userModel.isActivated,
+        requiresOnboarding: userModel.requiresOnboarding,
       );
     } else {
       throw const CacheFailure();

@@ -21,7 +21,9 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }) async {
     // Try to get from local storage first (offline-first approach or cache)
     try {
-      final localProfile = await localDataSource.getLastUserProfile(email: email);
+      final localProfile = await localDataSource.getLastUserProfile(
+        email: email,
+      );
       if (localProfile != null) {
         return Right(localProfile);
       }
@@ -58,17 +60,24 @@ class ProfileRepositoryImpl implements ProfileRepository {
     UserProfileEntity profile,
   ) async {
     try {
+      print("💾 [PROFILE REPO] Starting profile save...");
       await localDataSource.cacheUserProfile(profile);
+      print("💾 [PROFILE REPO] Profile cached locally");
 
       if (EnvConfig.useMockData) {
+        print("💾 [PROFILE REPO] Using mock data source");
         await remoteDataSource.updateUserProfile(profile);
       } else {
-        // TODO: Implement real remote call
+        // Update remote profile via Supabase RPC
+        print("💾 [PROFILE REPO] Calling remote updateUserProfile...");
         await remoteDataSource.updateUserProfile(profile);
+        print("✅ [PROFILE REPO] Profile saved to Supabase!");
       }
       return const Right(unit);
     } catch (e) {
-      return Left(CacheFailure());
+      print("❌ [PROFILE REPO] Error saving profile: $e");
+      print("❌ [PROFILE REPO] Stack trace: ${StackTrace.current}");
+      return Left(CacheFailure(e.toString()));
     }
   }
 }

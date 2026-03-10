@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:braves_cog/core/providers/shared_preferences_provider.dart';
 import 'package:braves_cog/core/usecases/usecase.dart';
+import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
 import 'package:braves_cog/features/onboarding/data/repositories/onboarding_repository_impl.dart';
 import 'package:braves_cog/features/onboarding/domain/entities/consents_entity.dart';
 import 'package:braves_cog/features/onboarding/domain/repositories/onboarding_repository.dart';
@@ -100,6 +101,105 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
   Future<void> saveOnboardingData(Map<String, dynamic> data) async {
     final repository = _repository as OnboardingRepositoryImpl;
     await repository.saveOnboardingData(data);
+
+    // Extract demographic data and update ProfileNotifier with it
+    _updateProfileWithDemographicData(data);
+  }
+
+  void _updateProfileWithDemographicData(Map<String, dynamic> allAnswers) {
+    try {
+      final demographicAnswers =
+          (allAnswers['Demographic'] as Map<String, dynamic>?) ?? {};
+
+      if (demographicAnswers.isEmpty) {
+        print("⚠️ No demographic data found in onboarding answers");
+        return;
+      }
+
+      // Get current profile state
+      final profileNotifier = ref.read(profileProvider.notifier);
+      final currentProfile = ref.read(profileProvider).profile;
+
+      // Extract values from demographic survey answers
+      // The structure is: { 'DemographicSurvey': { question_id: answer, ... } }
+      final surveyAnswers = demographicAnswers.values.isNotEmpty
+          ? demographicAnswers.values.first as Map<String, dynamic>?
+          : <String, dynamic>{};
+
+      if (surveyAnswers == null || surveyAnswers.isEmpty) {
+        print("⚠️ Demographic survey answers are empty");
+        return;
+      }
+
+      print("📊 Demographic answers: $surveyAnswers");
+
+      // Map survey answers to profile fields
+      int birthYear = currentProfile.birthYear;
+      int height = currentProfile.height;
+      int weight = currentProfile.weight;
+      String currentIllness = currentProfile.currentIllness;
+      String chronicDiseases = currentProfile.chronicDiseases;
+      bool smokingCigarettes = currentProfile.smokingCigarettes;
+      bool drinkingAlcohol = currentProfile.drinkingAlcohol;
+
+      // Extract from survey answers - adjust keys based on actual survey structure
+      surveyAnswers.forEach((key, value) {
+        if (key.toLowerCase().contains('birth') ||
+            key.toLowerCase().contains('age')) {
+          if (value is int) {
+            birthYear = value;
+          } else if (value is String) {
+            birthYear = int.tryParse(value) ?? birthYear;
+          }
+        } else if (key.toLowerCase().contains('height')) {
+          if (value is int) {
+            height = value;
+          } else if (value is String) {
+            height = int.tryParse(value) ?? height;
+          }
+        } else if (key.toLowerCase().contains('weight')) {
+          if (value is int) {
+            weight = value;
+          } else if (value is String) {
+            weight = int.tryParse(value) ?? weight;
+          }
+        } else if (key.toLowerCase().contains('illness')) {
+          if (value is String) {
+            currentIllness = value;
+          }
+        } else if (key.toLowerCase().contains('disease')) {
+          if (value is String) {
+            chronicDiseases = value;
+          }
+        } else if (key.toLowerCase().contains('smoking')) {
+          if (value is bool) {
+            smokingCigarettes = value;
+          }
+        } else if (key.toLowerCase().contains('alcohol')) {
+          if (value is bool) {
+            drinkingAlcohol = value;
+          }
+        }
+      });
+
+      // Update profile with extracted data
+      final updatedProfile = currentProfile.copyWith(
+        birthYear: birthYear,
+        height: height,
+        weight: weight,
+        currentIllness: currentIllness,
+        chronicDiseases: chronicDiseases,
+        smokingCigarettes: smokingCigarettes,
+        drinkingAlcohol: drinkingAlcohol,
+      );
+
+      print(
+        "✅ Updated profile: birthYear=$birthYear, height=$height, weight=$weight",
+      );
+      profileNotifier.updateProfile(updatedProfile);
+    } catch (e) {
+      print("❌ Error updating profile with demographic data: $e");
+    }
   }
 
   Future<void> completeOnboarding() async {
@@ -118,6 +218,9 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
         );
         return;
       }
+
+      // 1.5. Invalidate profile cache to force fresh load from Supabase
+      ref.invalidate(profileProvider);
 
       // 2. Save Consents
       final consentsResult = await _saveConsentsUseCase(state.consents);
@@ -138,10 +241,14 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
       completeResult.fold(
         (failure) =>
             state = state.copyWith(isLoading: false, error: failure.message),
-        (_) => state = state.copyWith(
-          isLoading: false,
-          stage: OnboardingStage.completed,
-        ),
+        (_) {
+          // Update auth state to mark onboarding as complete
+          ref.read(authProvider.notifier).completeOnboardingInAuth();
+          state = state.copyWith(
+            isLoading: false,
+            stage: OnboardingStage.completed,
+          );
+        },
       );
     } catch (e) {
       state = state.copyWith(isLoading: false, error: "Nieoczekiwany błąd: $e");

@@ -15,34 +15,20 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  bool _isReturningUser = true;
-
   final _authCodeController = TextEditingController();
-  final _loginController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _loginPasswordController = TextEditingController();
+
+  bool _showActivation = true; // Toggle between activation and login
 
   @override
   void initState() {
     super.initState();
-    // Use addPostFrameCallback to safely read provider after build
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkReturningUser();
-    });
   }
 
-  Future<void> _checkReturningUser() async {
-    // We can access sharedPreferencesProvider synchronously because it's initialized in main
-    final prefs = ref.read(sharedPreferencesProvider);
-    final hasRegistered = prefs.getBool('user-registered') ?? false;
-    setState(() {
-      _isReturningUser = hasRegistered;
-    });
-  }
-
-  Future<void> _handleRegister() async {
-    if (_authCodeController.text.isEmpty ||
-        _loginController.text.isEmpty ||
-        _passwordController.text.isEmpty) {
+  Future<void> _handleActivateUser() async {
+    if (_authCodeController.text.isEmpty || _passwordController.text.isEmpty) {
       _showAlert('Proszę wypełnić wszystkie pola');
       return;
     }
@@ -50,33 +36,48 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       await ref
           .read(authProvider.notifier)
-          .register(
-            _loginController.text,
+          .activateUser(
+            _authCodeController.text.trim(),
             _passwordController.text,
-            'User', // Name placeholder
           );
 
-      // Update UI state for returning user
-      final prefs = ref.read(sharedPreferencesProvider);
-      await prefs.setBool('user-registered', true);
-      await prefs.setBool('just-registered', true); // Flag for onboarding
+      // Check if activation was successful
+      final authState = ref.read(authProvider);
+      if (authState.error != null) {
+        _showAlert(authState.error ?? 'Błąd aktywacji');
+        return;
+      }
 
-      widget.onLogin();
+      if (authState.isAuthenticated) {
+        final prefs = ref.read(sharedPreferencesProvider);
+        await prefs.setBool('user-registered', true);
+        widget.onLogin();
+      }
     } catch (e) {
-      _showAlert('Błąd rejestracji: ${e.toString()}');
+      _showAlert('Błąd aktywacji: ${e.toString()}');
     }
   }
 
   Future<void> _handleLogin() async {
-    if (_loginController.text.isEmpty || _passwordController.text.isEmpty) {
+    if (_emailController.text.isEmpty ||
+        _loginPasswordController.text.isEmpty) {
       _showAlert('Proszę wypełnić wszystkie pola');
       return;
     }
 
     try {
-      await ref
-          .read(authProvider.notifier)
-          .login(_loginController.text, _passwordController.text);
+      // For standard login, we'll use the activation mechanism with email directly
+      final email = _emailController.text.trim();
+      final password = _loginPasswordController.text;
+
+      // Try to extract code from email or use email directly
+      String codeToUse = email;
+      if (email.contains('@')) {
+        // If it's already an email format, try to use it as-is
+        codeToUse = email;
+      }
+
+      await ref.read(authProvider.notifier).activateUser(codeToUse, password);
 
       // Check if login was successful
       final authState = ref.read(authProvider);
@@ -86,6 +87,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
 
       if (authState.isAuthenticated) {
+        final prefs = ref.read(sharedPreferencesProvider);
+        await prefs.setBool('user-registered', true);
         widget.onLogin();
       }
     } catch (e) {
@@ -110,8 +113,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void dispose() {
     _authCodeController.dispose();
-    _loginController.dispose();
     _passwordController.dispose();
+    _emailController.dispose();
+    _loginPasswordController.dispose();
     super.dispose();
   }
 
@@ -122,11 +126,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     // Stack to show loading overlay
     return Stack(
       children: [
-        if (!_isReturningUser)
-          _buildRegistrationScreen()
-        else
-          _buildLoginScreen(),
-
+        _showActivation ? _buildActivationScreen() : _buildLoginScreen(),
         if (authState.isLoading)
           Container(
             color: Colors.black.withValues(alpha: 0.5),
@@ -136,7 +136,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _buildRegistrationScreen() {
+  Widget _buildActivationScreen() {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
@@ -159,56 +159,56 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     color: Theme.of(
                       context,
                     ).colorScheme.surfaceContainerHighest,
-                    // borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        'Rejestracja',
+                        'Aktywuj Konto',
                         style: Theme.of(context).textTheme.headlineMedium,
                       ),
                       SizedBox(height: AppTheme.spacingSm),
-
+                      Text(
+                        'Wprowadź kod zaproszenia i hasło',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.7),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                       SizedBox(height: AppTheme.spacingLg),
                       _buildTextField(
-                        label: 'Kod autoryzacyjny',
+                        label: 'Kod zaproszenia',
                         controller: _authCodeController,
                         placeholder: 'Wprowadź kod',
                       ),
                       SizedBox(height: AppTheme.spacingMd),
                       _buildTextField(
-                        label: 'Login',
-                        controller: _loginController,
-                        placeholder: 'Twój login',
-                      ),
-                      SizedBox(height: AppTheme.spacingMd),
-                      _buildTextField(
                         label: 'Hasło',
                         controller: _passwordController,
-                        placeholder: 'Twoje hasło',
+                        placeholder: 'Wprowadź hasło',
                         isPassword: true,
-                        // Note: To truly match design, we'd style TextField via InputDeco theme in AppTheme,
-                        // but here passing isPassword affects obscureText only.
                       ),
                       SizedBox(height: AppTheme.spacingXl),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: _handleRegister,
-                          child: const Text('Zarejestruj się'),
+                          onPressed: _handleActivateUser,
+                          child: const Text('Aktywuj Konto'),
                         ),
                       ),
-                      SizedBox(height: AppTheme.spacingXs),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _isReturningUser = true;
-                            });
-                          },
-                          child: const Text('Zaloguj się'),
+                      SizedBox(height: AppTheme.spacingMd),
+                      TextButton(
+                        onPressed: () {
+                          setState(() => _showActivation = false);
+                        },
+                        child: Text(
+                          'Masz już konto? Zaloguj się',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                         ),
                       ),
                       SizedBox(height: AppTheme.spacingMd),
@@ -252,54 +252,51 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: SingleChildScrollView(
           padding: EdgeInsets.all(AppTheme.spacingLg),
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 440),
+            constraints: const BoxConstraints(maxWidth: 400),
             child: Column(
               children: [
-                SizedBox(height: AppTheme.spacing2Xl),
+                SizedBox(height: AppTheme.spacingXl),
                 Image.asset(
                   'assets/images/braves-title.png',
                   height: 120,
                   fit: BoxFit.contain,
                 ),
-                SizedBox(height: AppTheme.spacing2Xl),
+                SizedBox(height: AppTheme.spacingXl),
                 Container(
                   padding: EdgeInsets.all(AppTheme.spacingXl),
                   decoration: BoxDecoration(
                     color: Theme.of(
                       context,
                     ).colorScheme.surfaceContainerHighest,
-                    // borderRadius: BorderRadius.circular(AppTheme.borderRadiusXLarge),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        'Witaj Ponownie!',
+                        'Zaloguj się',
                         style: Theme.of(context).textTheme.headlineMedium,
                       ),
                       SizedBox(height: AppTheme.spacingSm),
                       Text(
-                        'Zaloguj się, by rozwijać swój mózg',
+                        'Wprowadź email i hasło',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(
                             context,
-                          ).colorScheme.primary.withValues(alpha: 0.7),
+                          ).colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      SizedBox(height: AppTheme.spacingSm),
-
                       SizedBox(height: AppTheme.spacingLg),
                       _buildTextField(
-                        label: 'Login',
-                        controller: _loginController,
-                        placeholder: 'Twój login',
+                        label: 'Email',
+                        controller: _emailController,
+                        placeholder: 'Wprowadź email',
                       ),
                       SizedBox(height: AppTheme.spacingMd),
                       _buildTextField(
                         label: 'Hasło',
-                        controller: _passwordController,
-                        placeholder: 'Twoje hasło',
+                        controller: _loginPasswordController,
+                        placeholder: 'Wprowadź hasło',
                         isPassword: true,
                       ),
                       SizedBox(height: AppTheme.spacingXl),
@@ -311,15 +308,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                       ),
                       SizedBox(height: AppTheme.spacingMd),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _isReturningUser = false;
-                            });
-                          },
-                          child: const Text('Zarejestruj się'),
+                      TextButton(
+                        onPressed: () {
+                          setState(() => _showActivation = true);
+                        },
+                        child: Text(
+                          'Nie masz konta? Aktywuj zaproszenie',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                         ),
                       ),
                       SizedBox(height: AppTheme.spacingMd),

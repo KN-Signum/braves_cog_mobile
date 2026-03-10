@@ -10,11 +10,63 @@ import 'package:braves_cog/core/providers/shared_preferences_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 import 'package:braves_cog/features/profile/domain/entities/user_type.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:braves_cog/core/services/notification_service.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+/// Initialize timezone database for notification scheduling
+Future<void> _initializeTimezone() async {
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation('Europe/Warsaw'));
+}
+
+Future<void> _initializeNotifications() async {
+  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  final notificationService = NotificationService(
+    flutterLocalNotificationsPlugin,
+  );
+
+  final initialized = await notificationService.initialize();
+
+  if (initialized) {
+    print('✅ [Main] Notifications initialized successfully');
+    // Request permissions (will show dialog on iOS and Android 13+)
+    await notificationService.requestPermissions();
+
+    // Check final permission status
+    final enabled = await notificationService.areNotificationsEnabled();
+    if (!enabled) {
+      print('⚠️ [Main] WARNING: User did not grant notification permissions!');
+      print(
+        '   Notifications will NOT work until permissions are granted in system settings',
+      );
+    } else {
+      // Test immediate notification to verify it works
+      print('🧪 [Main] Testing notifications...');
+      await notificationService.testNotificationNow();
+
+      // Test scheduled notification (5 seconds from now)
+      print('🧪 [Main] Scheduling test notification for 5 seconds from now...');
+      await notificationService.testScheduledNotification();
+
+      // Show what's actually scheduled
+      await notificationService.debugPrintPendingNotifications();
+    }
+  } else {
+    print('⚠️ [Main] Failed to initialize notifications');
+  }
+}
+
 Future main() async {
   await EnvConfig.init();
+  await _initializeTimezone();
+
+  // Initialize notifications
+  await _initializeNotifications();
+
   final prefs = await SharedPreferences.getInstance();
   CognitionPackage.ensureInitialized();
   runApp(

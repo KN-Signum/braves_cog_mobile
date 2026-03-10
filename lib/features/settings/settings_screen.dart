@@ -5,7 +5,7 @@ import 'package:braves_cog/core/providers/theme_provider.dart';
 import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 import 'package:braves_cog/features/profile/domain/entities/user_type.dart';
-import 'package:braves_cog/features/settings/get_help_screen.dart';
+// import 'package:braves_cog/features/settings/get_help_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   final VoidCallback onLogout;
@@ -34,20 +34,20 @@ class SettingsScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         children: [
           if (userType == UserType.normalCog)
-            _buildThemeSwitchTile(context, ref),
-          _buildGroupThemeVariantTile(context, ref),
+            // _buildThemeSwitchTile(context, ref),
+            _buildGroupThemeVariantTile(context, ref),
           _buildSettingsTile(
             context: context,
             icon: Icons.help_outline,
             title: 'Uzyskaj pomoc',
             subtitle: 'Numery alarmowe i wsparcie',
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => GetHelpScreen(),
-                ),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (_) => GetHelpScreen(),
+              //   ),
+              // );
             },
           ),
           _buildSettingsTile(

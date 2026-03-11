@@ -183,6 +183,7 @@ class NotificationService {
       notificationDetails: notificationDetails,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.dateAndTime,
+      payload: scheduledDateTime.toIso8601String(),
     );
 
     print(

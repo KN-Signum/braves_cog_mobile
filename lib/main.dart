@@ -14,6 +14,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:braves_cog/core/services/notification_service.dart';
+import 'package:braves_cog/core/providers/notification_service_provider.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -23,7 +24,7 @@ Future<void> _initializeTimezone() async {
   tz.setLocalLocation(tz.getLocation('Europe/Warsaw'));
 }
 
-Future<void> _initializeNotifications() async {
+Future<NotificationService> _initializeNotifications() async {
   final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   final notificationService = NotificationService(
     flutterLocalNotificationsPlugin,
@@ -45,12 +46,12 @@ Future<void> _initializeNotifications() async {
       );
     } else {
       // Test immediate notification to verify it works
-      print('🧪 [Main] Testing notifications...');
-      await notificationService.testNotificationNow();
+      // print('🧪 [Main] Testing notifications...');
+      // await notificationService.testNotificationNow();
 
       // Test scheduled notification (5 seconds from now)
-      print('🧪 [Main] Scheduling test notification for 5 seconds from now...');
-      await notificationService.testScheduledNotification();
+      // print('🧪 [Main] Scheduling test notification for 5 seconds from now...');
+      // await notificationService.testScheduledNotification();
 
       // Show what's actually scheduled
       await notificationService.debugPrintPendingNotifications();
@@ -58,6 +59,8 @@ Future<void> _initializeNotifications() async {
   } else {
     print('⚠️ [Main] Failed to initialize notifications');
   }
+
+  return notificationService;
 }
 
 Future main() async {
@@ -65,13 +68,16 @@ Future main() async {
   await _initializeTimezone();
 
   // Initialize notifications
-  await _initializeNotifications();
+  final notificationService = await _initializeNotifications();
 
   final prefs = await SharedPreferences.getInstance();
   CognitionPackage.ensureInitialized();
   runApp(
     ProviderScope(
-      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        notificationServiceProvider.overrideWithValue(notificationService),
+      ],
       child: const MyApp(),
     ),
   );

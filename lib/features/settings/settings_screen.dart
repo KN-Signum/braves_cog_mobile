@@ -5,6 +5,8 @@ import 'package:braves_cog/core/providers/theme_provider.dart';
 import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 import 'package:braves_cog/features/profile/domain/entities/user_type.dart';
+import 'package:braves_cog/core/providers/notification_service_provider.dart';
+import 'package:intl/intl.dart';
 // import 'package:braves_cog/features/settings/get_help_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -55,7 +57,80 @@ class SettingsScreen extends ConsumerWidget {
             icon: Icons.notifications,
             title: 'Powiadomienia',
             subtitle: 'Zarządzaj powiadomieniami',
-            onTap: () {},
+            onTap: () async {
+              final service = ref.read(notificationServiceProvider);
+              final pending = await service.getPendingNotifications();
+              if (!context.mounted) return;
+              showDialog<void>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Zaplanowane powiadomienia'),
+                  content: pending.isEmpty
+                      ? const Text('Brak zaplanowanych powiadomień.')
+                      : SizedBox(
+                          width: double.maxFinite,
+                          child: ListView.separated(
+                            shrinkWrap: true,
+                            itemCount: pending.length,
+                            separatorBuilder: (_, __) => const Divider(),
+                            itemBuilder: (_, i) {
+                              final n = pending[i];
+                              DateTime? scheduledAt;
+                              if (n.payload != null) {
+                                scheduledAt = DateTime.tryParse(n.payload!);
+                              }
+                              final dateLabel = scheduledAt != null
+                                  ? DateFormat(
+                                      'dd.MM.yyyy HH:mm',
+                                    ).format(scheduledAt.toLocal())
+                                  : null;
+                              return ListTile(
+                                dense: true,
+                                contentPadding: EdgeInsets.zero,
+                                leading: const Icon(Icons.notifications_active),
+                                title: Text(
+                                  n.title ?? '(brak tytułu)',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (n.body != null && n.body!.isNotEmpty)
+                                      Text(n.body!),
+                                    if (dateLabel != null)
+                                      Text(
+                                        'Zaplanowane: $dateLabel',
+                                        style: const TextStyle(
+                                          fontStyle: FontStyle.italic,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                  actions: [
+                    TextButton(
+                      onPressed: () async {
+                        await service.cancelAllNotifications();
+                        if (ctx.mounted) Navigator.of(ctx).pop();
+                      },
+                      child: const Text(
+                        'Wyczyść wszystkie',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(ctx).pop(),
+                      child: const Text('Zamknij'),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
           _buildSettingsTile(
             context: context,

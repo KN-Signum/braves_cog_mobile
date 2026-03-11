@@ -45,10 +45,10 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       print("🔄 [PROFILE RPC] userId=$userId");
       print("🔄 [PROFILE RPC] profileData keys: ${profileData.keys}");
 
-      // Call the activate_user_profile RPC
+      // Call the activate_user_profile RPC with JSON parameter
       final result = await supabaseClient.rpc(
         'activate_user_profile',
-        params: profileData,
+        params: {'profile_data': profileData},
       );
 
       print("✅ [PROFILE RPC] RPC call successful");
@@ -60,30 +60,56 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     }
   }
 
-  /// Convert profile entity fields to snake_case for database operations
+  /// Convert profile entity fields to snake_case for database operations.
+  /// Only includes fields that differ from the default entity values,
+  /// so un-filled onboarding sections don't overwrite existing DB data.
+  /// Exception: birth_year, height, weight are always included as mandatory demographic fields.
   Map<String, dynamic> _entityToSnakeCase(UserProfileEntity profile) {
-    return {
-      'birth_year': profile.birthYear,
-      'height': profile.height,
-      'weight': profile.weight,
-      'current_illness': profile.currentIllness,
-      'chronic_diseases': profile.chronicDiseases,
-      'smoking_cigarettes': profile.smokingCigarettes,
-      'smoking_frequency': profile.smokingFrequency,
-      'drinking_alcohol': profile.drinkingAlcohol,
-      'alcohol_frequency': profile.alcoholFrequency,
-      'other_substances': profile.otherSubstances,
-      'other_substances_name': profile.otherSubstancesName,
-      'other_substances_frequency': profile.otherSubstancesFrequency,
-      'allergies': profile.allergies,
-      'medications': profile.medications,
-      'biological_sex': profile.biologicalSex.value,
-      'gender_identity': profile.genderIdentity,
-      'gender_identity_other': profile.genderIdentityOther,
-      'education': profile.education.value,
-      'education_other': profile.educationOther,
-      'disability': profile.disability,
-      'type': profile.type.value,
-    };
+    const defaults = UserProfileEntity();
+    final map = <String, dynamic>{};
+
+    // Always send mandatory demographic fields
+    map['birth_year'] = profile.birthYear;
+    map['height'] = profile.height;
+    map['weight'] = profile.weight;
+
+    // Always send substance use booleans — "no" (false) also needs to persist
+    map['smoking_cigarettes'] = profile.smokingCigarettes;
+    map['drinking_alcohol'] = profile.drinkingAlcohol;
+    map['other_substances'] = profile.otherSubstances;
+
+    if (profile.currentIllness != defaults.currentIllness)
+      map['current_illness'] = profile.currentIllness;
+    if (profile.chronicDiseases != defaults.chronicDiseases)
+      map['chronic_diseases'] = profile.chronicDiseases;
+    if (profile.smokingFrequency != defaults.smokingFrequency)
+      map['smoking_frequency'] = profile.smokingFrequency;
+    if (profile.alcoholFrequency != defaults.alcoholFrequency)
+      map['alcohol_frequency'] = profile.alcoholFrequency;
+    if (profile.otherSubstancesName != defaults.otherSubstancesName)
+      map['other_substances_name'] = profile.otherSubstancesName;
+    if (profile.otherSubstancesFrequency != defaults.otherSubstancesFrequency)
+      map['other_substances_frequency'] = profile.otherSubstancesFrequency;
+    if (profile.allergies.isNotEmpty) map['allergies'] = profile.allergies;
+    if (profile.medications.isNotEmpty)
+      map['medications'] = profile.medications;
+    if (profile.biologicalSex != defaults.biologicalSex)
+      map['biological_sex'] = profile.biologicalSex.value;
+    if (profile.genderIdentity != defaults.genderIdentity)
+      map['gender_identity'] = profile.genderIdentity;
+    if (profile.genderIdentityOther != defaults.genderIdentityOther)
+      map['gender_identity_other'] = profile.genderIdentityOther;
+    if (profile.education != defaults.education)
+      map['education'] = profile.education.value;
+    if (profile.educationOther != defaults.educationOther)
+      map['education_other'] = profile.educationOther;
+    if (profile.disability != defaults.disability)
+      map['disability'] = profile.disability;
+    // 'type' is intentionally excluded — set by admin, not editable by user
+
+    print(
+      "🔄 [PROFILE RPC] Non-default fields being sent: ${map.keys.toList()}",
+    );
+    return map;
   }
 }

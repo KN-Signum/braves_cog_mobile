@@ -43,7 +43,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       print('✅ [AUTH] Primary login successful');
       developer.log('✓ Primary login successful', name: 'AuthRemoteDataSource');
-      return _userToModel(user, isActivated: true);
+
+      // Check if user has already completed onboarding via profiles table
+      final isActivated = await _isProfileActivated(user.id);
+      print('🔍 [AUTH] Profile is_activated=$isActivated');
+      return _userToModel(
+        user,
+        isActivated: true,
+        requiresOnboarding: !isActivated,
+      );
     } on AuthException catch (e) {
       print(
         '❌ [AUTH] Primary login failed - Status: ${e.statusCode}, Message: ${e.message}',
@@ -148,6 +156,21 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return _userToModel(user);
     } catch (e) {
       throw Exception('Failed to get current user: $e');
+    }
+  }
+
+  /// Check if the user's profile has is_activated = true in the profiles table
+  Future<bool> _isProfileActivated(String userId) async {
+    try {
+      final response = await supabaseClient
+          .from('profiles')
+          .select('is_activated')
+          .eq('id', userId)
+          .single();
+      return (response['is_activated'] as bool?) ?? false;
+    } catch (e) {
+      print('⚠️ [AUTH] Could not check profile activation status: $e');
+      return false;
     }
   }
 

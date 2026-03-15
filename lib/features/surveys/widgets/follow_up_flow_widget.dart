@@ -4,7 +4,6 @@ import 'package:braves_cog/features/surveys/widgets/universal_survey_widget.dart
 import 'package:braves_cog/features/surveys/domain/entities/survey_entity.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 import 'package:braves_cog/features/surveys/config/survey_flow_rules.dart';
-import 'package:braves_cog/features/surveys/config/survey_configs/mini_eat_survey_config.dart';
 
 bool _isAlertSurvey(String surveyId) {
   if (surveyId == 'PHQ_2' || surveyId == 'GAD_2') return true;
@@ -17,26 +16,25 @@ bool _isAlertSurvey(String surveyId) {
   return false;
 }
 
-class ScreeningFlowWidget extends ConsumerStatefulWidget {
+class FollowUpFlowWidget extends ConsumerStatefulWidget {
   final VoidCallback onBack;
   final Function(Map<String, dynamic>) onComplete;
 
-  const ScreeningFlowWidget({
+  const FollowUpFlowWidget({
     super.key,
     required this.onBack,
     required this.onComplete,
   });
 
   @override
-  ConsumerState<ScreeningFlowWidget> createState() =>
-      _ScreeningFlowWidgetState();
+  ConsumerState<FollowUpFlowWidget> createState() =>
+      _FollowUpFlowWidgetState();
 }
 
-class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
+class _FollowUpFlowWidgetState extends ConsumerState<FollowUpFlowWidget> {
   int _currentSurveyIndex = 0;
   final Map<String, dynamic> _allAnswers = {};
   bool _startAtEndForCurrentSurvey = false;
-  /// Ankiety alertowe, po których pokazano alert – nie pokazujemy ich już w flow.
   final Set<String> _alertSurveysCompleted = {};
 
   late List<Map<String, dynamic>> _surveys;
@@ -45,7 +43,7 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
   void initState() {
     super.initState();
     final profile = ref.read(profileProvider).profile;
-    _surveys = SurveyFlowRules.getScreeningSurveys(profile.type);
+    _surveys = SurveyFlowRules.getFollowUpSurveys(profile.type);
   }
 
   void _handleSurveyComplete(
@@ -55,29 +53,7 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
     final currentSurveyId = _surveys[_currentSurveyIndex]['id'];
     _allAnswers[currentSurveyId] = answers;
 
-    // Jeśli to nawigacja wstecz, tylko zapisz odpowiedzi, nie przechodź dalej
-    if (isBackNavigation) {
-      return;
-    }
-
-    if (currentSurveyId == 'screening_diet') {
-      final dietChangedRaw = answers['diet_changed'];
-      final dietChanged = dietChangedRaw == true ||
-          dietChangedRaw == 1 ||
-          dietChangedRaw == 'true';
-      if (dietChanged) {
-        setState(() {
-          _surveys = List<Map<String, dynamic>>.from(_surveys)
-            ..add({
-              'id': 'MINI_EAT',
-              'config': MiniEatSurveyConfig.getSurvey(),
-            });
-          _currentSurveyIndex++;
-          _startAtEndForCurrentSurvey = false;
-        });
-        return;
-      }
-    }
+    if (isBackNavigation) return;
 
     if (_isAlertSurvey(currentSurveyId)) {
       _alertSurveysCompleted.add(currentSurveyId);
@@ -154,16 +130,13 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
       );
     }
 
-    // Global progress liczony po WSZYSTKICH pytaniach we wszystkich ankietach screeningu.
     int totalQuestions = 0;
     int questionOffset = 0;
     for (int i = 0; i < _surveys.length; i++) {
       final meta = _surveys[i];
       final survey = meta['config'] as SurveyEntity;
       final qCount = survey.questions.length;
-      if (i < _currentSurveyIndex) {
-        questionOffset += qCount;
-      }
+      if (i < _currentSurveyIndex) questionOffset += qCount;
       totalQuestions += qCount;
     }
 
@@ -177,6 +150,7 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
       startAtLastQuestion: _startAtEndForCurrentSurvey,
       showFinishLabel: _currentSurveyIndex == _surveys.length - 1,
       initialAnswers: initialAnswers,
+      headerTitle: 'Follow-up',
     );
   }
 }

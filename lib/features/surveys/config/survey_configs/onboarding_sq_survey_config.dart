@@ -1,21 +1,21 @@
 import 'package:braves_cog/features/surveys/domain/entities/survey_entity.dart';
 import 'package:braves_cog/features/surveys/domain/entities/survey_question_entity.dart';
 
-class ScreeningSQSurveyConfig {
+class OnboardingSqSurveyConfig {
   static SurveyEntity getSurvey() {
     return SurveyEntity(
-      id: 'screening_SQ',
-      title: 'Screening',
+      id: 'onboarding_SQ',
+      title: 'Onboarding',
       questions: [
         // Info page
         SurveyQuestionEntity(
-          id: 'sq_info',
+          id: 'obsq_info',
           type: QuestionType.text,
-          question: 'Jakość snu — ostatni miesiąc',
+          question: 'Jakość snu',
           description:
-              'Kilka pytań o Twój sen w ciągu ostatniego miesiąca.\n\n'
-              'Odpowiadaj zgodnie z typową sytuacją — nie musisz liczyć dokładnych godzin ani minut.\n\n'
-              'Szacowany czas: ok. 2–3 minuty.',
+              'Poniższe pytania dotyczą Twoich nawyków związanych ze snem w ciągu ostatniego miesiąca.\n\n'
+              'Prosimy o odpowiedzi odzwierciedlające sytuację w większości dni i nocy — nie musisz podawać dokładnych wartości, wystarczy najlepsza ocena.\n\n'
+              'Szacowany czas: ok. 3–4 minuty.',
           required: false,
           options: {
             'info': true,
@@ -24,7 +24,7 @@ class ScreeningSQSurveyConfig {
         ),
         // Q1: Godzina pójścia spać
         SurveyQuestionEntity(
-          id: 'sq_bedtime',
+          id: 'obsq_bedtime',
           type: QuestionType.number,
           question: 'W ciągu ostatniego miesiąca, o której godzinie zazwyczaj kładłeś się spać w nocy?',
           required: true,
@@ -36,7 +36,7 @@ class ScreeningSQSurveyConfig {
         ),
         // Q2: Godzina wstania
         SurveyQuestionEntity(
-          id: 'sq_waketime',
+          id: 'obsq_waketime',
           type: QuestionType.number,
           question: 'W ciągu ostatniego miesiąca, o której godzinie zazwyczaj wstawałeś rano?',
           required: true,
@@ -48,7 +48,7 @@ class ScreeningSQSurveyConfig {
         ),
         // Q3: Czas zaśnięcia (minuty)
         SurveyQuestionEntity(
-          id: 'sq_sleep_latency',
+          id: 'obsq_sleep_latency',
           type: QuestionType.number,
           question: 'W ciągu ostatniego miesiąca, ile czasu zazwyczaj zajmowało Ci zaśnięcie każdej nocy?',
           required: true,
@@ -59,7 +59,7 @@ class ScreeningSQSurveyConfig {
         ),
         // Q4: Godziny snu
         SurveyQuestionEntity(
-          id: 'sq_sleep_hours',
+          id: 'obsq_sleep_hours',
           type: QuestionType.number,
           question: 'W ciągu ostatniego miesiąca, ile godzin rzeczywistego snu miałeś każdej nocy?\n(Może to się różnić od liczby godzin spędzonych w łóżku)',
           required: true,
@@ -70,7 +70,7 @@ class ScreeningSQSurveyConfig {
         ),
         // Q5: Trudności ze snem
         SurveyQuestionEntity(
-          id: 'sq_sleep_difficulties',
+          id: 'obsq_sleep_difficulties',
           type: QuestionType.choice,
           question: 'W ciągu ostatniego miesiąca, czy miałeś trudności ze snem, ponieważ budziłeś się w środku nocy lub wcześnie rano?',
           required: true,
@@ -85,7 +85,7 @@ class ScreeningSQSurveyConfig {
         ),
         // Q6: Jakość snu
         SurveyQuestionEntity(
-          id: 'sq_sleep_quality',
+          id: 'obsq_sleep_quality',
           type: QuestionType.choice,
           question: 'W ciągu ostatniego miesiąca, jak ogólnie oceniasz jakość swojego snu?',
           required: true,

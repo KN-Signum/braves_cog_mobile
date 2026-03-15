@@ -3,7 +3,6 @@ import 'package:braves_cog/features/cognitive_games/data/mappers/rp_result_mappe
 import 'package:braves_cog/features/cognitive_games/domain/entities/cognitive_game_result.dart';
 import 'package:braves_cog/features/cognitive_games/presentation/providers/cognitive_game_provider.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:research_package/research_package.dart';

@@ -10,19 +10,16 @@ class GAD7SurveyConfig {
         SurveyQuestionEntity(
           id: 'gad7_info',
           type: QuestionType.text,
-          question: 'Następne stwierdzenia dotyczą Twoich doświadczeń związanych z odczuwaniem lęku, napięcia oraz zamartwiania się w codziennym życiu. Przeczytaj uważnie każde stwierdzenie i zaznacz, w jakim stopniu odnosi się ono do Ciebie w ostatnim czasie. Odpowiadaj zgodnie z tym, jak rzeczywiście się czujesz — nie ma odpowiedzi dobrych ani złych.',
+          question: 'Lęk i stres',
+          description:
+              'W tej sekcji znajdziesz pytania dotyczące Twojego poziomu lęku i odczuwanego stresu.\n\n'
+              'Pierwsza część dotyczy ostatnich dwóch tygodni, druga — ostatniego miesiąca. Odpowiadaj zgodnie z tym, jak się rzeczywiście czułeś — nie ma odpowiedzi błędnych.\n\n'
+              'Po wypełnieniu tej sekcji zobaczysz krótki komunikat z informacją o Twoim wyniku.\n\n'
+              'Szacowany czas: ok. 5–7 minut.',
           required: false,
           options: {
             'info': true,
-          },
-        ),
-        SurveyQuestionEntity(
-          id: 'gad7_info',
-          type: QuestionType.text,
-          question: 'Jak często w ciągu ostatnich 2 tygodni dokuczały ci następujące problemy?',
-          required: false,
-          options: {
-            'info': true,
+            'intro': true,
           },
         ),
         // 1

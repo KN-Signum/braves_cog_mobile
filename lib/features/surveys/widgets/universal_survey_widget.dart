@@ -28,6 +28,17 @@ import 'package:braves_cog/features/surveys/widgets/question_builders/time_quest
 import 'package:braves_cog/features/surveys/widgets/question_builders/boolean_question_builder.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+bool _isAlertSurvey(String surveyId) {
+  if (surveyId == 'PHQ_2' || surveyId == 'GAD_2') return true;
+  if (surveyId == 'Baseline_Depression' ||
+      surveyId.contains('PHQ_9') ||
+      surveyId.contains('phq9')) return true;
+  if (surveyId == 'Baseline_Stress_And_Anxiety_GAD7' ||
+      surveyId.contains('GAD_7') ||
+      surveyId.contains('gad7')) return true;
+  return false;
+}
+
 class UniversalSurveyWidget extends ConsumerStatefulWidget {
   final SurveyEntity survey;
   final Function(Map<String, dynamic>, {bool isBackNavigation}) onComplete;
@@ -64,9 +75,21 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
   int _currentStep = 0;
   bool _showingAlert = false;
   bool _isSubmitting = false;
+  double _maxProgressValue = 0.0;
 
   String? _alertTitle;
   String? _alertMessage;
+
+  /// Po pojawieniu się alertu w ankietach PHQ-2, GAD-2, PHQ-9, GAD-7 nie można cofać do pytań.
+  bool _alertWasShownInThisSurvey = false;
+  /// Krok (indeks pytania) w momencie pokazania alertu – pasek postępu nie spada przy cofaniu.
+  int? _progressStepWhenAlertShown;
+
+  /// MiniEat (screening), MiniEat onboarding (MINI_EAT_OB) i Baseline_Eating_Habits – opis pytania w „i” w kółku (tooltip).
+  bool get _isMiniEatStyleSurvey =>
+      widget.survey.id == 'MINI_EAT' ||
+      widget.survey.id == 'MINI_EAT_OB' ||
+      widget.survey.id == 'Baseline_Eating_Habits';
 
   @override
   void initState() {
@@ -281,6 +304,10 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
           _showingAlert = true;
           _alertTitle = alert.title;
           _alertMessage = alert.message;
+          if (_isAlertSurvey(widget.survey.id)) {
+            _alertWasShownInThisSurvey = true;
+            _progressStepWhenAlertShown = _currentStep;
+          }
         });
       } else {
         setState(() {
@@ -298,6 +325,13 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
   }
 
   void _handleBack() {
+    if (_isAlertSurvey(widget.survey.id) &&
+        _alertWasShownInThisSurvey) {
+      final answers = ref.read(surveyProvider(widget.survey.id)).answers;
+      widget.onComplete(answers, isBackNavigation: true);
+      widget.onBack();
+      return;
+    }
     if (_currentStep > 0) {
       setState(() {
         _currentStep--;
@@ -365,7 +399,11 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
         ? (widget.globalStepOffset! + _currentStep + 1) /
               widget.globalTotalSteps!
         : localProgress;
-    final progressValue = globalProgress.clamp(0.0, 1.0);
+    double progressValue = globalProgress.clamp(0.0, 1.0);
+    if (progressValue > _maxProgressValue) {
+      _maxProgressValue = progressValue;
+    }
+    progressValue = _maxProgressValue;
     final percent = (progressValue * 100).round();
 
     // Ensure current step is valid after conditional logic changes
@@ -401,22 +439,25 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
                   children: [
                     Row(
                       children: [
-                        IconButton(
-                          icon: Icon(
-                            Icons.chevron_left,
-                            color: Theme.of(context).colorScheme.primary,
-                            size: 28,
-                          ),
-                          onPressed: _handleBack,
-                          style: IconButton.styleFrom(
-                            shape: const CircleBorder(),
-                            side: BorderSide(
+                        if (!_showingAlert)
+                          IconButton(
+                            icon: Icon(
+                              Icons.chevron_left,
                               color: Theme.of(context).colorScheme.primary,
-                              width: 2,
+                              size: 28,
                             ),
-                            minimumSize: const Size(44, 44),
-                          ),
-                        ),
+                            onPressed: _handleBack,
+                            style: IconButton.styleFrom(
+                              shape: const CircleBorder(),
+                              side: BorderSide(
+                                color: Theme.of(context).colorScheme.primary,
+                                width: 2,
+                              ),
+                              minimumSize: const Size(44, 44),
+                            ),
+                          )
+                        else
+                          const SizedBox(width: 44, height: 44),
                         Expanded(
                           child: Center(
                             child: Text(
@@ -556,42 +597,71 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
   Widget _buildQuestion(SurveyQuestionEntity question) {
     final questionText = _getQuestionText(question);
     final isInfoOnly = question.options?['info'] == true;
+    final isIntroStyle = question.options?['intro'] == true;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         if (isInfoOnly) ...[
-          SizedBox(
-            width: double.infinity,
-            child: Text(
-              questionText,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w400,
-                height: 1.5,
-              ),
-            ),
-          ),
-          if (question.description != null) ...[
-            const SizedBox(height: 16),
+          if (isIntroStyle) ...[
             SizedBox(
               width: double.infinity,
               child: Text(
-                question.description!,
+                questionText,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: const Color(0xFF505968),
-                  fontWeight: FontWeight.w400,
-                  height: 1.5,
-                ),
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      height: 1.3,
+                      letterSpacing: -0.24,
+                    ),
               ),
             ),
+            const SizedBox(height: 24),
+            if (question.description != null)
+              SizedBox(
+                width: double.infinity,
+                child: Text(
+                  question.description!,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        height: 1.6,
+                        fontSize: 18,
+                      ),
+                ),
+              ),
+          ] else ...[
+            SizedBox(
+              width: double.infinity,
+              child: Text(
+                questionText,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w400,
+                      height: 1.5,
+                    ),
+              ),
+            ),
+            if (question.description != null) ...[
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: Text(
+                  question.description!,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: const Color(0xFF505968),
+                        fontWeight: FontWeight.w400,
+                        height: 1.5,
+                      ),
+                ),
+              ),
+            ],
           ],
         ] else ...[
           SizedBox(
             width: double.infinity,
             child:
-                widget.survey.id == 'MINI_EAT' && question.description != null
+                _isMiniEatStyleSurvey && question.description != null
                 ? ClickableQuestionTextWidget(
                     questionText: questionText,
                     tooltipText: question.description,
@@ -606,9 +676,8 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
                     ),
                   ),
           ),
-          // Don't show description as separate text for MINI EAT (it's in the tooltip)
-          if (question.description != null &&
-              widget.survey.id != 'MINI_EAT') ...[
+          // Don't show description as separate text for MINI EAT / MiniEat onboarding (it's in the tooltip)
+          if (question.description != null && !_isMiniEatStyleSurvey) ...[
             const SizedBox(height: 8),
             SizedBox(
               width: double.infinity,

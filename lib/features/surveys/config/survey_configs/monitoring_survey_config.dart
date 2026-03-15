@@ -7,6 +7,33 @@ class MonitoringSurveyConfig {
       id: 'monitoring',
       title: 'Monitoring',
       questions: [
+        SurveyQuestionEntity(
+          id: 'monitoring_info',
+          type: QuestionType.text,
+          question: 'Jak się dziś czujesz?',
+          description:
+              'Monitoring to krótkie, regularne sprawdzenie Twojego samopoczucia w ramach badania BRAVES Cog.\n\n'
+              'Zajmie to zaledwie kilka minut. Odpowiedz na poniższe pytania tak szczerze, jak to możliwe.\n\n'
+              'Szacowany czas: ok. 3–6 minut.',
+          required: false,
+          options: {
+            'info': true,
+            'intro': true,
+          },
+        ),
+        SurveyQuestionEntity(
+          id: 'monitoring_info_2',
+          type: QuestionType.text,
+          question: 'Jak się dziś czujesz?',
+          description:
+              'Oceń swoje ogólne samopoczucie na skali od "bardzo źle" do "bardzo dobrze".\n\n'
+              'Jeśli Twoja ocena jest niska, pojawią się dodatkowe pytania.\n\n',
+          required: false,
+          options: {
+            'info': true,
+            'intro': true,
+          },
+        ),
         // Q1: Jak się dzisiaj czujesz? (1-10 segment scale)
         SurveyQuestionEntity(
           id: 'q1',
@@ -21,6 +48,25 @@ class MonitoringSurveyConfig {
             'reversed': true,
             'minLabel': 'Bardzo źle',
             'maxLabel': 'Bardzo dobrze',
+          },
+        ),
+        SurveyQuestionEntity(
+          id: 'q2_memory_info',
+          type: QuestionType.text,
+          question: 'Widzimy, że dzisiaj nie jest łatwy dzień',
+          description:
+              'Chcielibyśmy dowiedzieć się nieco więcej, żeby lepiej rozumieć Twoją sytuację w ramach badania.\n\n',
+          required: false,
+          options: {
+            'info': true,
+            'intro': true,
+          },
+          conditionalLogic: {
+            'showIf': {
+              'questionId': 'q1',
+              'operator': '<',
+              'value': 6,
+            },
           },
         ),
         // Q2: Problemy z pamięcią (conditional - only if q1 < 6, i.e., q1 <= 5)
@@ -61,6 +107,18 @@ class MonitoringSurveyConfig {
               'operator': '<',
               'value': 6,
             },
+          },
+        ),
+        SurveyQuestionEntity(
+          id: 'monitoring_info_3',
+          type: QuestionType.text,
+          question: 'Zdrowie i leczenie',
+          description:
+              'Prosimy o krótką informację na temat ewentualnych zmian w Twoim leczeniu.\n\n',
+          required: false,
+          options: {
+            'info': true,
+            'intro': true,
           },
         ),
         // Q4: Wizyta u lekarza (composite)

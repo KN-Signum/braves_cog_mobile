@@ -1,7 +1,7 @@
 import 'package:braves_cog/features/surveys/domain/entities/survey_entity.dart';
 import 'package:braves_cog/features/surveys/domain/entities/survey_question_entity.dart';
 
-class AQSurveyConfig {
+class ASRSSurveyConfig {
   static SurveyEntity getSurvey() {
     return SurveyEntity(
       id: 'Followup_AQ',
@@ -10,16 +10,22 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'asrs_info',
           type: QuestionType.text,
-          question:
-              'Proszę odpowiedzieć na wszystkie pytania, nawet jeśli nie jesteś pewien odpowiedzi. Dla każdego pytania zaznacz odpowiedź, która najlepiej opisuje Ciebie.',
+          question: 'Koncentracja i aktywność',
+          description:
+              'Ten kwestionariusz dotyczy trudności z koncentracją, organizacją i kontrolą impulsów.\n\n'
+              'Odpowiadaj zgodnie z tym, jak zazwyczaj funkcjonujesz — nie jak jest ostatnio, ale jak jest na co dzień.\n\n'
+              'Szacowany czas: ok. 3–5 minut.',
           required: false,
-          options: {'info': true},
+          options: {
+            'info': true,
+            'intro': true,
+          },
         ),
         // 1
         SurveyQuestionEntity(
           id: 'asrs_1',
           type: QuestionType.choice,
-          question: 'Jak często masz trudności, z dopracowaniem szczegółów jakiegoś zadania, po tym jak już je prawie wykonałeś?',
+          question: 'Jak często masz trudności z dopracowaniem szczegółów jakiegoś zadania, po tym jak już je prawie wykonałeś?',
           required: true,
           options: {
             'options': [
@@ -99,7 +105,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'asrs_6',
           type: QuestionType.choice,
-          question: 'Jak często zdarza Ci się czuć tak pobudzonym, że masz ochotę robić wiele rzeczy na raz, jakbyś był „nakręcony”?',
+          question: 'Jak często zdarza Ci się być tak pobudzonym, że czujesz, że musisz robić wiele różnych rzeczy, jak byś „był nakręcony?',
           required: true,
           options: {
             'options': [
@@ -115,7 +121,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'asrs_7',
           type: QuestionType.choice,
-          question: 'Jak często popełniasz błędy wynikające z nieuwagi, podczas pracy nad nudnym lub trudnym projektem?',
+          question: 'Jak często popełniasz błędy wynikające z nieuwagi podczas pracy nad nudnym lub trudnym projektem?',
           required: true,
           options: {
             'options': [
@@ -163,7 +169,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'asrs_10',
           type: QuestionType.choice,
-          question: 'Jak często gubisz, odkładasz rzeczy w niewłaściwe miejsce lub masz trudności ze znalezieniem ich, zarówno w pracy, jak i w domu?',
+          question: 'Jak często gubisz, odkładasz rzeczy w niewłaściwe miejsce lub masz trudności ze znalezieniem ich zarówno w pracy, jak i w domu?',
           required: true,
           options: {
             'options': [
@@ -195,7 +201,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'asrs_12',
           type: QuestionType.choice,
-          question: 'Jak często wstajesz z miejsca w sytuacjach wymagających długiego siedzenia, takich jak praca, spotkania czy wykłady?',
+          question: 'Jak często wstajesz z miejsca w sytuacjach wymagających długiego siedzenia (w pracy, na spotkaniach, wykładach)?',
           required: true,
           options: {
             'options': [
@@ -211,7 +217,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'asrs_13',
           type: QuestionType.choice,
-          question: 'Jak często masz poczucie „wewnętrznego niepokoju”?S',
+          question: 'Jak często masz poczucie „wewnętrznego niepokoju”?',
           required: true,
           options: {
             'options': [
@@ -227,7 +233,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'asrs_14',
           type: QuestionType.choice,
-          question: 'Jak często masz trudności z rozluźnieniem się i relaksem, kiedy masz czas dla siebie?',
+          question: 'Jak często masz trudności, aby rozluźnić się i zrelaksować, kiedy masz czas dla siebie?',
           required: true,
           options: {
             'options': [
@@ -259,7 +265,7 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'asrs_16',
           type: QuestionType.choice,
-          question: 'Jak często zdarza Ci się, że podczas rozmowy z innymi kończysz za kogoś wypowiedź, zanim on zdąży to zrobić?',
+          question: 'Jak często zdarza Ci się, że kiedy rozmawiasz z innymi, łapiesz się na tym, że kończysz za kogoś wypowiedź, zanim on sam zdąży to zrobić?',
           required: true,
           options: {
             'options': [

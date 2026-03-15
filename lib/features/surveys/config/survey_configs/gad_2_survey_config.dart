@@ -10,10 +10,15 @@ class GAD2SurveyConfig {
         SurveyQuestionEntity(
           id: 'gad2_info',
           type: QuestionType.text,
-          question: 'Następne stwierdzenia dotyczą Twoich doświadczeń związanych z odczuwaniem lęku, napięcia oraz zamartwiania się w codziennym życiu. Przeczytaj uważnie każde stwierdzenie i zaznacz, w jakim stopniu odnosi się ono do Ciebie w ostatnim czasie. Odpowiadaj zgodnie z tym, jak rzeczywiście się czujesz — nie ma odpowiedzi dobrych ani złych.',
+          question: 'Lęk — ostatnie 2 tygodnie',
+          description:
+              'W tej części prosimy o informacje dotyczące Twojej aktywności fizycznej w ciągu ostatnich 7 dni — w pracy, w domu i w czasie wolnym.\n\n'
+              'Pytania dotyczą intensywnych i umiarkowanych ćwiczeń, a także codziennego chodzenia i czasu spędzanego w pozycji siedzącej.\n\n'
+              'Szacowany czas: ok. 3–5 minut.',
           required: false,
           options: {
             'info': true,
+            'intro': true,
           },
         ),
         SurveyQuestionEntity(

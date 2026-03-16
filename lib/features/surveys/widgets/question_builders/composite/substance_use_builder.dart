@@ -39,6 +39,9 @@ class SubstanceUseBuilder extends ConsumerWidget {
         question.options?['substanceLabel'] as String? ?? question.question;
     final substanceDescription =
         question.options?['substanceDescription'] as String?;
+    final askName = question.options?['askName'] == true;
+    final otherNameKey = '${question.id}_name';
+    final otherNameValue = state.answers[otherNameKey] as String?;
 
     final primary = Theme.of(context).colorScheme.primary;
     final secondary = Theme.of(context).colorScheme.secondary;
@@ -63,21 +66,124 @@ class SubstanceUseBuilder extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      substanceLabel,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    if (substanceDescription != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        substanceDescription,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: const Color(0xFF505968),
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            substanceLabel,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                          ),
                         ),
-                      ),
-                    ],
+                        if (substanceDescription != null) ...[
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (dialogContext) {
+                                  return Dialog(
+                                    backgroundColor:
+                                        Theme.of(context).colorScheme.surface,
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.zero,
+                                    ),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .surfaceContainerHighest,
+                                        borderRadius: BorderRadius.zero,
+                                        border: Border.all(
+                                          color: primary,
+                                          width: 2,
+                                        ),
+                                      ),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            substanceLabel,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleMedium
+                                                ?.copyWith(
+                                                  fontWeight: FontWeight.w700,
+                                                  color: primary,
+                                                ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            substanceDescription,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.copyWith(
+                                                  color: primary,
+                                                  height: 1.5,
+                                                ),
+                                          ),
+                                          const SizedBox(height: 12),
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: TextButton(
+                                              onPressed: () {
+                                                Navigator.of(dialogContext)
+                                                    .pop();
+                                              },
+                                              child: Text(
+                                                'Zamknij',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .labelLarge
+                                                    ?.copyWith(
+                                                      color: primary,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                    ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                            child: Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: primary, width: 2),
+                                color: Theme.of(context).colorScheme.surface,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'i',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelSmall
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        color: primary,
+                                      ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -101,6 +207,9 @@ class SubstanceUseBuilder extends ConsumerWidget {
                         if (!newValue) {
                           notifier.updateAnswer(frequencyKey, '0');
                           notifier.updateAnswer(question.id, '0');
+                          if (askName) {
+                            notifier.removeAnswer(otherNameKey);
+                          }
                         } else {
                           notifier.removeAnswer(frequencyKey);
                           notifier.removeAnswer(question.id);
@@ -183,6 +292,40 @@ class SubstanceUseBuilder extends ConsumerWidget {
                 );
               }).toList(),
             ),
+            if (askName) ...[
+              const SizedBox(height: 16),
+              Text(
+                'Jakie?',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                decoration: InputDecoration(
+                  hintText: 'Wpisz nazwę substancji',
+                  border: const OutlineInputBorder(
+                    borderRadius: BorderRadius.zero,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.zero,
+                    borderSide: BorderSide(color: primary, width: 2),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.zero,
+                    borderSide: BorderSide(color: secondary, width: 2),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 16,
+                  ),
+                ),
+                controller: TextEditingController(text: otherNameValue ?? ''),
+                onChanged: (value) {
+                  notifier.updateAnswer(otherNameKey, value.trim());
+                },
+              ),
+            ],
           ],
         ],
       ),

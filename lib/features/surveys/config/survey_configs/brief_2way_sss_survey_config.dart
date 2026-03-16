@@ -10,10 +10,15 @@ class Brief2WaySSSSurveyConfig {
         SurveyQuestionEntity(
           id: 'sss_info',
           type: QuestionType.text,
-          question: 'Następne stwierdzenia dotyczą twoich doświadczeń, odczuć oraz sposobu funkcjonowania w różnych sytuacjach związanych z cechami ze spektrum autyzmu. Przeczytaj uważnie każde stwierdzenie i zaznacz, w jakim stopniu jest ono na ogół prawdziwe w Twoim przypadku. Nie ma odpowiedzi dobrych ani złych — ważne jest, aby odpowiedzi były zgodne z Twoimi osobistymi doświadczeniami.',
+          question: 'Wsparcie społeczne',
+          description:
+              'Ta sekcja dotyczy Twoich relacji z innymi ludźmi — zarówno wsparcia, które otrzymujesz, jak i tego, które sam/sama dajesz.\n\n'
+              'Dla każdego stwierdzenia zaznacz, w jakim stopniu odpowiada ono Twojej typowej sytuacji.\n\n'
+              'Szacowany czas: ok. 3–4 minuty.',
           required: false,
           options: {
             'info': true,
+            'intro': true,
           },
         ),
         SurveyQuestionEntity(

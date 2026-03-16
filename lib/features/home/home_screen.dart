@@ -6,12 +6,14 @@ import 'package:braves_cog/features/profile/presentation/providers/profile_provi
 class HomeScreen extends ConsumerWidget {
   final VoidCallback onMonitoringClick;
   final VoidCallback onScreeningClick;
+  final VoidCallback onFollowUpClick;
   final VoidCallback onTestsClick;
 
   const HomeScreen({
     super.key,
     required this.onMonitoringClick,
     required this.onScreeningClick,
+    required this.onFollowUpClick,
     required this.onTestsClick,
   });
 
@@ -42,6 +44,8 @@ class HomeScreen extends ConsumerWidget {
                     _buildMonitoringCard(context),
                     SizedBox(height: AppTheme.spacingMd),
                     _buildScreeningCard(context),
+                    SizedBox(height: AppTheme.spacingMd),
+                    _buildFollowUpCard(context),
                     SizedBox(height: AppTheme.spacingXl)
                   ],
                 ),
@@ -137,6 +141,51 @@ class HomeScreen extends ConsumerWidget {
             ),
             Icon(
               Icons.assessment,
+              size: 60,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFollowUpCard(BuildContext context) {
+    return GestureDetector(
+      onTap: onFollowUpClick,
+      child: Container(
+        padding: EdgeInsets.all(AppTheme.spacingLg),
+        decoration: BoxDecoration(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.12)
+              : Theme.of(context).colorScheme.secondary.withValues(alpha: 0.08),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.25),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Follow-up',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  SizedBox(height: AppTheme.spacingSm),
+                  Text(
+                    'Ankiety kontrolne: styl życia, sen, odżywianie, samopoczucie',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.fact_check_outlined,
               size: 60,
               color: Theme.of(context).colorScheme.primary,
             ),

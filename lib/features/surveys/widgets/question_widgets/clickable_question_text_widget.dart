@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 
 class ClickableQuestionTextWidget extends StatefulWidget {
   final String questionText;
@@ -21,12 +20,10 @@ class ClickableQuestionTextWidget extends StatefulWidget {
 class _ClickableQuestionTextWidgetState
     extends State<ClickableQuestionTextWidget> {
   OverlayEntry? _overlayEntry;
-  TapGestureRecognizer? _keywordTapRecognizer;
 
   @override
   void dispose() {
     _removeOverlay();
-    _keywordTapRecognizer?.dispose();
     super.dispose();
   }
 
@@ -35,25 +32,7 @@ class _ClickableQuestionTextWidgetState
     _overlayEntry = null;
   }
 
-  // Extract keyword from question text (everything after "Jak często jesz/-asz" or "Jak często spożywasz/-asz")
-  String? _extractKeyword(String text) {
-    final patterns = [
-      // Obsługuje zarówno starą formę "jesz/-asz", jak i uproszczoną "jesz".
-      RegExp(r'Jak często jesz(?:/-asz)? (.+?)\?'),
-      // Analogicznie dla "spożywasz/-asz" vs "spożywasz".
-      RegExp(r'Jak często spożywasz(?:/-asz)? (.+?)\?'),
-    ];
-
-    for (final pattern in patterns) {
-      final match = pattern.firstMatch(text);
-      if (match != null && match.groupCount >= 1) {
-        return match.group(1);
-      }
-    }
-    return null;
-  }
-
-  void _showTooltip(String keyword, BuildContext context, Offset position) {
+  void _showTooltip(BuildContext context, Offset position) {
     if (widget.tooltipText == null || widget.tooltipText!.isEmpty) return;
 
     _removeOverlay();
@@ -116,13 +95,10 @@ class _ClickableQuestionTextWidgetState
 
   @override
   Widget build(BuildContext context) {
-    final keyword = _extractKeyword(widget.questionText);
     final primary = Theme.of(context).colorScheme.primary;
 
-    if (keyword == null ||
-        widget.tooltipText == null ||
-        widget.tooltipText!.isEmpty) {
-      // No keyword found or no tooltip text, just show regular text
+    // Jeśli nie ma tekstu tooltipa, pokazujemy sam tekst pytania.
+    if (widget.tooltipText == null || widget.tooltipText!.isEmpty) {
       return Text(
         widget.questionText,
         textAlign: TextAlign.center,
@@ -130,57 +106,52 @@ class _ClickableQuestionTextWidgetState
       );
     }
 
-    // Split text into parts: before keyword, keyword, after keyword
-    final keywordIndex = widget.questionText.indexOf(keyword);
-    if (keywordIndex == -1) {
-      return Text(
-        widget.questionText,
-        textAlign: TextAlign.center,
-        style: widget.textStyle,
-      );
-    }
-
-    final beforeKeyword = widget.questionText.substring(0, keywordIndex);
-    final afterKeyword = widget.questionText.substring(
-      keywordIndex + keyword.length,
-    );
-
-    _keywordTapRecognizer?.dispose();
-    _keywordTapRecognizer = TapGestureRecognizer()
-      ..onTap = () {
-        // Get the position of the keyword in the text
-        final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
-        if (renderBox != null) {
-          // Calculate approximate position of keyword (centered in text)
-          final screenSize = MediaQuery.of(context).size;
-          final globalPosition = renderBox.localToGlobal(Offset.zero);
-          final tapPosition = Offset(
-            screenSize.width / 2,
-            globalPosition.dy + renderBox.size.height / 2,
-          );
-          _showTooltip(keyword, context, tapPosition);
-        }
-      };
-
-    return RichText(
-      textAlign: TextAlign.center,
-      text: TextSpan(
-        style: widget.textStyle,
-        children: [
-          TextSpan(text: beforeKeyword),
-          TextSpan(
-            text: keyword,
-            recognizer: _keywordTapRecognizer,
-            style: (widget.textStyle ?? const TextStyle()).copyWith(
-              decoration: TextDecoration.underline,
-              decorationColor: primary,
-              decorationThickness: 2,
-              color: primary,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Flexible(
+          child: Text(
+            widget.questionText,
+            textAlign: TextAlign.center,
+            style: widget.textStyle,
+          ),
+        ),
+        const SizedBox(width: 8),
+        GestureDetector(
+          onTap: () {
+            final RenderBox? renderBox =
+                context.findRenderObject() as RenderBox?;
+            if (renderBox != null) {
+              final screenSize = MediaQuery.of(context).size;
+              final globalPosition = renderBox.localToGlobal(Offset.zero);
+              final tapPosition = Offset(
+                screenSize.width / 2,
+                globalPosition.dy + renderBox.size.height / 2,
+              );
+              _showTooltip(context, tapPosition);
+            }
+          },
+          child: Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: primary, width: 2),
+              color: Theme.of(context).colorScheme.surface,
+            ),
+            child: Center(
+              child: Text(
+                'i',
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: primary,
+                    ),
+              ),
             ),
           ),
-          TextSpan(text: afterKeyword),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

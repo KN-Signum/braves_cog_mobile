@@ -7,15 +7,7 @@ class PSS10SurveyConfig {
       id: 'Baseline_Stress_And_Anxiety_PSS10',
       title: 'Stres (PSS-10)',
       questions: [
-        SurveyQuestionEntity(
-          id: 'pss10_info',
-          type: QuestionType.text,
-          question: 'Pytania zawarte w tej skali dotyczą Twoich myśli i odczuć związanych z doświadczanymi w ostatnim miesiącu zdarzeniami.\nW każdym pytaniu należy wskazać, jak często myślałeś/aś i odczuwałeś/aś w podany sposób.\nMimo znacznych podobieństw są to różne pytania i każde z nich należy traktować oddzielnie.\nNajlepiej na każde pytanie odpowiadać w miarę szybko, wybierając tę odpowiedź, która wydaje się najbardziej trafna.',
-          required: false,
-          options: {
-            'info': true,
-          },
-        ),
+
         // 1
         SurveyQuestionEntity(
           id: 'pss10_1',

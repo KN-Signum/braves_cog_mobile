@@ -1,20 +1,20 @@
 import 'package:braves_cog/features/surveys/domain/entities/survey_entity.dart';
 import 'package:braves_cog/features/surveys/domain/entities/survey_question_entity.dart';
 
-class ScreeningCognitiveComplaintsSurveyConfig {
+class CognitiveComplaintsFollowUpSurveyConfig {
   static SurveyEntity getSurvey() {
     return SurveyEntity(
-      id: 'BC-CCI-E',
-      title: 'Screening',
+      id: 'CognitiveComplaintsFollowUpSurveyConfig',
+      title: 'Followup',
       questions: [
         SurveyQuestionEntity(
-          id: 'cc_info',
+          id: 'ccf_info',
           type: QuestionType.text,
-          question: 'Funkcje poznawcze — ostatnie 30 dni',
+          question: 'Funkcje poznawcze — ocena szczegółowa',
           description:
-              'Ta sekcja dotyczy ewentualnych trudności z pamięcią, koncentracją i myśleniem, które mogłeś odczuwać w ostatnim miesiącu.\n\n'
-              'Oceniaj nasilenie objawów na od ich braku do ich bardzo dużego nasilenia.\n\n'
-              'Szacowany czas: ok. 2–4 minuty.',
+              'W tej sekcji prosimy o bardziej szczegółową ocenę ewentualnych trudności z pamięcią, koncentracją i myśleniem.\n\n'
+              'Porównaj swoje obecne funkcjonowanie z tym sprzed roku (lub sprzed rozpoczęcia badania).\n\n'
+              'Szacowany czas: ok. 3–5 minuty.',
           required: false,
           options: {
             'info': true,
@@ -22,7 +22,7 @@ class ScreeningCognitiveComplaintsSurveyConfig {
           },
         ),
         SurveyQuestionEntity(
-          id: 'cc_rating_forgetting',
+          id: 'ccf_rating_forgetting',
           type: QuestionType.choice,
           question:
               'Zapominanie / Problemy z pamięcią',
@@ -37,7 +37,7 @@ class ScreeningCognitiveComplaintsSurveyConfig {
           },
         ),
         SurveyQuestionEntity(
-          id: 'cc_rating_concentration',
+          id: 'ccf_rating_concentration',
           type: QuestionType.choice,
           question:
               'Słaba koncentracja',
@@ -52,7 +52,7 @@ class ScreeningCognitiveComplaintsSurveyConfig {
           },
         ),
         SurveyQuestionEntity(
-          id: 'cc_rating_expressing_thoughts',
+          id: 'ccf_rating_expressing_thoughts',
           type: QuestionType.choice,
           question:
               'Trudności w wyrażaniu myśli',
@@ -67,7 +67,7 @@ class ScreeningCognitiveComplaintsSurveyConfig {
           },
         ),
         SurveyQuestionEntity(
-          id: 'cc_rating_finding_words',
+          id: 'ccf_rating_finding_words',
           type: QuestionType.choice,
           question:
               'Trudność w znalezieniu właściwego słowa',
@@ -82,7 +82,7 @@ class ScreeningCognitiveComplaintsSurveyConfig {
           },
         ),
         SurveyQuestionEntity(
-          id: 'cc_rating_slowed_thinking',
+          id: 'ccf_rating_slowed_thinking',
           type: QuestionType.choice,
           question:
               'Spowolnione tempo myślenia',
@@ -97,7 +97,7 @@ class ScreeningCognitiveComplaintsSurveyConfig {
           },
         ),
         SurveyQuestionEntity(
-          id: 'cc_rating_problem_solving',
+          id: 'ccf_rating_problem_solving',
           type: QuestionType.choice,
           question:
               'Trudności z rozwiązywaniem problemów lub „rozgryzaniem” rzeczy',
@@ -113,7 +113,7 @@ class ScreeningCognitiveComplaintsSurveyConfig {
         ),
         // Info page for second part
         SurveyQuestionEntity(
-          id: 'cc_info_part2',
+          id: 'ccf_info_part2',
           type: QuestionType.text,
           question: 'Proszę odpowiedzieć na poniższe pytania, biorąc pod uwagę ostatnie 30 dni\n\n',
           description: 'Zaznacz jedną odpowiedź dla każdego pytania.',
@@ -125,7 +125,7 @@ class ScreeningCognitiveComplaintsSurveyConfig {
         ),
         // Q1: Impact on work
         SurveyQuestionEntity(
-          id: 'cc_impact_work',
+          id: 'ccf_impact_work',
           type: QuestionType.choice,
           question: 'Wymienione powyżej objawy utrudniają mi wykonywanie pracy\n(jeśli obecnie nie pracujesz – odpowiedz, odnosząc się do ostatniej pracy lub szkoły)',
           required: true,
@@ -141,7 +141,7 @@ class ScreeningCognitiveComplaintsSurveyConfig {
         ),
         // Q2: Impact on relationships
         SurveyQuestionEntity(
-          id: 'cc_impact_relationships',
+          id: 'ccf_impact_relationships',
           type: QuestionType.choice,
           question: 'Wymienione powyżej objawy utrudniają mi utrzymywanie dobrych relacji z rodziną i przyjaciółmi',
           required: true,
@@ -157,7 +157,7 @@ class ScreeningCognitiveComplaintsSurveyConfig {
         ),
         // Q3: Impact on hobbies
         SurveyQuestionEntity(
-          id: 'cc_impact_hobbies',
+          id: 'ccf_impact_hobbies',
           type: QuestionType.choice,
           question: 'Wymienione powyżej objawy utrudniają mi czerpanie przyjemności z aktywności społecznych, rekreacyjnych lub hobby',
           required: true,

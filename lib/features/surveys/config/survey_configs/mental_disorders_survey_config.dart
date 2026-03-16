@@ -7,18 +7,6 @@ class MentalDisordersSurveyConfig {
       id: 'Baseline_Mental_Health_Disorders',
       title: 'Zaburzenia psychiczne',
       questions: [
-        // Główne pytanie (info) – tekst u góry, jak przy chorobach somatycznych.
-        SurveyQuestionEntity(
-          id: 'mental_info',
-          type: QuestionType.choice,
-          question:
-              'Czy kiedykolwiek rozpoznano u Ciebie (przez lekarza lub psychologa) któreś z poniższych zaburzeń?',
-          required: false,
-          options: {
-            'info': true,
-          },
-        ),
-
         // Depresja
         SurveyQuestionEntity(
           id: 'mental_depression',

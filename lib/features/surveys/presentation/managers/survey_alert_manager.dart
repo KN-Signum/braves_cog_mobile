@@ -78,7 +78,7 @@ class SurveyAlertManager {
         return SurveyAlert(
           title: 'Alert krytyczny',
           message:
-              'Twój wynik wykonanego testu wskazuje na bardzo nasilone objawy depresyjne. Nie jest to diagnoza, jednak zalecany jest pilny kontakt ze specjalistą. W sytuacji nagłej skorzystaj z numerów dostępnych w ustawieniach wzakładce „Uzyskaj pomoc" lub zadzwoń 112 / 999.',
+              'Twój wynik wykonanego testu wskazuje na bardzo nasilone objawy depresyjne. Nie jest to diagnoza, jednak zalecany jest pilny kontakt ze specjalistą. W sytuacji nagłej skorzystaj z numerów dostępnych w ustawieniach w zakładce „Uzyskaj pomoc" lub zadzwoń 112 / 999.',
         );
       } else if (score >= 15) {
         return SurveyAlert(
@@ -113,8 +113,12 @@ class SurveyAlertManager {
         surveyId.contains('gad7')) {
       int score = 0;
       for (int i = 1; i <= 7; i++) {
-        score += getIntAnswer('gad7_$i');
-      }
+        final key = 'gad7_$i';
+        final val = getIntAnswer(key);
+        print("$key = $val");
+        score += val;
+        }
+        print("TOTAL = $score");
 
       if (score >= 15) {
         return SurveyAlert(

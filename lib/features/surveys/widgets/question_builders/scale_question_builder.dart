@@ -24,10 +24,12 @@ class ScaleQuestionBuilder extends ConsumerWidget {
     final max = (question.options?['max'] as num?)?.toDouble() ?? 100.0;
     final step = (question.options?['step'] as num?)?.toDouble();
     final unit = question.options?['unit'] as String?;
-    final currentValue =
-        (state.answers[question.id] as num?)?.toDouble() ?? min;
     final segmentScale = question.options?['segmentScale'] == true;
     final showMarkers = question.options?['showMarkers'] == true;
+
+    final currentValue =
+        (state.answers[question.id] as num?)?.toDouble() ??
+        (segmentScale ? 0.0 : min);
 
     if (segmentScale) {
       return SegmentScaleQuestionWidget(

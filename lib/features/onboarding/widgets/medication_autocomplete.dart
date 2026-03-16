@@ -28,18 +28,20 @@ class _MedicationAutocompleteState extends State<MedicationAutocomplete> {
   List<String> _medications = [];
   bool _isLoading = true;
   late TextEditingController _textController;
+  late FocusNode _focusNode;
 
   @override
   void initState() {
     super.initState();
     _textController = TextEditingController(text: widget.initialValue ?? '');
+    _focusNode = FocusNode();
     _loadMedications();
   }
 
   @override
   void didUpdateWidget(MedicationAutocomplete oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Aktualizuj kontroler gdy initialValue się zmieni
+    // Aktualizuj kontroler tylko gdy initialValue zmienił się z zewnątrz (np. inny lek), nie przy każdym wpisywaniu
     if (widget.initialValue != oldWidget.initialValue &&
         widget.initialValue != _textController.text) {
       _textController.text = widget.initialValue ?? '';
@@ -67,6 +69,7 @@ class _MedicationAutocompleteState extends State<MedicationAutocomplete> {
   @override
   void dispose() {
     _textController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -74,7 +77,7 @@ class _MedicationAutocompleteState extends State<MedicationAutocomplete> {
   Widget build(BuildContext context) {
     return RawAutocomplete<String>(
       textEditingController: _textController,
-      focusNode: FocusNode(),
+      focusNode: _focusNode,
       optionsBuilder: (TextEditingValue textEditingValue) {
         if (textEditingValue.text.isEmpty || _isLoading) {
           return const Iterable<String>.empty();

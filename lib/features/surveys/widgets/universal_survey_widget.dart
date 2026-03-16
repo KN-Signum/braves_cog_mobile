@@ -32,10 +32,12 @@ bool _isAlertSurvey(String surveyId) {
   if (surveyId == 'PHQ_2' || surveyId == 'GAD_2') return true;
   if (surveyId == 'Baseline_Depression' ||
       surveyId.contains('PHQ_9') ||
-      surveyId.contains('phq9')) return true;
+      surveyId.contains('phq9'))
+    return true;
   if (surveyId == 'Baseline_Stress_And_Anxiety_GAD7' ||
       surveyId.contains('GAD_7') ||
-      surveyId.contains('gad7')) return true;
+      surveyId.contains('gad7'))
+    return true;
   return false;
 }
 
@@ -82,6 +84,7 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
 
   /// Po pojawieniu się alertu w ankietach PHQ-2, GAD-2, PHQ-9, GAD-7 nie można cofać do pytań.
   bool _alertWasShownInThisSurvey = false;
+
   /// Krok (indeks pytania) w momencie pokazania alertu – pasek postępu nie spada przy cofaniu.
   int? _progressStepWhenAlertShown;
 
@@ -325,8 +328,7 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
   }
 
   void _handleBack() {
-    if (_isAlertSurvey(widget.survey.id) &&
-        _alertWasShownInThisSurvey) {
+    if (_isAlertSurvey(widget.survey.id) && _alertWasShownInThisSurvey) {
       final answers = ref.read(surveyProvider(widget.survey.id)).answers;
       widget.onComplete(answers, isBackNavigation: true);
       widget.onBack();
@@ -510,7 +512,7 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 32),
             child: ElevatedButton(
               onPressed: _canProceed ? _handleNext : null,
               style: ElevatedButton.styleFrom(
@@ -610,10 +612,10 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
                 questionText,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      height: 1.3,
-                      letterSpacing: -0.24,
-                    ),
+                  fontWeight: FontWeight.w800,
+                  height: 1.3,
+                  letterSpacing: -0.24,
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -623,10 +625,9 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
                 child: Text(
                   question.description!,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        height: 1.6,
-                        fontSize: 18,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.copyWith(height: 1.6, fontSize: 18),
                 ),
               ),
           ] else ...[
@@ -636,9 +637,9 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
                 questionText,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w400,
-                      height: 1.5,
-                    ),
+                  fontWeight: FontWeight.w400,
+                  height: 1.5,
+                ),
               ),
             ),
             if (question.description != null) ...[
@@ -649,10 +650,10 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
                   question.description!,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: const Color(0xFF505968),
-                        fontWeight: FontWeight.w400,
-                        height: 1.5,
-                      ),
+                    color: const Color(0xFF505968),
+                    fontWeight: FontWeight.w400,
+                    height: 1.5,
+                  ),
                 ),
               ),
             ],
@@ -660,8 +661,7 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
         ] else ...[
           SizedBox(
             width: double.infinity,
-            child:
-                _isMiniEatStyleSurvey && question.description != null
+            child: _isMiniEatStyleSurvey && question.description != null
                 ? ClickableQuestionTextWidget(
                     questionText: questionText,
                     tooltipText: question.description,

@@ -24,7 +24,25 @@ class _ConsentsScreenState extends ConsumerState<ConsentsScreen> {
     'Powiadomienia',
   ];
 
+  bool _validateConsents(ConsentsEntity consents) {
+    return consents.dataCollection &&
+        consents.wantsAdverseEventsMonitoring &&
+        consents.pushNotifications;
+  }
+
   void _handleNext(ConsentsEntity consents) {
+    if (!_validateConsents(consents)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Musisz wyrazić zgodę na wszystkie opcje, aby korzystać z aplikacji.',
+          ),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
     if (_currentStep < _totalSteps - 1) {
       setState(() => _currentStep++);
     } else {
@@ -229,9 +247,8 @@ class _ConsentsScreenState extends ConsumerState<ConsentsScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          color: Theme.of(context).colorScheme.secondary,
           width: 2,
         ),
       ),

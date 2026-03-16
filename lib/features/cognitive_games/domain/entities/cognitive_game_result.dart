@@ -11,7 +11,7 @@ enum CognitiveTestType {
 }
 
 class CognitiveTestResult {
-  final String id;
+  final String? id;
   final String userId;
   final CognitiveTestType testType;
   final DateTime completedAt;
@@ -19,7 +19,7 @@ class CognitiveTestResult {
   final Map<String, dynamic> rawData;
 
   CognitiveTestResult({
-    required this.id,
+    this.id,
     required this.userId,
     required this.testType,
     required this.completedAt,

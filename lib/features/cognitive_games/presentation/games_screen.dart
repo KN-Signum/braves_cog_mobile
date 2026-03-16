@@ -216,8 +216,13 @@ class GamesScreen extends ConsumerWidget {
 
   void _processSequenceResults(WidgetRef ref, RPTaskResult taskResult) {
     try {
-      final currentProfile = ref.read(profileProvider).profile;
-      final userId = currentProfile.id ?? 'unknown_user';
+      final authState = ref.read(authProvider);
+      final userId = authState.user?.id;
+
+      if (userId == null) {
+        debugPrint('❌ [GamesScreen] Brak zalogowanego użytkownika — wyniki nie zostaną zapisane');
+        return;
+      }
 
       debugPrint(
         '📊 [GamesScreen] Przetwarzanie wyników dla użytkownika: $userId',

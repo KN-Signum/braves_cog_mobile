@@ -20,24 +20,36 @@ class CognitiveRepositoryImpl implements CognitiveRepository {
     CognitiveTestResult result,
   ) async {
     try {
-      final payload = {
+      final metricsJson = RPResultMapper.metricsToJson(result.metrics);
+
+      // Payload for local cache (includes app-generated id for traceability)
+      final localPayload = {
         'id': result.id,
         'userId': result.userId,
         'testType': result.testType.name,
         'completedAt': result.completedAt.toIso8601String(),
-        'metrics': RPResultMapper.metricsToJson(result.metrics),
+        'metrics': metricsJson,
+        'rawData': result.rawData,
+      };
+
+      // Payload for Supabase (no id — server generates UUID PK)
+      final remotePayload = {
+        'userId': result.userId,
+        'testType': result.testType.name,
+        'completedAt': result.completedAt.toIso8601String(),
+        'metrics': metricsJson,
         'rawData': result.rawData,
       };
 
       try {
-        await localDataSource.cacheTestResult(payload);
+        await localDataSource.cacheTestResult(localPayload);
       } catch (cacheError) {
         return Left(
           CacheFailure('Błąd zapisu na dysku urządzenia: $cacheError'),
         );
       }
 
-      await remoteDataSource.saveTestResult(payload);
+      await remoteDataSource.saveTestResult(remotePayload);
 
       return const Right(null);
     } catch (e) {

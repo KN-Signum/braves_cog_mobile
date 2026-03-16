@@ -6,7 +6,7 @@ import 'package:braves_cog/features/profile/presentation/providers/profile_provi
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:research_package/research_package.dart';
-import '../../../cognition_config.dart';
+import '../cognition_config.dart';
 
 class GamesScreen extends ConsumerWidget {
   const GamesScreen({super.key});

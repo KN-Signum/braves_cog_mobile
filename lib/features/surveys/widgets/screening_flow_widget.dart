@@ -5,15 +5,18 @@ import 'package:braves_cog/features/surveys/domain/entities/survey_entity.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 import 'package:braves_cog/features/surveys/config/survey_flow_rules.dart';
 import 'package:braves_cog/features/surveys/config/survey_configs/mini_eat_survey_config.dart';
+import 'package:braves_cog/features/cognitive_games/presentation/cognitive_games_launcher.dart';
 
 bool _isAlertSurvey(String surveyId) {
   if (surveyId == 'PHQ_2' || surveyId == 'GAD_2') return true;
   if (surveyId == 'Baseline_Depression' ||
       surveyId.contains('PHQ_9') ||
-      surveyId.contains('phq9')) return true;
+      surveyId.contains('phq9'))
+    return true;
   if (surveyId == 'Baseline_Stress_And_Anxiety_GAD7' ||
       surveyId.contains('GAD_7') ||
-      surveyId.contains('gad7')) return true;
+      surveyId.contains('gad7'))
+    return true;
   return false;
 }
 
@@ -36,6 +39,7 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
   int _currentSurveyIndex = 0;
   final Map<String, dynamic> _allAnswers = {};
   bool _startAtEndForCurrentSurvey = false;
+
   /// Ankiety alertowe, po których pokazano alert – nie pokazujemy ich już w flow.
   final Set<String> _alertSurveysCompleted = {};
 
@@ -60,18 +64,26 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
       return;
     }
 
+    // Special handling for screening games intro
+    if (currentSurveyId == 'screening_games_intro') {
+      CognitiveGamesLauncher.launchFullSequence(context, ref, () {
+        // After games complete, call onComplete to navigate away
+        widget.onComplete(_allAnswers);
+      });
+      return;
+    }
+
     if (currentSurveyId == 'screening_diet') {
       final dietChangedRaw = answers['diet_changed'];
-      final dietChanged = dietChangedRaw == true ||
+      final dietChanged =
+          dietChangedRaw == true ||
           dietChangedRaw == 1 ||
           dietChangedRaw == 'true';
       if (dietChanged) {
         setState(() {
-          _surveys = List<Map<String, dynamic>>.from(_surveys)
-            ..add({
-              'id': 'MINI_EAT',
-              'config': MiniEatSurveyConfig.getSurvey(),
-            });
+          _surveys = List<Map<String, dynamic>>.from(
+            _surveys,
+          )..add({'id': 'MINI_EAT', 'config': MiniEatSurveyConfig.getSurvey()});
           _currentSurveyIndex++;
           _startAtEndForCurrentSurvey = false;
         });
@@ -89,7 +101,8 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
         _startAtEndForCurrentSurvey = false;
         while (_currentSurveyIndex < _surveys.length &&
             _alertSurveysCompleted.contains(
-                _surveys[_currentSurveyIndex]['id'] as String)) {
+              _surveys[_currentSurveyIndex]['id'] as String,
+            )) {
           _currentSurveyIndex++;
         }
       });
@@ -132,15 +145,13 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) widget.onComplete(_allAnswers);
       });
-      return const Scaffold(
-          body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (index != _currentSurveyIndex) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) setState(() => _currentSurveyIndex = index);
       });
-      return const Scaffold(
-          body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final currentMeta = _surveys[_currentSurveyIndex];
     final currentSurvey = currentMeta['config'] as SurveyEntity;

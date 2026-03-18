@@ -1,25 +1,11 @@
 import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
-import 'package:braves_cog/features/cognitive_games/data/mappers/rp_result_mapper.dart';
-import 'package:braves_cog/features/cognitive_games/domain/entities/cognitive_game_result.dart';
-import 'package:braves_cog/features/cognitive_games/presentation/providers/cognitive_game_provider.dart';
+import 'package:braves_cog/features/cognitive_games/presentation/cognitive_games_launcher.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:research_package/research_package.dart';
-import '../cognition_config.dart';
 
 class GamesScreen extends ConsumerWidget {
   const GamesScreen({super.key});
-
-  static const Map<String, CognitiveTestType> _stepMap = {
-    'stroop_ffect_step': CognitiveTestType.stroop,
-    'trail_making_step': CognitiveTestType.trailMaking,
-    'flanker_step': CognitiveTestType.flanker,
-    'RVIP_step': CognitiveTestType.rvip,
-    'tapping_step': CognitiveTestType.tapping,
-    'corsi_block_step': CognitiveTestType.corsiBlock,
-    'reaction_time_step': CognitiveTestType.reactionTime,
-  };
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -117,7 +103,7 @@ class GamesScreen extends ConsumerWidget {
                     ),
                     SizedBox(width: 8),
                     Text(
-                      'Szacowany czas: ~12 minut',
+                      'Szacowany czas: ~10 minut',
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w600,
@@ -128,7 +114,11 @@ class GamesScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: () => _launchFullSequence(context, ref),
+                  onPressed: () => CognitiveGamesLauncher.launchFullSequence(
+                    context,
+                    ref,
+                    null,
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorScheme.of(context).primary,
                     foregroundColor: ColorScheme.of(context).surface,
@@ -179,125 +169,6 @@ class GamesScreen extends ConsumerWidget {
           ),
         ),
       ],
-    );
-  }
-
-  void _launchFullSequence(BuildContext context, WidgetRef ref) {
-    final List<RPStep> steps = [];
-
-    _stepMap.forEach((stepId, testType) {
-      steps.add(_getStepById(stepId));
-    });
-
-    steps.add(
-      RPCompletionStep(
-        identifier: 'sequence_completion',
-        title: 'Świetna robota!',
-        text: 'Dziękujemy za Twój wkład w badania. Trening został ukończony.',
-      ),
-    );
-
-    final task = RPOrderedTask(
-      identifier: 'full_cognitive_sequence',
-      steps: steps,
-    );
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => _CognitiveTaskScreen(
-          task: task,
-          onComplete: (result) => _processSequenceResults(ref, result),
-        ),
-      ),
-    );
-  }
-
-  void _processSequenceResults(WidgetRef ref, RPTaskResult taskResult) {
-    try {
-      final currentProfile = ref.read(profileProvider).profile;
-      final userId = currentProfile.id ?? 'unknown_user';
-
-      debugPrint(
-        '📊 [GamesScreen] Przetwarzanie wyników dla użytkownika: $userId',
-      );
-
-      final List<CognitiveTestResult> collectedResults = [];
-      final fullJson = taskResult.toJson();
-      final resultsNode = fullJson['results'] as Map<String, dynamic>?;
-
-      if (resultsNode == null) return;
-
-      _stepMap.forEach((stepId, testType) {
-        if (resultsNode.containsKey(stepId)) {
-          try {
-            final cleanResult = RPResultMapper.fromRPTaskResult(
-              taskResult: taskResult,
-              userId: userId,
-              testType: testType,
-              stepIdentifier: stepId,
-            );
-            collectedResults.add(cleanResult);
-          } catch (e) {
-            debugPrint('❌ Błąd mapowania kroku $stepId: $e');
-          }
-        }
-      });
-
-      if (collectedResults.isNotEmpty) {
-        debugPrint(
-          '📊 [GamesScreen] Wysyłanie ${collectedResults.length} wyników...',
-        );
-        ref
-            .read(cognitiveGamesProvider.notifier)
-            .saveSequenceResults(collectedResults);
-      }
-    } catch (e) {
-      debugPrint("❌ Krytyczny błąd przetwarzania wyników: $e");
-    }
-  }
-
-  RPStep _getStepById(String identifier) {
-    switch (identifier) {
-      case 'stroop_ffect_step':
-        return stroopEffect;
-      case 'trail_making_step':
-        return trailMaking;
-      case 'flanker_step':
-        return flanker;
-      case 'RVIP_step':
-        return rapidVisualInfoProcessing;
-      case 'tapping_step':
-        return tapping;
-      case 'corsi_block_step':
-        return corsiBlockTapping;
-      case 'reaction_time_step':
-        return reactionTime;
-      default:
-        throw Exception('Nieznany krok: $identifier');
-    }
-  }
-}
-
-class _CognitiveTaskScreen extends StatelessWidget {
-  final RPOrderedTask task;
-  final void Function(RPTaskResult) onComplete;
-
-  const _CognitiveTaskScreen({required this.task, required this.onComplete});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Localizations.override(
-        context: context,
-        child: RPUITask(
-          hideNextButton: true,
-          task: task,
-          onSubmit: (result) {
-            onComplete(result);
-          },
-        ),
-      ),
     );
   }
 }

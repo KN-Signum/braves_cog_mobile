@@ -6,6 +6,7 @@ import 'package:braves_cog/features/auth/presentation/providers/auth_provider.da
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 import 'package:braves_cog/features/profile/domain/entities/user_type.dart';
 import 'package:braves_cog/features/settings/get_help_screen.dart';
+import 'package:braves_cog/features/settings/researchers_contact_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   final VoidCallback onLogout;
@@ -46,6 +47,20 @@ class SettingsScreen extends ConsumerWidget {
                 context,
                 MaterialPageRoute(
                   builder: (_) => GetHelpScreen(),
+                ),
+              );
+            },
+          ),
+          _buildSettingsTile(
+            context: context,
+            icon: Icons.mail_outline,
+            title: 'Kontakt do badaczy',
+            subtitle: 'E-mail i adres zespołu badawczego',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ResearchersContactScreen(),
                 ),
               );
             },

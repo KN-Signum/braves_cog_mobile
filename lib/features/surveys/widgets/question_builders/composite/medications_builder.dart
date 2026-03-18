@@ -481,7 +481,7 @@ class _MedicationsBuilderState extends ConsumerState<MedicationsBuilder> {
                           border: Border.all(color: primary, width: 2),
                         ),
                         child: Text(
-                          'Nie znalazłem mojego leku wśród proponowanych. Wpiszę go ręcznie.',
+                          'Nie znalazłem mojego leku wśród proponowanych',
                           textAlign: TextAlign.center,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w600,
@@ -522,31 +522,36 @@ class _MedicationsBuilderState extends ConsumerState<MedicationsBuilder> {
             );
           }),
           const SizedBox(height: 8),
-          ElevatedButton.icon(
-            onPressed: () {
-              final newMeds = List<Map<String, dynamic>>.from(medications);
-              newMeds.add({
-                'name': '',
-                'dose': null,
-                'dosage': null,
-                'doseDontKnow': false,
-              });
-              notifier.updateAnswer('${question.id}_medications', newMeds);
-            },
-            icon: const Icon(Icons.add),
-            label: Text(
-              medications.isEmpty ? 'Dodaj lek' : 'Dodaj kolejny lek',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppTheme.inverseTextColor,
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                final newMeds = List<Map<String, dynamic>>.from(medications);
+                newMeds.add({
+                  'name': '',
+                  'dose': null,
+                  'dosage': null,
+                  'doseDontKnow': false,
+                });
+                notifier.updateAnswer('${question.id}_medications', newMeds);
+              },
+              icon: const Icon(Icons.add),
+              label: Text(
+                medications.isEmpty ? 'Dodaj lek' : 'Dodaj kolejny lek',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.inverseTextColor,
+                    ),
               ),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryColor,
-              foregroundColor: AppTheme.inverseTextColor,
-              minimumSize: const Size(double.infinity, 56),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-              elevation: 0,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryColor,
+                foregroundColor: AppTheme.inverseTextColor,
+                minimumSize: const Size(double.infinity, 56),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.zero,
+                ),
+                elevation: 0,
+              ),
             ),
           ),
           if (medications.isEmpty)

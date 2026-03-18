@@ -23,12 +23,27 @@ class SegmentScaleQuestionWidget extends StatefulWidget {
 
 class _SegmentScaleQuestionWidgetState
     extends State<SegmentScaleQuestionWidget> {
+  List<Color> get _colors {
+    final baseColors = [
+      Colors.green.shade900,
+      Colors.green.shade800,
+      Colors.green.shade600,
+      Colors.lightGreen.shade500,
+      Colors.lightGreen.shade300,
+      Colors.yellow.shade400,
+      Colors.orange.shade200,
+      Colors.orange.shade400,
+      Colors.red.shade400,
+      Colors.red.shade700,
+    ];
+    return widget.reversed ? baseColors.reversed.toList() : baseColors;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final borderColor = theme.colorScheme.primary;
     final selectedColor = theme.colorScheme.secondary;
-    final unselectedBackground = theme.colorScheme.surface;
 
     return Column(
       children: [
@@ -44,7 +59,7 @@ class _SegmentScaleQuestionWidgetState
                   height: 40,
                   margin: const EdgeInsets.symmetric(horizontal: 2),
                   decoration: BoxDecoration(
-                    color: isSelected ? selectedColor : unselectedBackground,
+                    color: isSelected ? selectedColor : _colors[index],
                     border: Border.all(
                       color: borderColor,
                       width: 2,

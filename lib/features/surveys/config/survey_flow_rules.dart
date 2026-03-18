@@ -113,8 +113,7 @@ class SurveyFlowRules {
   }
 
   /// Pierwszy pełny follow-up – po 6 miesiącach.
-  static List<Map<String, dynamic>> getFirstFollowUpSurveys(
-      UserType userType) {
+  static List<Map<String, dynamic>> getFirstFollowUpSurveys(UserType userType) {
     final base = _getBaseFollowUpSurveys(userType);
     return [
       {
@@ -135,7 +134,8 @@ class SurveyFlowRules {
 
   /// Drugi pełny follow-up – po 12 miesiącach.
   static List<Map<String, dynamic>> getSecondFollowUpSurveys(
-      UserType userType) {
+    UserType userType,
+  ) {
     final base = _getBaseFollowUpSurveys(userType);
     return [
       {
@@ -154,14 +154,19 @@ class SurveyFlowRules {
     ];
   }
 
-  static List<Map<String, dynamic>> _getBaseFollowUpSurveys(
-      UserType userType) {
+  static List<Map<String, dynamic>> _getBaseFollowUpSurveys(UserType userType) {
     return [
       {'id': 'followup_IPAQ', 'config': IPAQSurveyConfig.getSurvey()},
       {'id': 'followup_SQ', 'config': ScreeningSQSurveyConfig.getSurvey()},
-      {'id': 'MINI_EAT_OB', 'config': MiniEatOnboardingSurveyConfig.getSurvey()},
+      {
+        'id': 'MINI_EAT_OB',
+        'config': MiniEatOnboardingSurveyConfig.getSurvey(),
+      },
       {'id': 'followup_SU', 'config': ScreeningSUSurveyConfig.getSurvey()},
-      {'id': 'followup_Brief2Way', 'config': Brief2WaySSSSurveyConfig.getSurvey()},
+      {
+        'id': 'followup_Brief2Way',
+        'config': Brief2WaySSSSurveyConfig.getSurvey(),
+      },
       {'id': 'ASRS', 'config': asrs_config.ASRSSurveyConfig.getSurvey()},
       {'id': 'followup_AQ', 'config': AQSurveyConfig.getSurvey()},
       {'id': 'followup_GAD7', 'config': GAD7SurveyConfig.getSurvey()},
@@ -189,10 +194,7 @@ class SurveyFlowRules {
           question: title,
           description: description,
           required: false,
-          options: {
-            'info': true,
-            'intro': true,
-          },
+          options: {'info': true, 'intro': true},
         ),
       ],
     );
@@ -213,6 +215,31 @@ class SurveyFlowRules {
       {'id': 'screening_diet', 'config': ScreeningDietSurveyConfig.getSurvey()},
       {'id': 'GAD_2', 'config': GAD2SurveyConfig.getSurvey()},
       {'id': 'PHQ_2', 'config': PHQ2SurveyConfig.getSurvey()},
+      {
+        'id': 'screening_games_intro',
+        'config': _buildScreeningGamesIntroSurvey(),
+      },
     ];
+  }
+
+  static SurveyEntity _buildScreeningGamesIntroSurvey() {
+    return SurveyEntity(
+      id: 'screening_games_intro',
+      title: 'Screening',
+      questions: [
+        SurveyQuestionEntity(
+          id: 'screening_games_intro_info',
+          type: QuestionType.text,
+          question: 'Dziękujemy za ukończenie badania screeningowego!',
+          description:
+              'Świetnie poszło! Właśnie ukończyłeś/aś część ankietową screening\'u. Teraz przychodzi pora na ostatni krok — krótka sesja gier poznawczych.\n\n'
+              'Ta sesja to 7 krótkich ćwiczeń, które pomogą nam ocenić Twoją koncentrację, pamięć i szybkość reakcji.\n\n'
+              'Szacowany czas: ok. 10–12 minut.\n\n'
+              'Przygotuj się na gry poznawcze — możesz zrobić sobie przerwę przed rozpoczęciem, jeśli potrzebujesz.',
+          required: false,
+          options: {'info': true, 'intro': true},
+        ),
+      ],
+    );
   }
 }

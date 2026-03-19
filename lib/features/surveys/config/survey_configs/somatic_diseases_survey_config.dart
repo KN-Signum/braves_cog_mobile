@@ -7,14 +7,18 @@ class SomaticDiseasesSurveyConfig {
       id: 'Baseline_Somatic_Disease',
       title: 'Choroby somatyczne',
       questions: [
-        // Główne pytanie (info) – tekst u góry, jak w używkach.
         SurveyQuestionEntity(
           id: 'somatic_info',
           type: QuestionType.choice,
-          question: 'Czy kiedykolwiek rozpoznano u Ciebie (przez lekarza) któreś z poniższych schorzeń?',
+          question: 'Historia zdrowia',
+          description:
+              'W tej sekcji prosimy o informacje dotyczące Twoich wcześniejszych lub obecnych rozpoznań lekarskich — zarówno w zakresie zdrowia psychicznego, jak i somatycznego.\n\n'
+              'Zaznacz tylko te schorzenia, które zostały u Ciebie oficjalnie rozpoznane przez lekarza lub psychologa. Jeśli nie jesteś pewien — wybierz opcję "Nie wiem".\n\n'
+              'Szacowany czas: ok. 3–5 minut.',
           required: false,
           options: {
             'info': true,
+            'intro': true,
           },
         ),
         // Choroby układu krążenia

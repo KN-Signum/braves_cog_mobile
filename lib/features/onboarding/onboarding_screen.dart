@@ -41,14 +41,12 @@ class OnboardingScreen extends ConsumerWidget {
           Future.delayed(const Duration(seconds: 2), () {
             ref
                 .read(onboardingProvider.notifier)
-                .setStage(OnboardingStage.welcome);
+                .setStage(OnboardingStage.intro);
           });
         });
         return const _LogoScreen();
 
       case OnboardingStage.welcome:
-        return const WelcomeScreen();
-
       case OnboardingStage.intro:
         return const IntroScreen();
 

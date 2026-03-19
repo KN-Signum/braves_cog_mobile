@@ -10,19 +10,23 @@ class PHQ2SurveyConfig {
         SurveyQuestionEntity(
           id: 'phq2_info',
           type: QuestionType.text,
-          question: 'Następne pytania dotyczą Twojego samopoczucia psychicznego oraz objawów, których mogłeś/-aś doświadczać w ostatnim czasie. Przeczytaj uważnie każde stwierdzenie i zaznacz, jak często występował u Ciebie dany objaw w ciągu ostatnich 2 tygodni. Odpowiadaj zgodnie z własnym doświadczeniem — nie ma odpowiedzi dobrych ani złych.',
+          question: 'Nastrój — ostatnie 2 tygodnie',
+          description:
+              'Dwa krótkie pytania dotyczące Twojego nastroju i odczuwania przyjemności w ostatnich dwóch tygodniach.\n\n'
+              'Szacowany czas: ok. 1 minuty.',
           required: false,
           options: {
             'info': true,
+            'intro': true,
           },
         ),
         SurveyQuestionEntity(
           id: 'phq2_1',
           type: QuestionType.choice,
           question:
-              'Jak często w ciągu ostatnich 2 tygodni odczuwałaś/eś małe zainteresowanie albo brak przyjemności w robieniu czegokolwiek?',
+              'Jak często w ciągu ostatnich 2 tygodni odczuwałeś małe zainteresowanie albo brak przyjemności w robieniu czegokolwiek?',
           required: true,
-          genderForm: 'odczuwałaś',
+          genderForm: 'odczuwałeś',
           options: {
             'options': [
               {'value': 0, 'label': 'Wcale'},
@@ -36,9 +40,9 @@ class PHQ2SurveyConfig {
           id: 'phq2_2',
           type: QuestionType.choice,
           question:
-              'Jak często w ciągu ostatnich 2 tygodni odczuwałaś/eś smutek, przygnębienie lub beznadziejność?',
+              'Jak często w ciągu ostatnich 2 tygodni odczuwałeś smutek, przygnębienie lub beznadziejność?',
           required: true,
-          genderForm: 'odczuwałaś',
+          genderForm: 'odczuwałeś',
           options: {
             'options': [
               {'value': 0, 'label': 'Wcale'},

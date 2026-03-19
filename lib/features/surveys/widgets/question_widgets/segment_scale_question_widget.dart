@@ -41,6 +41,10 @@ class _SegmentScaleQuestionWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final borderColor = theme.colorScheme.primary;
+    final selectedColor = theme.colorScheme.secondary;
+
     return Column(
       children: [
         Row(
@@ -53,32 +57,21 @@ class _SegmentScaleQuestionWidgetState
                 onTap: () => widget.onChanged(segmentValue),
                 child: Container(
                   height: 40,
-                  margin: EdgeInsets.symmetric(horizontal: 2),
+                  margin: const EdgeInsets.symmetric(horizontal: 2),
                   decoration: BoxDecoration(
-                    color: _colors[index],
+                    color: isSelected ? selectedColor : _colors[index],
                     border: Border.all(
-                      color: isSelected
-                          ? Theme.of(context).colorScheme.primary
-                          : Colors.transparent,
-                      width: isSelected ? 3 : 0,
+                      color: borderColor,
+                      width: 2,
                     ),
                     borderRadius: BorderRadius.zero,
                   ),
                   child: Center(
                     child: Text(
                       '$segmentValue',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: isSelected
-                            ? Theme.of(context).colorScheme.onPrimary
-                            : Colors.white,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: borderColor,
                         fontWeight: FontWeight.bold,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 2.0,
-                            color: Colors.black.withValues(alpha: 0.5),
-                            offset: Offset(1.0, 1.0),
-                          ),
-                        ],
                       ),
                     ),
                   ),
@@ -93,15 +86,15 @@ class _SegmentScaleQuestionWidgetState
           children: [
             Text(
               widget.minLabel ?? '1',
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: _colors.first),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.primary,
+              ),
             ),
             Text(
               widget.maxLabel ?? '10',
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: _colors.last),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.primary,
+              ),
             ),
           ],
         ),

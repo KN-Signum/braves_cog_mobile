@@ -10,10 +10,16 @@ class PHQ9SurveyConfig {
         SurveyQuestionEntity(
           id: 'phq9_info',
           type: QuestionType.text,
-          question: 'Następne pytania dotyczą Twojego samopoczucia psychicznego oraz objawów, których mogłeś doświadczać w ostatnim czasie. Przeczytaj uważnie każde stwierdzenie i zaznacz, jak często występował u Ciebie dany objaw w ciągu ostatnich 2 tygodni. Odpowiadaj zgodnie z własnym doświadczeniem — nie ma odpowiedzi dobrych ani złych.',
+          question: 'Nastrój i sampopoczucie',
+          description:
+              'Poniższe pytania dotyczą Twojego nastroju i samopoczucia w ciągu ostatnich dwóch tygodni.\n\n'
+              'Odpowiadaj tak szczerze, jak to możliwe. Wyniki posłużą wyłącznie celom badawczym i nie są przekazywane osobom trzecim.\n\n'
+              'Po wypełnieniu tej sekcji zobaczysz krótki komunikat z informacją o Twoim wyniku.\n\n'
+              'Szacowany czas: ok. 3–5 minut.',
           required: false,
           options: {
             'info': true,
+            'intro': true,
           },
         ),
         // 1

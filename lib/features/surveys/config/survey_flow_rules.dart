@@ -1,8 +1,12 @@
 import 'package:braves_cog/features/profile/domain/entities/user_type.dart';
 
+import 'package:braves_cog/features/surveys/domain/entities/survey_entity.dart';
+import 'package:braves_cog/features/surveys/domain/entities/survey_question_entity.dart';
+
 import 'survey_configs/demographic_survey_config.dart';
 import 'survey_configs/ipaq_survey_config.dart';
 import 'survey_configs/screening_sq_survey_config.dart';
+import 'survey_configs/onboarding_sq_survey_config.dart';
 import 'survey_configs/mini_eat_survey_config.dart';
 import 'survey_configs/screening_su_survey_config.dart';
 import 'survey_configs/brief_2way_sss_survey_config.dart';
@@ -13,12 +17,15 @@ import 'survey_configs/phq_9_survey_config.dart';
 import 'survey_configs/somatic_diseases_survey_config.dart';
 import 'survey_configs/mental_disorders_survey_config.dart';
 import 'survey_configs/medications_survey_config.dart';
+import 'survey_configs/mini_eat_onboarding.dart';
 
 import 'survey_configs/screening_pa_survey_config.dart';
 import 'survey_configs/screening_cognitivecomplaints_survey_config.dart';
 import 'survey_configs/screening_diet_survey_config.dart';
 import 'survey_configs/gad_2_survey_config.dart';
 import 'survey_configs/phq_2_survey_config.dart';
+import 'survey_configs/asrs_survey_config.dart' as asrs_config;
+import 'survey_configs/cognitive_complaints_followup_config.dart';
 
 class SurveyFlowRules {
   /// Returns the modules for onboarding based on the user's patient type.
@@ -46,11 +53,11 @@ class SurveyFlowRules {
           },
           {
             'id': 'Baseline_Sleep_Quality',
-            'config': ScreeningSQSurveyConfig.getSurvey(),
+            'config': OnboardingSqSurveyConfig.getSurvey(),
           },
           {
-            'id': 'Baseline_Eating_Habits',
-            'config': MiniEatSurveyConfig.getSurvey(),
+            'id': 'MINI_EAT_OB',
+            'config': MiniEatOnboardingSurveyConfig.getSurvey(),
           },
           {
             'id': 'Baseline_Substance_Use',
@@ -99,6 +106,100 @@ class SurveyFlowRules {
     ];
   }
 
+  /// Returns the surveys for the follow-up flow (tytuł: Follow-up).
+  static List<Map<String, dynamic>> getFollowUpSurveys(UserType userType) {
+    // Domyślnie używamy konfiguracji dla pierwszego pełnego follow-upu (6 miesięcy).
+    return getFirstFollowUpSurveys(userType);
+  }
+
+  /// Pierwszy pełny follow-up – po 6 miesiącach.
+  static List<Map<String, dynamic>> getFirstFollowUpSurveys(UserType userType) {
+    final base = _getBaseFollowUpSurveys(userType);
+    return [
+      {
+        'id': 'followup_intro_6m',
+        'config': _buildFollowUpIntroSurvey(
+          id: 'followup_intro_6m',
+          title: 'Minęło 6 miesięcy — czas na przegląd',
+          description:
+              'Dziękujemy za dotychczasowy udział w badaniu BRAVES Cog. Przez ostatnie pół roku regularnie odpowiadałeś/aś na pytania dotyczące swojego zdrowia i samopoczucia — to bardzo cenne dane.\n\n'
+              'Dzisiejsza sesja jest bardziej rozbudowana niż comiesięczne sprawdzenia. Ponownie wypełnisz część kwestionariuszy z początku badania, a także kilka nowych narzędzi.\n\n'
+              'Szacowany czas: ok. 30–45 minut.\n\n'
+              'Możesz robić przerwy — Twoje odpowiedzi są zapisywane automatycznie.',
+        ),
+      },
+      ...base,
+    ];
+  }
+
+  /// Drugi pełny follow-up – po 12 miesiącach.
+  static List<Map<String, dynamic>> getSecondFollowUpSurveys(
+    UserType userType,
+  ) {
+    final base = _getBaseFollowUpSurveys(userType);
+    return [
+      {
+        'id': 'followup_intro_12m',
+        'config': _buildFollowUpIntroSurvey(
+          id: 'followup_intro_12m',
+          title: 'Rok w badaniu — ostatnia pełna sesja',
+          description:
+              'To już 12 miesięcy od dołączenia do projektu BRAVES Cog. Bardzo dziękujemy za Twój udział i zaangażowanie przez cały ten czas.\n\n'
+              'Dzisiejsza sesja jest ostatnią pełną sesją w badaniu. Ponownie wypełnisz kluczowe kwestionariusze, które pozwolą nam ocenić zmiany na przestrzeni roku.\n\n'
+              'Szacowany czas: ok. 30–45 minut.\n\n'
+              'Twoje odpowiedzi są zapisywane automatycznie — możesz robić przerwy.',
+        ),
+      },
+      ...base,
+    ];
+  }
+
+  static List<Map<String, dynamic>> _getBaseFollowUpSurveys(UserType userType) {
+    return [
+      {'id': 'followup_IPAQ', 'config': IPAQSurveyConfig.getSurvey()},
+      {'id': 'followup_SQ', 'config': ScreeningSQSurveyConfig.getSurvey()},
+      {
+        'id': 'MINI_EAT_OB',
+        'config': MiniEatOnboardingSurveyConfig.getSurvey(),
+      },
+      {'id': 'followup_SU', 'config': ScreeningSUSurveyConfig.getSurvey()},
+      {
+        'id': 'followup_Brief2Way',
+        'config': Brief2WaySSSSurveyConfig.getSurvey(),
+      },
+      {'id': 'ASRS', 'config': asrs_config.ASRSSurveyConfig.getSurvey()},
+      {'id': 'followup_AQ', 'config': AQSurveyConfig.getSurvey()},
+      {'id': 'followup_GAD7', 'config': GAD7SurveyConfig.getSurvey()},
+      {'id': 'followup_PSS10', 'config': PSS10SurveyConfig.getSurvey()},
+      {'id': 'followup_PHQ9', 'config': PHQ9SurveyConfig.getSurvey()},
+      {
+        'id': 'followup_BC_CCI',
+        'config': CognitiveComplaintsFollowUpSurveyConfig.getSurvey(),
+      },
+    ];
+  }
+
+  static SurveyEntity _buildFollowUpIntroSurvey({
+    required String id,
+    required String title,
+    required String description,
+  }) {
+    return SurveyEntity(
+      id: id,
+      title: 'Follow-up',
+      questions: [
+        SurveyQuestionEntity(
+          id: '${id}_info',
+          type: QuestionType.text,
+          question: title,
+          description: description,
+          required: false,
+          options: {'info': true, 'intro': true},
+        ),
+      ],
+    );
+  }
+
   /// Returns the surveys for the screening flow based on the user's patient type.
   static List<Map<String, dynamic>> getScreeningSurveys(UserType userType) {
     // Similarly, filter specific surveys conditionally relying on [userType].
@@ -114,6 +215,31 @@ class SurveyFlowRules {
       {'id': 'screening_diet', 'config': ScreeningDietSurveyConfig.getSurvey()},
       {'id': 'GAD_2', 'config': GAD2SurveyConfig.getSurvey()},
       {'id': 'PHQ_2', 'config': PHQ2SurveyConfig.getSurvey()},
+      {
+        'id': 'screening_games_intro',
+        'config': _buildScreeningGamesIntroSurvey(),
+      },
     ];
+  }
+
+  static SurveyEntity _buildScreeningGamesIntroSurvey() {
+    return SurveyEntity(
+      id: 'screening_games_intro',
+      title: 'Screening',
+      questions: [
+        SurveyQuestionEntity(
+          id: 'screening_games_intro_info',
+          type: QuestionType.text,
+          question: 'Dziękujemy za ukończenie badania screeningowego!',
+          description:
+              'Świetnie poszło! Właśnie ukończyłeś/aś część ankietową screening\'u. Teraz przychodzi pora na ostatni krok — krótka sesja gier poznawczych.\n\n'
+              'Ta sesja to 7 krótkich ćwiczeń, które pomogą nam ocenić Twoją koncentrację, pamięć i szybkość reakcji.\n\n'
+              'Szacowany czas: ok. 10–12 minut.\n\n'
+              'Przygotuj się na gry poznawcze — możesz zrobić sobie przerwę przed rozpoczęciem, jeśli potrzebujesz.',
+          required: false,
+          options: {'info': true, 'intro': true},
+        ),
+      ],
+    );
   }
 }

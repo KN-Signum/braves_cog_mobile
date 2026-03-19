@@ -8,6 +8,7 @@ import '../home/home_screen.dart';
 import '../health/health_module_screen.dart';
 import '../surveys/widgets/universal_survey_widget.dart';
 import '../surveys/widgets/screening_flow_widget.dart';
+import '../surveys/widgets/follow_up_flow_widget.dart';
 import '../surveys/config/survey_configs/monitoring_survey_config.dart';
 import '../profile/user_profile_screen.dart';
 import '../cognitive_games/presentation/games_screen.dart';
@@ -131,7 +132,14 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
   void _navigateToScreening() {
     setState(() {
       _currentView = 'screening';
-      _currentIndex = 1; // Assuming health is index 1
+      _currentIndex = 1;
+    });
+  }
+
+  void _navigateToFollowUp() {
+    setState(() {
+      _currentView = 'followup';
+      _currentIndex = 1;
     });
   }
 
@@ -176,6 +184,7 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
       'settings',
       'monitoring',
       'screening',
+      'followup',
     ].contains(_currentView);
 
     return Scaffold(
@@ -196,6 +205,7 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
           key: const ValueKey('home'),
           onMonitoringClick: _navigateToMonitoring,
           onScreeningClick: _navigateToScreening,
+          onFollowUpClick: _navigateToFollowUp,
           onTestsClick: _navigateToTests,
         );
       case 'health':
@@ -226,6 +236,15 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
           },
           onBack: _navigateToHome,
         );
+      case 'followup':
+        return FollowUpFlowWidget(
+          key: const ValueKey('followup'),
+          onComplete: (Map<String, dynamic> allAnswers) {
+            // TODO: Save follow-up answers
+            _navigateToHome();
+          },
+          onBack: _navigateToHome,
+        );
       case 'games':
         return GamesScreen(key: const ValueKey('games'));
       case 'profile':
@@ -241,11 +260,11 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
           },
         );
       default:
-        // Fallback to home
         return HomeScreen(
           key: const ValueKey('default_home'),
           onMonitoringClick: _navigateToMonitoring,
           onScreeningClick: _navigateToScreening,
+          onFollowUpClick: _navigateToFollowUp,
           onTestsClick: _navigateToTests,
         );
     }

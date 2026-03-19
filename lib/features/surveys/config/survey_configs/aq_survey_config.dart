@@ -10,10 +10,16 @@ class AQSurveyConfig {
         SurveyQuestionEntity(
           id: 'aq_info',
           type: QuestionType.text,
-          question:
-              'Proszę odpowiedzieć na wszystkie pytania, nawet jeśli nie jesteś pewien odpowiedzi. Dla każdego pytania zaznacz odpowiedź, która najlepiej opisuje Ciebie.',
+          question: 'Styl funkcjonowania',
+          description:
+              'Poniższe stwierdzenia dotyczą Twoich typowych zachowań, preferencji i sposobów przetwarzania informacji.\n\n'
+              'Nie ma tu odpowiedzi dobrych ani złych — zaznacz tę opcję, która najlepiej opisuje Ciebie, a nie to, jak chciałbyś być postrzegany.\n\n'
+              'Szacowany czas: ok. 5–8 minut.',
           required: false,
-          options: {'info': true},
+          options: {
+            'info': true,
+            'intro': true,
+          },
         ),
         // 1
         SurveyQuestionEntity(
@@ -23,15 +29,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -44,15 +45,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -66,15 +62,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -88,15 +79,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -110,15 +96,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -132,15 +113,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -154,15 +130,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -176,15 +147,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -197,15 +163,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -219,15 +180,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -240,15 +196,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -262,15 +213,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -283,15 +229,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -304,15 +245,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -325,15 +261,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -347,15 +278,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -368,15 +294,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -390,15 +311,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -411,15 +327,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -433,15 +344,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -451,19 +357,14 @@ class AQSurveyConfig {
           id: 'aq_21',
           type: QuestionType.choice,
           question:
-              'Czytanie beletrystyki не sprawia mi szczególnej przyjemności',
+              'Czytanie beletrystyki nie sprawia mi szczególnej przyjemności',
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -476,15 +377,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej nie się zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -498,15 +394,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -519,15 +410,10 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
-              },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },
@@ -541,15 +427,435 @@ class AQSurveyConfig {
           required: true,
           options: {
             'options': [
-              {
-                'value': 'definitely_agree',
-                'label': 'Zdecydowanie się zgadzam',
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
               },
-              {'value': 'slightly_agree', 'label': 'Raczej się zgadzam'},
-              {'value': 'slightly_disagree', 'label': 'Raczej się nie zgadzam'},
-              {
-                'value': 'definitely_disagree',
-                'label': 'Zdecydowanie się nie zgadzam',
+            ],
+          },
+        ),
+        // 26
+        SurveyQuestionEntity(
+          id: 'aq_26',
+          type: QuestionType.choice,
+          question:
+              'Często zauważam, że nie wiem, jak podtrzymać rozmowę',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 27
+        SurveyQuestionEntity(
+          id: 'aq_27',
+          type: QuestionType.choice,
+          question:
+              'Z łatwością odczytuję treści zawarte między wierszami, gdy ktoś do mnie mówi',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 28
+        SurveyQuestionEntity(
+          id: 'aq_28',
+          type: QuestionType.choice,
+          question:
+              'Zwykle koncentruję się bardziej na całym obrazie niż na drobnych szczegółach',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 29
+        SurveyQuestionEntity(
+          id: 'aq_29',
+          type: QuestionType.choice,
+          question:
+              'Nie jestem zbyt dobry w zapamiętywaniu numerów telefonów',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 30
+        SurveyQuestionEntity(
+          id: 'aq_30',
+          type: QuestionType.choice,
+          question:
+              'Zwykle nie zauważam drobnych zmian w jakiejś sytuacji lub w czyimś wyglądzie',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 31
+        SurveyQuestionEntity(
+          id: 'aq_31',
+          type: QuestionType.choice,
+          question:
+              'Potrafię zauważyć, że osoba, która mnie słucha staje się znudzona',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 32
+        SurveyQuestionEntity(
+          id: 'aq_32',
+          type: QuestionType.choice,
+          question:
+              'Potrafię robić kilka rzeczy równocześnie',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 33
+        SurveyQuestionEntity(
+          id: 'aq_33',
+          type: QuestionType.choice,
+          question:
+              'Gdy rozmawiam przez telefon, nie jestem pewny, kiedy nadchodzi moja kolej, żeby mówić',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 34
+        SurveyQuestionEntity(
+          id: 'aq_34',
+          type: QuestionType.choice,
+          question:
+              'Lubię robić różne rzeczy spontanicznie',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 35
+        SurveyQuestionEntity(
+          id: 'aq_35',
+          type: QuestionType.choice,
+          question:
+              'Często jako ostatni rozumiem sens dowcipu',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 36
+        SurveyQuestionEntity(
+          id: 'aq_36',
+          type: QuestionType.choice,
+          question:
+              'Potrafię z łatwością odgadnąć, co ktoś myśli lub czuje, po prostu patrząc na jego twarz',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 37
+        SurveyQuestionEntity(
+          id: 'aq_37',
+          type: QuestionType.choice,
+          question:
+              'Potrafię bardzo szybko powrócić do czynności, którą coś mi przerwało',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 38
+        SurveyQuestionEntity(
+          id: 'aq_38',
+          type: QuestionType.choice,
+          question:
+              'Dobrze sobie radzę z towarzyskimi pogaduszkami',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 39
+        SurveyQuestionEntity(
+          id: 'aq_39',
+          type: QuestionType.choice,
+          question:
+              'Ludzie często zwracają mi uwagę, że nieustannie mówię na ten sam temat',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 40
+        SurveyQuestionEntity(
+          id: 'aq_40',
+          type: QuestionType.choice,
+          question:
+              'Kiedy byłem mały, przyjemność sprawiały mi zabawy z innymi dziećmi, w których trzeba było coś udawać',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 41
+        SurveyQuestionEntity(
+          id: 'aq_41',
+          type: QuestionType.choice,
+          question:
+              'Lubię zbierać informacje na temat kategorii, do których należą różne rzeczy (np. marek samochodów, gatunków ptaków, rodzajów pociągów, roślin i innych)',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 42
+        SurveyQuestionEntity(
+          id: 'aq_42',
+          type: QuestionType.choice,
+          question:
+              'Trudno jest mi wyobrazić sobie, jakby to było być kimś innym',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 43
+        SurveyQuestionEntity(
+          id: 'aq_43',
+          type: QuestionType.choice,
+          question:
+              'Lubię starannie planować wszelkie zajęcia, w jakich biorę udział',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 44
+        SurveyQuestionEntity(
+          id: 'aq_44',
+          type: QuestionType.choice,
+          question:
+              'Lubię spotkania towarzyskie',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 45
+        SurveyQuestionEntity(
+          id: 'aq_45',
+          type: QuestionType.choice,
+          question:
+              'Rozpoznawanie intencji innych ludzi sprawia mi trudność',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 46
+        SurveyQuestionEntity(
+          id: 'aq_46',
+          type: QuestionType.choice,
+          question:
+              'Nowe sytuacje wywołują we mnie niepokój',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 1, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 1, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 0, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 0, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 47
+        SurveyQuestionEntity(
+          id: 'aq_47',
+          type: QuestionType.choice,
+          question:
+              'Lubię poznawać nowych ludzi',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 48
+        SurveyQuestionEntity(
+          id: 'aq_48',
+          type: QuestionType.choice,
+          question:
+              'Jestem dobrym dyplomatą',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 49
+        SurveyQuestionEntity(
+          id: 'aq_49',
+          type: QuestionType.choice,
+          question:
+              'Nie jestem zbyt dobry w zapamiętywaniu dat urodzin innych osób',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
+              },
+            ],
+          },
+        ),
+        // 50
+        SurveyQuestionEntity(
+          id: 'aq_50',
+          type: QuestionType.choice,
+          question:
+              'Z łatwością bawię się z dziećmi w zabawy wymagające udawania',
+          required: true,
+          options: {
+            'options': [
+              {'value': 0, 'score': 0, 'label': 'Zdecydowanie się zgadzam'},
+              {'value': 1, 'score': 0, 'label': 'Raczej się zgadzam'},
+              {'value': 2, 'score': 1, 'label': 'Raczej się nie zgadzam'},
+              {'value': 3, 'score': 1, 'label': 'Zdecydowanie się nie zgadzam',
               },
             ],
           },

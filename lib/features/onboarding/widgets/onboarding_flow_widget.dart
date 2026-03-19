@@ -9,10 +9,19 @@ bool _isAlertSurvey(String surveyId) {
   if (surveyId == 'PHQ_2' || surveyId == 'GAD_2') return true;
   if (surveyId == 'Baseline_Depression' ||
       surveyId.contains('PHQ_9') ||
-      surveyId.contains('phq9')) return true;
+      surveyId.contains('phq9')) {
+    return true;
+  }
   if (surveyId == 'Baseline_Stress_And_Anxiety_GAD7' ||
       surveyId.contains('GAD_7') ||
-      surveyId.contains('gad7')) return true;
+      surveyId.contains('gad7')) {
+    return true;
+  }
+  if (surveyId == 'Baseline_ASD' ||
+      surveyId.contains('AQ') ||
+      surveyId.contains('aq')) {
+    return true;
+  }
   return false;
 }
 
@@ -63,8 +72,8 @@ class _OnboardingFlowWidgetState extends ConsumerState<OnboardingFlowWidget> {
 
     if (isBackNavigation) return;
 
-    if (_isAlertSurvey(surveyId as String)) {
-      _alertSurveysCompleted.add(surveyId as String);
+    if (_isAlertSurvey(surveyId)) {
+      _alertSurveysCompleted.add(surveyId);
     }
 
     int nextM = _currentModuleIndex;
@@ -188,7 +197,7 @@ class _OnboardingFlowWidgetState extends ConsumerState<OnboardingFlowWidget> {
     if (rawModuleAnswers is Map<String, dynamic>) {
       moduleAnswers = rawModuleAnswers;
     } else if (rawModuleAnswers is Map) {
-      moduleAnswers = Map<String, dynamic>.from(rawModuleAnswers as Map);
+      moduleAnswers = Map<String, dynamic>.from(rawModuleAnswers);
     }
 
     final initialAnswers = moduleAnswers != null

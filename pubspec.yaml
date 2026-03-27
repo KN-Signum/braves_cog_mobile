@@ -29,6 +29,8 @@ dependencies:
 
   # Utilities
   shared_preferences: ^2.2.2
+  flutter_local_notifications: ^20.0.0
+  timezone: ^0.10.0
 
   # SVG support
   flutter_svg: ^2.0.10

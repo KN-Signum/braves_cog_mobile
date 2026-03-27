@@ -10,6 +10,8 @@ import '../surveys/widgets/universal_survey_widget.dart';
 import '../surveys/widgets/screening_flow_widget.dart';
 import '../surveys/widgets/follow_up_flow_widget.dart';
 import '../surveys/config/survey_configs/monitoring_survey_config.dart';
+import '../surveys/config/survey_schedule_config.dart';
+import '../surveys/presentation/providers/survey_completion_provider.dart';
 import '../profile/user_profile_screen.dart';
 import '../cognitive_games/presentation/games_screen.dart';
 import '../settings/settings_screen.dart';
@@ -79,6 +81,11 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
   }
 
   void _handleOnboardingComplete() {
+    // Onboarding includes the first monitoring session — seed the completion so
+    // the monitoring card is locked for the next ~15 days.
+    ref
+        .read(surveyCompletionProvider.notifier)
+        .recordCompletion(SurveyScheduleConfig.monitoring);
     setState(() {
       _currentView = 'home';
       _currentIndex = 0;
@@ -218,8 +225,10 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
           key: const ValueKey('monitoring'),
           survey: MonitoringSurveyConfig.getSurvey(),
           onComplete: (answers, {isBackNavigation = false}) {
-            // TODO: Save answers
             if (!isBackNavigation) {
+              ref
+                  .read(surveyCompletionProvider.notifier)
+                  .recordCompletion(SurveyScheduleConfig.monitoring);
               _navigateToHome();
             }
           },
@@ -231,7 +240,9 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
         return ScreeningFlowWidget(
           key: const ValueKey('screening'),
           onComplete: (Map<String, dynamic> allAnswers) {
-            // TODO: Save all answers from all screening surveys
+            ref
+                .read(surveyCompletionProvider.notifier)
+                .recordCompletion(SurveyScheduleConfig.screening);
             _navigateToHome();
           },
           onBack: _navigateToHome,

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:braves_cog/core/config/env_config.dart';
 import 'package:braves_cog/core/services/api_client.dart';
 import 'package:braves_cog/core/providers/shared_preferences_provider.dart';
@@ -18,9 +19,15 @@ final authLocalDataSourceProvider = Provider<AuthLocalDataSource>((ref) {
   return AuthLocalDataSourceImpl(sharedPreferences: prefs);
 });
 
+final supabaseClientProvider = Provider<SupabaseClient>((ref) {
+  return Supabase.instance.client;
+});
+
 final apiClientProvider = Provider<ApiClient>((ref) {
+  final supabase = ref.watch(supabaseClientProvider);
   return ApiClient(
     baseUrl: EnvConfig.apiBaseUrl,
+    supabaseClient: supabase,
     tokenProvider: () async {
       final localAuth = ref.read(authLocalDataSourceProvider);
       return await localAuth.getToken();
@@ -32,8 +39,8 @@ final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
   if (EnvConfig.useMockData) {
     return AuthMockDataSource();
   }
-  final apiClient = ref.watch(apiClientProvider);
-  return AuthRemoteDataSourceImpl(apiClient: apiClient);
+  final supabase = ref.watch(supabaseClientProvider);
+  return AuthRemoteDataSourceImpl(supabaseClient: supabase);
 });
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
@@ -79,30 +86,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
     });
   }
 
-  Future<void> login(String email, String password) async {
+  Future<void> activateUser(String code, String password) async {
     state = state.copyWith(isLoading: true, error: null);
-    final result = await _repository.login(email, password);
+    final result = await _repository.activateUser(code, password);
     result.fold(
       (failure) {
         state = state.copyWith(isLoading: false, error: failure.message);
       },
       (user) {
         state = AuthState(user: user);
-        _ref.read(profileProvider.notifier).loadProfile(email: user.email);
-      },
-    );
-  }
-
-  Future<void> register(String email, String password, String name) async {
-    state = state.copyWith(isLoading: true, error: null);
-    final result = await _repository.register(email, password, name);
-    result.fold(
-      (failure) {
-        state = state.copyWith(isLoading: false, error: failure.message);
-      },
-      (user) {
-        state = AuthState(user: user);
-        _ref.read(profileProvider.notifier).loadProfile(email: user.email);
+        // Load profile after activation
+        if (user.requiresOnboarding) {
+          // User needs to complete onboarding, don't load profile yet
+          // This is handled in the routing/navigation layer
+        } else {
+          _ref.read(profileProvider.notifier).loadProfile(email: user.email);
+        }
       },
     );
   }
@@ -110,6 +109,16 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> logout() async {
     await _repository.logout();
     state = const AuthState();
+  }
+
+  Future<void> completeOnboardingInAuth() async {
+    // Update the current user to mark onboarding as complete
+    if (state.user != null) {
+      final updatedUser = state.user!.copyWith(requiresOnboarding: false);
+      state = state.copyWith(user: updatedUser);
+      // Load profile after onboarding is complete
+      _ref.read(profileProvider.notifier).loadProfile(email: updatedUser.email);
+    }
   }
 }
 

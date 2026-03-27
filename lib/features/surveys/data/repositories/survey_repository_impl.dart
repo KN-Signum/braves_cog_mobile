@@ -4,6 +4,7 @@ import 'package:braves_cog/features/surveys/domain/repositories/survey_repositor
 import 'package:braves_cog/features/surveys/domain/entities/survey_submission_model.dart';
 import 'package:braves_cog/features/surveys/data/datasources/survey_local_data_source.dart';
 import 'package:braves_cog/features/surveys/data/datasources/survey_remote_data_source.dart';
+import 'package:flutter/foundation.dart';
 
 class SurveyRepositoryImpl implements SurveyRepository {
   final SurveyRemoteDataSource remoteDataSource;
@@ -19,18 +20,39 @@ class SurveyRepositoryImpl implements SurveyRepository {
     required SurveySubmissionModel submission,
   }) async {
     try {
-      await remoteDataSource.submitSurveyAnswers(submission: submission);
+      debugPrint(
+        '[SurveyRepository] Saving survey: ${submission.surveyId} score=${submission.score}',
+      );
 
-      // Convert answers back to Map for local cache if needed
-      final answersMap = {
-        for (var a in submission.answers) a.questionId: a.value,
-      };
-      // Optionally cache locally if successful
-      await localDataSource.cacheSurveyAnswers(submission.surveyId, answersMap);
+      try {
+        await localDataSource.cacheSurveyAnswers(
+          submission.surveyId,
+          submission.answersMap,
+        );
+        debugPrint(
+          '[SurveyRepository] Local cache saved for: ${submission.surveyId}',
+        );
+      } catch (cacheError) {
+        debugPrint('[SurveyRepository] Cache error: $cacheError');
+        return Left(CacheFailure('Błąd zapisu lokalnej ankiety: $cacheError'));
+      }
+
+      try {
+        await remoteDataSource.submitSurveyAnswers(submission: submission);
+        debugPrint(
+          '[SurveyRepository] Remote submission success: ${submission.surveyId}',
+        );
+      } catch (remoteError) {
+        debugPrint('[SurveyRepository] Remote submission failed: $remoteError');
+        return Left(
+          ServerFailure('Błąd wysyłania ankiety do serwera: $remoteError'),
+        );
+      }
 
       return const Right(null);
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      debugPrint('[SurveyRepository] Unexpected error: $e');
+      return Left(ServerFailure('Błąd wysyłania ankiety do serwera: $e'));
     }
   }
 }

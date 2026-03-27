@@ -1,13 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:braves_cog/core/providers/shared_preferences_provider.dart';
+import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
 import 'package:braves_cog/features/surveys/data/datasources/survey_local_data_source.dart';
-import 'package:braves_cog/features/surveys/data/datasources/survey_mock_data_source.dart';
 import 'package:braves_cog/features/surveys/data/datasources/survey_remote_data_source.dart';
 import 'package:braves_cog/features/surveys/data/repositories/survey_repository_impl.dart';
 import 'package:braves_cog/features/surveys/domain/repositories/survey_repository.dart';
 import 'package:braves_cog/features/surveys/domain/usecases/save_survey_result_usecase.dart';
 import 'package:braves_cog/features/surveys/domain/entities/survey_submission_model.dart';
-import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
+import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 // Data Sources
 final surveyLocalDataSourceProvider = Provider<SurveyLocalDataSource>((ref) {
@@ -16,8 +17,7 @@ final surveyLocalDataSourceProvider = Provider<SurveyLocalDataSource>((ref) {
 });
 
 final surveyRemoteDataSourceProvider = Provider<SurveyRemoteDataSource>((ref) {
-  // Use mock data source for dev mode, just like Profile feature
-  return SurveyMockDataSource();
+  return SurveySupabaseDataSource(supabaseClient: Supabase.instance.client);
 });
 
 // Repository
@@ -96,35 +96,93 @@ class SurveyNotifier extends StateNotifier<SurveyState> {
     }
   }
 
-  String _inferType(dynamic value) {
-    if (value is bool) return 'boolean';
-    if (value is num) return 'number';
-    if (value is String) return 'text';
-    if (value is List) return 'list';
-    if (value is Map) return 'composite';
-    return 'unknown';
+  int? _calculateScore(String surveyId, Map<String, dynamic> answers) {
+    int getIntAnswer(String key) {
+      final value = answers[key];
+      if (value is int) return value;
+      if (value is num) return value.toInt();
+      if (value is String) {
+        final parsed = int.tryParse(value);
+        if (parsed != null) return parsed;
+      }
+      return 0;
+    }
+
+    // PHQ-2
+    if (surveyId == 'PHQ_2') {
+      return getIntAnswer('phq2_1') + getIntAnswer('phq2_2');
+    }
+
+    // GAD-2
+    if (surveyId == 'GAD_2') {
+      return getIntAnswer('gad2_1') + getIntAnswer('gad2_2');
+    }
+
+    // PHQ-9
+    if (surveyId == 'Baseline_Depression' ||
+        surveyId.contains('PHQ_9') ||
+        surveyId.contains('phq9')) {
+      int score = 0;
+      for (int i = 1; i <= 9; i++) {
+        score += getIntAnswer('phq9_$i');
+      }
+      return score;
+    }
+
+    // GAD-7
+    if (surveyId == 'Baseline_Stress_And_Anxiety_GAD7' ||
+        surveyId.contains('GAD_7') ||
+        surveyId.contains('gad7')) {
+      int score = 0;
+      for (int i = 1; i <= 7; i++) {
+        score += getIntAnswer('gad7_$i');
+      }
+      return score;
+    }
+
+    // AQ
+    if (surveyId == 'Baseline_ASD' ||
+        surveyId == 'followup_AQ' ||
+        surveyId.contains('AQ') ||
+        surveyId.contains('aq')) {
+      int score = 0;
+      for (int i = 1; i <= 50; i++) {
+        score += getIntAnswer('aq_$i');
+      }
+      return score;
+    }
+
+    return null;
   }
 
   Future<void> submitSurvey(String surveyId) async {
     state = state.copyWith(isLoading: true, error: null, isSaved: false);
 
-    final userId = _ref.read(profileProvider).profile.id ?? 'unknown';
+    final authState = _ref.read(authProvider);
+    final userId = authState.user?.id;
 
-    final answersList = state.answers.entries.map((e) {
-      return SurveyAnswerModel(
-        questionId: e.key,
-        type: _inferType(e.value),
-        value: e.value,
+    if (userId == null) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Brak zalogowanego użytkownika. Nie można wysłać ankiety.',
       );
-    }).toList();
+      return;
+    }
+
+    final score = _calculateScore(surveyId, state.answers);
+
+    debugPrint(
+      '[SurveyNotifier] submitSurvey surveyId=$surveyId answers=${state.answers.length} score=$score',
+    );
 
     final metadata = {'completedAt': DateTime.now().toUtc().toIso8601String()};
 
     final submission = SurveySubmissionModel(
       surveyId: surveyId,
       userId: userId,
+      answersMap: state.answers,
+      score: score,
       metadata: metadata,
-      answers: answersList,
     );
 
     final result = await _saveSurveyResultUseCase(
@@ -132,9 +190,16 @@ class SurveyNotifier extends StateNotifier<SurveyState> {
     );
 
     result.fold(
-      (failure) =>
-          state = state.copyWith(isLoading: false, error: failure.message),
-      (_) => state = state.copyWith(isLoading: false, isSaved: true),
+      (failure) {
+        debugPrint(
+          '[SurveyNotifier] Submission failed for $surveyId: ${failure.message}',
+        );
+        state = state.copyWith(isLoading: false, error: failure.message);
+      },
+      (_) {
+        debugPrint('[SurveyNotifier] Submission successful for: $surveyId');
+        state = state.copyWith(isLoading: false, isSaved: true);
+      },
     );
   }
 }

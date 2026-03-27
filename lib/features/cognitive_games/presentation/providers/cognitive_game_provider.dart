@@ -1,5 +1,4 @@
 // plik: lib/features/cognitive_games/presentation/providers/cognitive_games_providers.dart
-import 'package:braves_cog/features/cognitive_games/data/datasources/cognitice_game_mock_data_source.dart';
 import 'package:braves_cog/features/cognitive_games/data/datasources/cognitive_game_local_data_source.dart';
 import 'package:braves_cog/features/cognitive_games/data/datasources/cognitive_game_remote_data_source.dart';
 import 'package:braves_cog/features/cognitive_games/data/repositories/cognitive_repository_impl.dart';
@@ -7,6 +6,7 @@ import 'package:braves_cog/features/cognitive_games/domain/repositories/cognitiv
 import 'package:braves_cog/features/cognitive_games/domain/usecases/save_test_result_usecase.dart';
 import 'package:braves_cog/features/cognitive_games/presentation/providers/cognitive_game_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 // 1. Data Sources
 final cognitiveLocalDataSourceProvider = Provider<CognitiveLocalDataSource>((
@@ -19,8 +19,7 @@ final cognitiveLocalDataSourceProvider = Provider<CognitiveLocalDataSource>((
 final cognitiveRemoteDataSourceProvider = Provider<CognitiveRemoteDataSource>((
   ref,
 ) {
-  // Logic to switch between mock and real
-  return CognitiveMockDataSource();
+  return CognitiveSupabaseDataSource(supabaseClient: Supabase.instance.client);
 });
 
 // 2. Repository

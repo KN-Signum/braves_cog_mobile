@@ -50,6 +50,7 @@ bool _isAlertSurvey(String surveyId) {
 
 class UniversalSurveyWidget extends ConsumerStatefulWidget {
   final SurveyEntity survey;
+  final String? surveySubmissionId;
   final Function(Map<String, dynamic>, {bool isBackNavigation}) onComplete;
   final VoidCallback onBack;
   final bool showHeaderAndProgress;
@@ -63,6 +64,7 @@ class UniversalSurveyWidget extends ConsumerStatefulWidget {
   const UniversalSurveyWidget({
     super.key,
     required this.survey,
+    this.surveySubmissionId,
     required this.onComplete,
     required this.onBack,
     this.showHeaderAndProgress = true,
@@ -100,6 +102,9 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
       widget.survey.id == 'MINI_EAT' ||
       widget.survey.id == 'MINI_EAT_OB' ||
       widget.survey.id == 'Baseline_Eating_Habits';
+
+  String get _submissionSurveyId =>
+      widget.surveySubmissionId ?? widget.survey.id;
 
   @override
   void initState() {
@@ -287,7 +292,7 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
       setState(() {
         _isSubmitting = true;
       });
-      await notifier.submitSurvey(widget.survey.id);
+      await notifier.submitSurvey(_submissionSurveyId);
       if (mounted) {
         setState(() {
           _isSubmitting = false;
@@ -323,7 +328,7 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
         setState(() {
           _isSubmitting = true;
         });
-        await notifier.submitSurvey(widget.survey.id);
+        await notifier.submitSurvey(_submissionSurveyId);
         if (mounted) {
           setState(() {
             _isSubmitting = false;

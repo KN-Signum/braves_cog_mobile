@@ -10,10 +10,18 @@ import 'package:braves_cog/core/providers/shared_preferences_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 import 'package:braves_cog/features/profile/domain/entities/user_type.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await supabase.Supabase.initialize(
+    url: 'https://oozravmirgabrjirmptd.supabase.co',
+    anonKey: 'sb_publishable_ffjOxjbGOUZ1tnIqH3qJ7Q_PRR_VXdr',
+  );
+
   await EnvConfig.init();
   final prefs = await SharedPreferences.getInstance();
   CognitionPackage.ensureInitialized();

@@ -1,50 +1,50 @@
-import 'package:braves_cog/core/error/failures.dart';
+import 'package:braves_cog/core/config/auth_constants.dart';
 import 'package:braves_cog/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:braves_cog/features/auth/data/models/user_model.dart';
 
 class AuthMockDataSource implements AuthRemoteDataSource {
-  static const String _testPassword = 'password';
+  static const String _testUserPassword = 'password';
   static const Map<String, String> _testAccounts = {
-    // New study group emails
-    'vascog@test.pl': 'vascog',
-    'neurocog@test.pl': 'neurocog',
-    'covidcog@test.pl': 'covidcog',
-    'scccog@test.pl': 'scccog',
-    'normalcog@test.pl': 'normalcog',
-
-    // Backward-compatible aliases
-    'hypertension@test.pl': 'vascog',
-    'adhd@test.pl': 'neurocog',
-    'covid@test.pl': 'covidcog',
-    'scc@test.pl': 'scccog',
-    'normal@test.pl': 'normalcog',
+    // Mock invite codes and their corresponding user types
+    'vascog': 'vascog',
+    'neurocog': 'neurocog',
+    'covidcog': 'covidcog',
+    'scccog': 'scccog',
+    'normalcog': 'normalcog',
   };
 
   @override
-  Future<UserModel> login(String email, String password) async {
+  Future<UserModel> activateAndLogin(
+    String code,
+    String userProvidedPassword,
+  ) async {
     await Future.delayed(const Duration(seconds: 1)); // Simulate latency
 
-    // Check if email exists and password is correct
-    if (!_testAccounts.containsKey(email) || password != _testPassword) {
-      throw const ServerFailure('Invalid credentials');
+    // Check if code exists in test accounts
+    if (!_testAccounts.containsKey(code)) {
+      throw Exception('Activation failed: Invalid code or account not found.');
     }
 
-    return UserModel(
-      id: 'mock_user_${email.split('@')[0]}',
-      email: email,
-      name: _testAccounts[email]!,
-      token: 'mock_jwt_token_${email.split('@')[0]}_12345',
-    );
-  }
+    // In mock mode, accept both the test password and the technical password
+    if (userProvidedPassword != _testUserPassword &&
+        userProvidedPassword != AuthConstants.initialTechnicalPassword) {
+      throw Exception('Activation failed: Invalid password.');
+    }
 
-  @override
-  Future<UserModel> register(String email, String password, String name) async {
-    await Future.delayed(const Duration(seconds: 1));
+    final userType = _testAccounts[code]!;
+    final technicalEmail = AuthConstants.getTechnicalEmail(code);
+
+    // If user provided the initial technical password, mark as requires onboarding
+    final requiresOnboarding =
+        userProvidedPassword == AuthConstants.initialTechnicalPassword;
+
     return UserModel(
-      id: 'mock_user_${DateTime.now().millisecondsSinceEpoch}',
-      email: email,
-      name: name,
-      token: 'mock_jwt_token_register_12345',
+      id: 'mock_user_$code',
+      email: technicalEmail,
+      name: userType,
+      token: 'mock_jwt_token_${code}_12345',
+      isActivated: true,
+      requiresOnboarding: requiresOnboarding,
     );
   }
 
@@ -53,11 +53,13 @@ class AuthMockDataSource implements AuthRemoteDataSource {
     // In a real mock, we might check a local flag or token,
     // but here we just return a user if "logged in" logic was handled elsewhere
     await Future.delayed(const Duration(milliseconds: 500));
-    return const UserModel(
-      id: 'mock_user_normal',
-      email: 'normalcog@test.pl',
+    return UserModel(
+      id: 'mock_user_normalcog',
+      email: AuthConstants.getTechnicalEmail('normalcog'),
       name: 'normalcog',
       token: 'mock_jwt_token_current_user_12345',
+      isActivated: true,
+      requiresOnboarding: false,
     );
   }
 }

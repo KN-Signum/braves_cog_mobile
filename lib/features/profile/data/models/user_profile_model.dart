@@ -29,42 +29,72 @@ class UserProfileModel extends UserProfileEntity {
     super.type,
   });
 
+  /// Factory constructor to handle both camelCase (API) and snake_case (Database) JSON
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
+    // Support both camelCase (from API) and snake_case (from database)
+    final birthYear = json['birthYear'] ?? json['birth_year'];
+    final height = json['height'] ?? json['height'];
+    final weight = json['weight'] ?? json['weight'];
+    final currentIllness = json['currentIllness'] ?? json['current_illness'];
+    final chronicDiseases = json['chronicDiseases'] ?? json['chronic_diseases'];
+    final smokingCigarettes =
+        json['smokingCigarettes'] ?? json['smoking_cigarettes'];
+    final smokingFrequency =
+        json['smokingFrequency'] ?? json['smoking_frequency'];
+    final drinkingAlcohol = json['drinkingAlcohol'] ?? json['drinking_alcohol'];
+    final alcoholFrequency =
+        json['alcoholFrequency'] ?? json['alcohol_frequency'];
+    final otherSubstances = json['otherSubstances'] ?? json['other_substances'];
+    final otherSubstancesName =
+        json['otherSubstancesName'] ?? json['other_substances_name'];
+    final otherSubstancesFrequency =
+        json['otherSubstancesFrequency'] ?? json['other_substances_frequency'];
+    final allergies = json['allergies'] ?? [];
+    final medications = json['medications'] ?? [];
+    final biologicalSexVal = json['biologicalSex'] ?? json['biological_sex'];
+    final genderIdentity = json['genderIdentity'] ?? json['gender_identity'];
+    final genderIdentityOther =
+        json['genderIdentityOther'] ?? json['gender_identity_other'];
+    final educationVal = json['education'] ?? json['education'];
+    final educationOther = json['educationOther'] ?? json['education_other'];
+    final disability = json['disability'] ?? json['disability'];
+    final typeVal = json['type'] ?? json['type'];
+
     return UserProfileModel(
       id: json['id'],
-      birthYear: json['birthYear'] is int
-          ? json['birthYear']
-          : int.tryParse(json['birthYear']?.toString() ?? '') ?? 1990,
-      height: json['height'] is int
-          ? json['height']
-          : int.tryParse(json['height']?.toString() ?? '') ?? 170,
-      weight: json['weight'] is int
-          ? json['weight']
-          : int.tryParse(json['weight']?.toString() ?? '') ?? 70,
-      currentIllness: json['currentIllness'] ?? '',
-      chronicDiseases: json['chronicDiseases'] ?? '',
-      smokingCigarettes: json['smokingCigarettes'] ?? false,
-      smokingFrequency: json['smokingFrequency'] ?? '',
-      drinkingAlcohol: json['drinkingAlcohol'] ?? false,
-      alcoholFrequency: json['alcoholFrequency'] ?? '',
-      otherSubstances: json['otherSubstances'] ?? false,
-      otherSubstancesName: json['otherSubstancesName'] ?? '',
-      otherSubstancesFrequency: json['otherSubstancesFrequency'] ?? '',
-      allergies: List<String>.from(json['allergies'] ?? []),
-      medications: List<String>.from(json['medications'] ?? []),
-      biologicalSex: BiologicalSex.fromString(json['biologicalSex'] ?? ''),
-      genderIdentity: json['genderIdentity'] ?? '',
-      genderIdentityOther: json['genderIdentityOther'] ?? '',
-      education: EducationLevel.fromString(json['education'] ?? ''),
-      educationOther: json['educationOther'] ?? '',
-      disability: json['disability'] ?? '',
-      type: UserType.fromString(json['type'] ?? 'NormalCog'),
+      birthYear: birthYear is int
+          ? birthYear
+          : int.tryParse(birthYear?.toString() ?? '') ?? 1990,
+      height: height is int
+          ? height
+          : int.tryParse(height?.toString() ?? '') ?? 170,
+      weight: weight is int
+          ? weight
+          : int.tryParse(weight?.toString() ?? '') ?? 70,
+      currentIllness: currentIllness ?? '',
+      chronicDiseases: chronicDiseases ?? '',
+      smokingCigarettes: smokingCigarettes ?? false,
+      smokingFrequency: smokingFrequency ?? '',
+      drinkingAlcohol: drinkingAlcohol ?? false,
+      alcoholFrequency: alcoholFrequency ?? '',
+      otherSubstances: otherSubstances ?? false,
+      otherSubstancesName: otherSubstancesName ?? '',
+      otherSubstancesFrequency: otherSubstancesFrequency ?? '',
+      allergies: List<String>.from(allergies ?? []),
+      medications: List<String>.from(medications ?? []),
+      biologicalSex: BiologicalSex.fromString(biologicalSexVal ?? ''),
+      genderIdentity: genderIdentity ?? '',
+      genderIdentityOther: genderIdentityOther ?? '',
+      education: EducationLevel.fromString(educationVal ?? ''),
+      educationOther: educationOther ?? '',
+      disability: disability ?? '',
+      type: UserType.fromString(typeVal ?? 'NormalCog'),
     );
   }
 
+  /// Convert to camelCase JSON for API requests
   Map<String, dynamic> toJson() {
     return {
-      // NOTE: 'id' and 'lastUpdate' omitted. 'id' is extracted from token.
       'birthYear': birthYear,
       'height': height,
       'weight': weight,

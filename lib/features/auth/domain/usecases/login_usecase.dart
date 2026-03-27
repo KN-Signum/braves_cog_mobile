@@ -5,23 +5,23 @@ import 'package:braves_cog/core/usecases/usecase.dart';
 import 'package:braves_cog/features/auth/domain/entities/user_entity.dart';
 import 'package:braves_cog/features/auth/domain/repositories/auth_repository.dart';
 
-class LoginUseCase implements UseCase<UserEntity, LoginParams> {
+class ActivateUserUseCase implements UseCase<UserEntity, ActivateUserParams> {
   final AuthRepository repository;
 
-  LoginUseCase(this.repository);
+  ActivateUserUseCase(this.repository);
 
   @override
-  Future<Either<Failure, UserEntity>> call(LoginParams params) async {
-    return await repository.login(params.email, params.password);
+  Future<Either<Failure, UserEntity>> call(ActivateUserParams params) async {
+    return await repository.activateUser(params.code, params.password);
   }
 }
 
-class LoginParams extends Equatable {
-  final String email;
+class ActivateUserParams extends Equatable {
+  final String code;
   final String password;
 
-  const LoginParams({required this.email, required this.password});
+  const ActivateUserParams({required this.code, required this.password});
 
   @override
-  List<Object> get props => [email, password];
+  List<Object> get props => [code, password];
 }

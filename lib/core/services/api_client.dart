@@ -1,13 +1,19 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ApiClient {
   final String baseUrl;
   final http.Client client;
   final Future<String?> Function()? tokenProvider;
+  final SupabaseClient? supabaseClient;
 
-  ApiClient({required this.baseUrl, http.Client? client, this.tokenProvider})
-    : client = client ?? http.Client();
+  ApiClient({
+    required this.baseUrl,
+    http.Client? client,
+    this.tokenProvider,
+    this.supabaseClient,
+  }) : client = client ?? http.Client();
 
   Future<Map<String, String>> _getHeaders({
     Map<String, String>? additionalHeaders,
@@ -21,6 +27,11 @@ class ApiClient {
       final token = await tokenProvider!();
       if (token != null && token.isNotEmpty) {
         headers['Authorization'] = 'Bearer $token';
+      }
+    } else if (supabaseClient != null) {
+      final session = supabaseClient!.auth.currentSession;
+      if (session != null) {
+        headers['Authorization'] = 'Bearer ${session.accessToken}';
       }
     }
 

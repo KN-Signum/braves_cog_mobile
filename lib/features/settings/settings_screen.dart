@@ -43,11 +43,23 @@ class SettingsScreen extends ConsumerWidget {
             title: 'Uzyskaj pomoc',
             subtitle: 'Numery alarmowe i wsparcie',
             onTap: () {
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (_) => GetHelpScreen(),
+              //   ),
+              // );
+            },
+          ),
+          _buildSettingsTile(
+            context: context,
+            icon: Icons.mail_outline,
+            title: 'Kontakt do badaczy',
+            subtitle: 'E-mail i adres zespołu badawczego',
+            onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => GetHelpScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => GetHelpScreen()),
               );
             },
           ),

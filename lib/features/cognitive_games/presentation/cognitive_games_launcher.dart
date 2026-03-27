@@ -1,10 +1,10 @@
+import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:research_package/research_package.dart';
 import 'package:braves_cog/features/cognitive_games/data/mappers/rp_result_mapper.dart';
 import 'package:braves_cog/features/cognitive_games/domain/entities/cognitive_game_result.dart';
 import 'package:braves_cog/features/cognitive_games/presentation/providers/cognitive_game_provider.dart';
-import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 import '../cognition_config.dart';
 
 class CognitiveGamesLauncher {
@@ -58,12 +58,15 @@ class CognitiveGamesLauncher {
 
   static void _processSequenceResults(WidgetRef ref, RPTaskResult taskResult) {
     try {
-      final currentProfile = ref.read(profileProvider).profile;
-      final userId = currentProfile.id ?? 'unknown_user';
+      final authState = ref.read(authProvider);
+      final userId = authState.user?.id;
 
-      debugPrint(
-        '📊 [CognitiveGamesLauncher] Przetwarzanie wyników dla użytkownika: $userId',
-      );
+      if (userId == null) {
+        debugPrint(
+          '❌ [GamesScreen] Brak zalogowanego użytkownika — wyniki nie zostaną zapisane',
+        );
+        return;
+      }
 
       final List<CognitiveTestResult> collectedResults = [];
       final fullJson = taskResult.toJson();

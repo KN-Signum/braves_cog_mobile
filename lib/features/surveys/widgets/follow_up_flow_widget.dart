@@ -36,8 +36,7 @@ class FollowUpFlowWidget extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<FollowUpFlowWidget> createState() =>
-      _FollowUpFlowWidgetState();
+  ConsumerState<FollowUpFlowWidget> createState() => _FollowUpFlowWidgetState();
 }
 
 class _FollowUpFlowWidgetState extends ConsumerState<FollowUpFlowWidget> {
@@ -74,7 +73,8 @@ class _FollowUpFlowWidgetState extends ConsumerState<FollowUpFlowWidget> {
         _startAtEndForCurrentSurvey = false;
         while (_currentSurveyIndex < _surveys.length &&
             _alertSurveysCompleted.contains(
-                _surveys[_currentSurveyIndex]['id'] as String)) {
+              _surveys[_currentSurveyIndex]['id'] as String,
+            )) {
           _currentSurveyIndex++;
         }
       });
@@ -117,15 +117,13 @@ class _FollowUpFlowWidgetState extends ConsumerState<FollowUpFlowWidget> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) widget.onComplete(_allAnswers);
       });
-      return const Scaffold(
-          body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (index != _currentSurveyIndex) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) setState(() => _currentSurveyIndex = index);
       });
-      return const Scaffold(
-          body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final currentMeta = _surveys[_currentSurveyIndex];
     final currentSurvey = currentMeta['config'] as SurveyEntity;
@@ -151,6 +149,7 @@ class _FollowUpFlowWidgetState extends ConsumerState<FollowUpFlowWidget> {
 
     return UniversalSurveyWidget(
       survey: currentSurvey,
+      surveySubmissionId: currentSurveyId,
       onComplete: _handleSurveyComplete,
       onBack: _handleBack,
       showHeaderAndProgress: true,

@@ -54,6 +54,7 @@ dependencies:
       url: https://github.com/Adidadi0112/research.package.git
       ref: master
   flutter_secure_storage: ^10.0.0
+  supabase_flutter: ^2.12.0
 
 dev_dependencies:
   flutter_test:

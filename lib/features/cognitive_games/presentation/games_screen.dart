@@ -3,14 +3,95 @@ import 'package:braves_cog/features/cognitive_games/presentation/cognitive_games
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class CognitiveStats {
+  final int completedSessions;
+  final DateTime? lastSessionAt;
+
+  const CognitiveStats({required this.completedSessions, this.lastSessionAt});
+}
+
+final cognitiveStatsProvider = FutureProvider<CognitiveStats>((ref) async {
+  final authState = ref.watch(authProvider);
+  final userId = authState.user?.id;
+
+  if (userId == null) {
+    return const CognitiveStats(completedSessions: 0, lastSessionAt: null);
+  }
+
+  final rows = await Supabase.instance.client
+      .from('cognitive_test_results')
+      .select('completed_at')
+      .eq('user_id', userId)
+      .order('completed_at', ascending: true);
+
+  final completedAtValues = rows
+      .map((row) => row['completed_at']?.toString())
+      .whereType<String>()
+      .map(DateTime.tryParse)
+      .whereType<DateTime>()
+      .toList();
+
+  if (completedAtValues.isEmpty) {
+    return const CognitiveStats(completedSessions: 0, lastSessionAt: null);
+  }
+
+  // One session = whole batch of games.
+  // We infer sessions by clustering test results that happened close in time.
+  // A gap > 2h starts a new session.
+  var sessionCount = 0;
+  DateTime? previous;
+
+  for (final completedAt in completedAtValues) {
+    if (previous == null ||
+        completedAt.toUtc().difference(previous.toUtc()).inMinutes > 120) {
+      sessionCount++;
+    }
+    previous = completedAt;
+  }
+
+  return CognitiveStats(
+    completedSessions: sessionCount,
+    lastSessionAt: completedAtValues.last,
+  );
+});
 
 class GamesScreen extends ConsumerWidget {
   const GamesScreen({super.key});
+
+  String _formatLastTraining(DateTime? lastSessionAt) {
+    if (lastSessionAt == null) return '-';
+
+    final local = lastSessionAt.toLocal();
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+
+    final localDate = DateTime(local.year, local.month, local.day);
+    if (localDate == yesterday) {
+      return 'Wczoraj';
+    }
+
+    return DateFormat('dd.MM.yyyy').format(local);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
     final profileState = ref.watch(profileProvider);
+    final statsAsync = ref.watch(cognitiveStatsProvider);
+
+    final lastTrainingLabel = statsAsync.maybeWhen(
+      data: (stats) => _formatLastTraining(stats.lastSessionAt),
+      orElse: () => '...',
+    );
+
+    final completedSessionsLabel = statsAsync.maybeWhen(
+      data: (stats) => '${stats.completedSessions}',
+      orElse: () => '...',
+    );
 
     debugPrint(
       '👤 [GamesScreen] authUser: ${authState.user?.email} | authId: ${authState.user?.id}',
@@ -73,13 +154,13 @@ class GamesScreen extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _buildStatBox('Ostatni trening', 'Wczoraj'),
+                    _buildStatBox('Ostatni trening', lastTrainingLabel),
                     Container(
                       width: 1,
                       height: 40,
                       color: ColorScheme.of(context).secondary,
                     ),
-                    _buildStatBox('Ukończone sesje', '12'),
+                    _buildStatBox('Ukończone sesje', completedSessionsLabel),
                   ],
                 ),
               ],

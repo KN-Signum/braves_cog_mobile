@@ -120,21 +120,20 @@ class _OnboardingFlowWidgetState extends ConsumerState<OnboardingFlowWidget> {
       targetSurvey--;
     } else if (targetModule > 0) {
       targetModule--;
-      targetSurvey =
-          (_modules[targetModule]['surveys'] as List).length - 1;
+      targetSurvey = (_modules[targetModule]['surveys'] as List).length - 1;
     } else {
       widget.onBack();
       return;
     }
     while (targetModule >= 0 &&
         _isAlertSurvey(
-            (_modules[targetModule]['surveys'][targetSurvey]['id'] as String))) {
+          (_modules[targetModule]['surveys'][targetSurvey]['id'] as String),
+        )) {
       if (targetSurvey > 0) {
         targetSurvey--;
       } else if (targetModule > 0) {
         targetModule--;
-        targetSurvey =
-            (_modules[targetModule]['surveys'] as List).length - 1;
+        targetSurvey = (_modules[targetModule]['surveys'] as List).length - 1;
       } else {
         widget.onBack();
         return;
@@ -170,8 +169,7 @@ class _OnboardingFlowWidgetState extends ConsumerState<OnboardingFlowWidget> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) widget.onComplete(_allAnswers);
       });
-      return const Scaffold(
-          body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (m != _currentModuleIndex || s != _currentSurveyIndex) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -183,8 +181,7 @@ class _OnboardingFlowWidgetState extends ConsumerState<OnboardingFlowWidget> {
           });
         }
       });
-      return const Scaffold(
-          body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final currentModule = _modules[_currentModuleIndex];
     final currentSurvey = currentModule['surveys'][_currentSurveyIndex];
@@ -233,6 +230,7 @@ class _OnboardingFlowWidgetState extends ConsumerState<OnboardingFlowWidget> {
 
     return UniversalSurveyWidget(
       survey: survey,
+      surveySubmissionId: surveyId,
       onComplete: _handleSurveyComplete,
       onBack: _handleBack,
       showHeaderAndProgress: true,

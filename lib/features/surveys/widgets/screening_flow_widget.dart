@@ -83,18 +83,13 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
         // Usuwamy dynamicznie dodaną wcześniej MINI_EAT (jeśli była)
         // i dodajemy ją ponownie tylko gdy odpowiedź to "Tak".
         _surveys = List<Map<String, dynamic>>.from(_surveys)
-          ..removeWhere(
-            (e) => (e['id'] as String?) == 'MINI_EAT',
-          );
+          ..removeWhere((e) => (e['id'] as String?) == 'MINI_EAT');
 
         if (dietChanged) {
-          _surveys.insert(
-            _currentSurveyIndex + 1,
-            {
-              'id': 'MINI_EAT',
-              'config': MiniEatSurveyConfig.getSurvey(),
-            },
-          );
+          _surveys.insert(_currentSurveyIndex + 1, {
+            'id': 'MINI_EAT',
+            'config': MiniEatSurveyConfig.getSurvey(),
+          });
         }
 
         _currentSurveyIndex++;
@@ -103,7 +98,8 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
         // Pomijamy ankiety alertowe, które zostały już ukończone.
         while (_currentSurveyIndex < _surveys.length &&
             _alertSurveysCompleted.contains(
-                _surveys[_currentSurveyIndex]['id'] as String)) {
+              _surveys[_currentSurveyIndex]['id'] as String,
+            )) {
           _currentSurveyIndex++;
         }
       });
@@ -204,6 +200,7 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
 
     return UniversalSurveyWidget(
       survey: currentSurvey,
+      surveySubmissionId: currentSurveyId,
       onComplete: _handleSurveyComplete,
       onBack: _handleBack,
       showHeaderAndProgress: true,

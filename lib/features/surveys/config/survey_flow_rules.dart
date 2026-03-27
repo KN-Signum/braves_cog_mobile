@@ -7,7 +7,6 @@ import 'survey_configs/demographic_survey_config.dart';
 import 'survey_configs/ipaq_survey_config.dart';
 import 'survey_configs/screening_sq_survey_config.dart';
 import 'survey_configs/onboarding_sq_survey_config.dart';
-import 'survey_configs/mini_eat_survey_config.dart';
 import 'survey_configs/screening_su_survey_config.dart';
 import 'survey_configs/brief_2way_sss_survey_config.dart';
 import 'survey_configs/aq_survey_config.dart';
@@ -37,34 +36,28 @@ class SurveyFlowRules {
 
     return [
       {
-        'id': 'Demographic',
+        'id': 'demographic',
         'name': 'Dane demograficzne',
         'surveys': [
-          {'id': 'Demographic', 'config': DemographicSurveyConfig.getSurvey()},
+          {'id': 'demographic', 'config': DemographicSurveyConfig.getSurvey()},
         ],
       },
       {
         'id': 'Baseline_Lifestyle',
         'name': 'Styl życia',
         'surveys': [
+          {'id': 'IPAQ', 'config': IPAQSurveyConfig.getSurvey()},
           {
-            'id': 'Baseline_Physical_Activity',
-            'config': IPAQSurveyConfig.getSurvey(),
-          },
-          {
-            'id': 'Baseline_Sleep_Quality',
+            'id': 'onboarding_SQ',
             'config': OnboardingSqSurveyConfig.getSurvey(),
           },
           {
-            'id': 'MINI_EAT_OB',
+            'id': 'MINI_EAT',
             'config': MiniEatOnboardingSurveyConfig.getSurvey(),
           },
+          {'id': 'screening_SU', 'config': ScreeningSUSurveyConfig.getSurvey()},
           {
-            'id': 'Baseline_Substance_Use',
-            'config': ScreeningSUSurveyConfig.getSurvey(),
-          },
-          {
-            'id': 'Baseline_Social_Support',
+            'id': 'social_support',
             'config': Brief2WaySSSSurveyConfig.getSurvey(),
           },
         ],
@@ -73,16 +66,10 @@ class SurveyFlowRules {
         'id': 'Baseline_Symptoms',
         'name': 'Profil psychologiczny',
         'surveys': [
-          {'id': 'Baseline_ASD', 'config': AQSurveyConfig.getSurvey()},
-          {
-            'id': 'Baseline_Stress_And_Anxiety_GAD7',
-            'config': GAD7SurveyConfig.getSurvey(),
-          },
-          {
-            'id': 'Baseline_Stress_And_Anxiety_PSS10',
-            'config': PSS10SurveyConfig.getSurvey(),
-          },
-          {'id': 'Baseline_Depression', 'config': PHQ9SurveyConfig.getSurvey()},
+          {'id': 'AQ', 'config': AQSurveyConfig.getSurvey()},
+          {'id': 'GAD_7', 'config': GAD7SurveyConfig.getSurvey()},
+          {'id': 'PSS_10', 'config': PSS10SurveyConfig.getSurvey()},
+          {'id': 'PHQ_9', 'config': PHQ9SurveyConfig.getSurvey()},
         ],
       },
       {
@@ -90,17 +77,14 @@ class SurveyFlowRules {
         'name': 'Informacje zdrowotne',
         'surveys': [
           {
-            'id': 'Baseline_Somatic_Disease',
+            'id': 'somatic_diseases',
             'config': SomaticDiseasesSurveyConfig.getSurvey(),
           },
           {
-            'id': 'Baseline_Mental_Health_Disorders',
+            'id': 'mental_disorders',
             'config': MentalDisordersSurveyConfig.getSurvey(),
           },
-          {
-            'id': 'Baseline_Medications',
-            'config': MedicationsSurveyConfig.getSurvey(),
-          },
+          {'id': 'medications', 'config': MedicationsSurveyConfig.getSurvey()},
         ],
       },
     ];

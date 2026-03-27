@@ -1,11 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
 import 'package:braves_cog/core/providers/notification_service_provider.dart';
 import 'package:braves_cog/features/surveys/config/survey_schedule_config.dart';
 import 'package:braves_cog/features/surveys/domain/entities/survey_availability.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// In-memory store of [surveyType] → [lastCompletedAt].
-/// All data is lost when the app is terminated — this is intentional for
-/// the early development stage. Replace with a persistent datasource later.
+/// In-memory store of [surveyType] -> [lastCompletedAt].
+/// This is used as immediate optimistic state after completion.
+/// Availability is reconciled against backend submission timestamps.
 class SurveyCompletionNotifier extends StateNotifier<Map<String, DateTime>> {
   final Ref _ref;
 
@@ -46,11 +48,8 @@ class SurveyCompletionNotifier extends StateNotifier<Map<String, DateTime>> {
         return SurveyScheduleConfig.monitoringInterval;
       case SurveyScheduleConfig.screening:
         return SurveyScheduleConfig.screeningInterval;
-      // TODO(follow-up): add follow-up intervals when implemented
-      // case SurveyScheduleConfig.followUp1:
-      //   return SurveyScheduleConfig.followUp1Interval;
-      // case SurveyScheduleConfig.followUp2:
-      //   return SurveyScheduleConfig.followUp2Interval;
+      case SurveyScheduleConfig.followUp:
+        return SurveyScheduleConfig.followUpInterval;
       default:
         return null;
     }
@@ -62,11 +61,8 @@ class SurveyCompletionNotifier extends StateNotifier<Map<String, DateTime>> {
         return SurveyScheduleConfig.monitoringNotificationId;
       case SurveyScheduleConfig.screening:
         return SurveyScheduleConfig.screeningNotificationId;
-      // TODO(follow-up): add follow-up notification IDs when implemented
-      // case SurveyScheduleConfig.followUp1:
-      //   return SurveyScheduleConfig.followUp1NotificationId;
-      // case SurveyScheduleConfig.followUp2:
-      //   return SurveyScheduleConfig.followUp2NotificationId;
+      case SurveyScheduleConfig.followUp:
+        return SurveyScheduleConfig.followUpNotificationId;
       default:
         return null;
     }
@@ -78,7 +74,8 @@ class SurveyCompletionNotifier extends StateNotifier<Map<String, DateTime>> {
         return 'Czas na monitoring!';
       case SurveyScheduleConfig.screening:
         return 'Czas na screening!';
-      // TODO(follow-up): add follow-up titles when implemented
+      case SurveyScheduleConfig.followUp:
+        return 'Czas na follow-up!';
       default:
         return 'Czas na ankietę!';
     }
@@ -90,7 +87,8 @@ class SurveyCompletionNotifier extends StateNotifier<Map<String, DateTime>> {
         return 'Uzupełnij badanie samopoczucia.';
       case SurveyScheduleConfig.screening:
         return 'Wypełnij miesięczną ocenę zdrowia.';
-      // TODO(follow-up): add follow-up bodies when implemented
+      case SurveyScheduleConfig.followUp:
+        return 'Wypełnij ankietę follow-up.';
       default:
         return 'Wypełnij ankietę.';
     }
@@ -110,12 +108,147 @@ final _availabilityClockProvider = StreamProvider<DateTime>((ref) {
   return Stream.periodic(const Duration(seconds: 30), (_) => DateTime.now());
 });
 
+DateTime? _maxDate(DateTime? a, DateTime? b) {
+  if (a == null) return b;
+  if (b == null) return a;
+  return a.isAfter(b) ? a : b;
+}
+
+Future<DateTime?> _latestCompletionBySurveyIds({
+  required String userId,
+  required List<String> surveyIds,
+}) async {
+  if (surveyIds.isEmpty) return null;
+
+  final response = await Supabase.instance.client
+      .from('survey_responses')
+      .select('completed_at')
+      .eq('user_id', userId)
+      .inFilter('survey_id', surveyIds)
+      .order('completed_at', ascending: false)
+      .limit(1)
+      .maybeSingle();
+
+  final raw = response?['completed_at']?.toString();
+  return raw == null ? null : DateTime.tryParse(raw)?.toUtc();
+}
+
+Future<DateTime?> _latestCompletionBySurveyKeys({
+  required String userId,
+  required List<String> surveyKeys,
+}) async {
+  if (surveyKeys.isEmpty) return null;
+
+  final surveys = await Supabase.instance.client
+      .from('surveys')
+      .select('id')
+      .inFilter('survey_key', surveyKeys)
+      .eq('is_active', true);
+
+  final ids = surveys
+      .map((row) => row['id']?.toString())
+      .whereType<String>()
+      .where((id) => id.isNotEmpty)
+      .toList();
+
+  return _latestCompletionBySurveyIds(userId: userId, surveyIds: ids);
+}
+
+Future<DateTime?> _latestCompletionBySurveyType({
+  required String userId,
+  required String surveyType,
+}) async {
+  final surveys = await Supabase.instance.client
+      .from('surveys')
+      .select('id')
+      .eq('survey_type', surveyType)
+      .eq('is_active', true);
+
+  final ids = surveys
+      .map((row) => row['id']?.toString())
+      .whereType<String>()
+      .where((id) => id.isNotEmpty)
+      .toList();
+
+  return _latestCompletionBySurveyIds(userId: userId, surveyIds: ids);
+}
+
+Future<DateTime?> _latestCompletionByTypeWithFallbackKeys({
+  required String userId,
+  required String surveyType,
+  required List<String> fallbackKeys,
+}) async {
+  final byType = await _latestCompletionBySurveyType(
+    userId: userId,
+    surveyType: surveyType,
+  );
+  if (byType != null) return byType;
+  return _latestCompletionBySurveyKeys(
+    userId: userId,
+    surveyKeys: fallbackKeys,
+  );
+}
+
+final _latestMonitoringCompletionProvider = FutureProvider<DateTime?>((
+  ref,
+) async {
+  ref.watch(_availabilityClockProvider);
+  final userId = ref.watch(authProvider).user?.id;
+  if (userId == null) return null;
+
+  return _latestCompletionByTypeWithFallbackKeys(
+    userId: userId,
+    surveyType: SurveyScheduleConfig.monitoring,
+    fallbackKeys: SurveyScheduleConfig.monitoringSurveyKeys,
+  );
+});
+
+final _latestScreeningCompletionProvider = FutureProvider<DateTime?>((
+  ref,
+) async {
+  ref.watch(_availabilityClockProvider);
+  final userId = ref.watch(authProvider).user?.id;
+  if (userId == null) return null;
+
+  return _latestCompletionByTypeWithFallbackKeys(
+    userId: userId,
+    surveyType: SurveyScheduleConfig.screening,
+    fallbackKeys: SurveyScheduleConfig.screeningSurveyKeys,
+  );
+});
+
+final _latestFollowUpCompletionProvider = FutureProvider<DateTime?>((
+  ref,
+) async {
+  ref.watch(_availabilityClockProvider);
+  final userId = ref.watch(authProvider).user?.id;
+  if (userId == null) return null;
+
+  return _latestCompletionByTypeWithFallbackKeys(
+    userId: userId,
+    surveyType: SurveyScheduleConfig.followUp,
+    fallbackKeys: SurveyScheduleConfig.followUpSurveyKeys,
+  );
+});
+
+final _latestOnboardingCompletionProvider = FutureProvider<DateTime?>((
+  ref,
+) async {
+  ref.watch(_availabilityClockProvider);
+  final userId = ref.watch(authProvider).user?.id;
+  if (userId == null) return null;
+
+  return _latestCompletionBySurveyType(
+    userId: userId,
+    surveyType: 'onboarding',
+  );
+});
+
 SurveyAvailability _computeAvailability(
-  Map<String, DateTime> completions,
-  String surveyType,
+  DateTime? lastCompletedAt,
   Duration interval,
 ) {
-  final lastCompleted = completions[surveyType];
+  final lastCompleted = lastCompletedAt;
   if (lastCompleted == null) {
     return const SurveyAvailability(isAvailable: true);
   }
@@ -127,41 +260,45 @@ SurveyAvailability _computeAvailability(
 }
 
 final monitoringAvailabilityProvider = Provider<SurveyAvailability>((ref) {
-  // Watch the clock so this provider rebuilds every 30 s.
-  ref.watch(_availabilityClockProvider);
-  final completions = ref.watch(surveyCompletionProvider);
+  final local = ref.watch(
+    surveyCompletionProvider,
+  )[SurveyScheduleConfig.monitoring];
+  final remote = ref.watch(_latestMonitoringCompletionProvider).valueOrNull;
+  final effectiveLastCompleted = _maxDate(local, remote);
   return _computeAvailability(
-    completions,
-    SurveyScheduleConfig.monitoring,
+    effectiveLastCompleted,
     SurveyScheduleConfig.monitoringInterval,
   );
 });
 
 final screeningAvailabilityProvider = Provider<SurveyAvailability>((ref) {
-  // Watch the clock so this provider rebuilds every 30 s.
-  ref.watch(_availabilityClockProvider);
-  final completions = ref.watch(surveyCompletionProvider);
+  final local = ref.watch(
+    surveyCompletionProvider,
+  )[SurveyScheduleConfig.screening];
+  final remote = ref.watch(_latestScreeningCompletionProvider).valueOrNull;
+  final effectiveLastCompleted = _maxDate(local, remote);
   return _computeAvailability(
-    completions,
-    SurveyScheduleConfig.screening,
+    effectiveLastCompleted,
     SurveyScheduleConfig.screeningInterval,
   );
 });
 
-// TODO(follow-up): add availability providers when follow-up surveys are implemented
-// final followUp1AvailabilityProvider = Provider<SurveyAvailability>((ref) {
-//   final completions = ref.watch(surveyCompletionProvider);
-//   return _computeAvailability(
-//     completions,
-//     SurveyScheduleConfig.followUp1,
-//     SurveyScheduleConfig.followUp1IntervalDays,
-//   );
-// });
-// final followUp2AvailabilityProvider = Provider<SurveyAvailability>((ref) {
-//   final completions = ref.watch(surveyCompletionProvider);
-//   return _computeAvailability(
-//     completions,
-//     SurveyScheduleConfig.followUp2,
-//     SurveyScheduleConfig.followUp2IntervalDays,
-//   );
-// });
+/// Follow-up schedule:
+/// - First follow-up: 180 days from latest onboarding submission.
+/// - Next follow-ups: every 180 days from latest follow-up submission.
+final followUpAvailabilityProvider = Provider<SurveyAvailability>((ref) {
+  final localFollowUp = ref.watch(
+    surveyCompletionProvider,
+  )[SurveyScheduleConfig.followUp];
+  final remoteFollowUp = ref
+      .watch(_latestFollowUpCompletionProvider)
+      .valueOrNull;
+  final remoteOnboarding = ref
+      .watch(_latestOnboardingCompletionProvider)
+      .valueOrNull;
+
+  final latestFollowUp = _maxDate(localFollowUp, remoteFollowUp);
+  final anchor = latestFollowUp ?? remoteOnboarding;
+
+  return _computeAvailability(anchor, SurveyScheduleConfig.followUpInterval);
+});

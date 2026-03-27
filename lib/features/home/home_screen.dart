@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:braves_cog/core/theme/app_theme.dart';
-import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 import 'package:braves_cog/features/surveys/domain/entities/survey_availability.dart';
 import 'package:braves_cog/features/surveys/presentation/providers/survey_completion_provider.dart';
 
@@ -22,10 +21,9 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profileState = ref.watch(profileProvider);
-    final userType = profileState.profile.type.value;
     final monitoringAvailability = ref.watch(monitoringAvailabilityProvider);
     final screeningAvailability = ref.watch(screeningAvailabilityProvider);
+    final followUpAvailability = ref.watch(followUpAvailabilityProvider);
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -50,7 +48,7 @@ class HomeScreen extends ConsumerWidget {
                     SizedBox(height: AppTheme.spacingMd),
                     _buildScreeningCard(context, screeningAvailability),
                     SizedBox(height: AppTheme.spacingMd),
-                    _buildFollowUpCard(context),
+                    _buildFollowUpCard(context, followUpAvailability),
                     SizedBox(height: AppTheme.spacingXl),
                   ],
                 ),
@@ -179,48 +177,60 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFollowUpCard(BuildContext context) {
+  Widget _buildFollowUpCard(
+    BuildContext context,
+    SurveyAvailability availability,
+  ) {
+    final locked = !availability.isAvailable;
     return GestureDetector(
-      onTap: onFollowUpClick,
-      child: Container(
-        padding: EdgeInsets.all(AppTheme.spacingLg),
-        decoration: BoxDecoration(
-          color: Theme.of(context).brightness == Brightness.dark
-              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.12)
-              : Theme.of(context).colorScheme.secondary.withValues(alpha: 0.08),
-          border: Border.all(
-            color: Theme.of(
-              context,
-            ).colorScheme.primary.withValues(alpha: 0.25),
-            width: 1,
+      onTap: locked ? null : onFollowUpClick,
+      child: Opacity(
+        opacity: locked ? 0.45 : 1.0,
+        child: Container(
+          padding: EdgeInsets.all(AppTheme.spacingLg),
+          decoration: BoxDecoration(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.12)
+                : Theme.of(
+                    context,
+                  ).colorScheme.secondary.withValues(alpha: 0.08),
+            border: Border.all(
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.25),
+              width: 1,
+            ),
           ),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Follow-up',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Follow-up',
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                     ),
-                  ),
-                  SizedBox(height: AppTheme.spacingSm),
-                  Text(
-                    'Ankiety kontrolne: styl życia, sen, odżywianie, samopoczucie',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ],
+                    SizedBox(height: AppTheme.spacingSm),
+                    Text(
+                      locked
+                          ? 'Następne: ${DateFormat('dd.MM.yyyy').format(availability.nextAvailableAt!)}'
+                          : 'Ankiety kontrolne: styl życia, sen, odżywianie, samopoczucie',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Icon(
-              Icons.fact_check_outlined,
-              size: 60,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ],
+              Icon(
+                Icons.fact_check_outlined,
+                size: 60,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ],
+          ),
         ),
       ),
     );

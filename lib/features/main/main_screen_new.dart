@@ -86,6 +86,10 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
     ref
         .read(surveyCompletionProvider.notifier)
         .recordCompletion(SurveyScheduleConfig.monitoring);
+    // First follow-up should open 180 days after onboarding.
+    ref
+        .read(surveyCompletionProvider.notifier)
+        .recordCompletion(SurveyScheduleConfig.followUp);
     setState(() {
       _currentView = 'home';
       _currentIndex = 0;
@@ -251,7 +255,9 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
         return FollowUpFlowWidget(
           key: const ValueKey('followup'),
           onComplete: (Map<String, dynamic> allAnswers) {
-            // TODO: Save follow-up answers
+            ref
+                .read(surveyCompletionProvider.notifier)
+                .recordCompletion(SurveyScheduleConfig.followUp);
             _navigateToHome();
           },
           onBack: _navigateToHome,

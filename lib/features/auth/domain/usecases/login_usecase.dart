@@ -12,7 +12,7 @@ class ActivateUserUseCase implements UseCase<UserEntity, ActivateUserParams> {
 
   @override
   Future<Either<Failure, UserEntity>> call(ActivateUserParams params) async {
-    return await repository.activateUser(params.code, params.password);
+    return await repository.activateAccount(params.code, params.password);
   }
 }
 

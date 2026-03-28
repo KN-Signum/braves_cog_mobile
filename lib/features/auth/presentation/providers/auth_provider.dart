@@ -86,9 +86,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     });
   }
 
-  Future<void> activateUser(String code, String password) async {
+  Future<void> activateAccount(String code, String newPassword) async {
     state = state.copyWith(isLoading: true, error: null);
-    final result = await _repository.activateUser(code, password);
+    final result = await _repository.activateAccount(code, newPassword);
     result.fold(
       (failure) {
         state = state.copyWith(isLoading: false, error: failure.message);
@@ -100,6 +100,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
           // User needs to complete onboarding, don't load profile yet
           // This is handled in the routing/navigation layer
         } else {
+          _ref.read(profileProvider.notifier).loadProfile(email: user.email);
+        }
+      },
+    );
+  }
+
+  Future<void> login(String emailOrCode, String password) async {
+    state = state.copyWith(isLoading: true, error: null);
+    final result = await _repository.login(emailOrCode, password);
+    result.fold(
+      (failure) {
+        state = state.copyWith(isLoading: false, error: failure.message);
+      },
+      (user) {
+        state = AuthState(user: user);
+        if (!user.requiresOnboarding) {
           _ref.read(profileProvider.notifier).loadProfile(email: user.email);
         }
       },

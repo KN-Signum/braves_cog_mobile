@@ -1,13 +1,11 @@
 import 'package:braves_cog/features/auth/data/models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
-  /// Activate account with invite code and password
-  ///
-  /// This method implements the silent activation flow:
-  /// 1. Try to login with code@bravescog.internal and userProvidedPassword
-  /// 2. If that fails (400/401), try with the initial technical password
-  /// 3. If technical password succeeds, immediately update to userProvidedPassword
-  Future<UserModel> activateAndLogin(String code, String userProvidedPassword);
+  /// Activate account once using invite code and a new user password.
+  Future<UserModel> activateAccount(String code, String newPassword);
+
+  /// Login using invite code OR technical email and user password.
+  Future<UserModel> login(String emailOrCode, String password);
 
   Future<UserModel> getCurrentUser();
 }

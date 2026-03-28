@@ -20,7 +20,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _loginPasswordController = TextEditingController();
 
-  bool _showActivation = true; // Toggle between activation and login
+  bool _showActivation = false; // Toggle between activation and login
 
   @override
   void initState() {
@@ -33,28 +33,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
-    try {
-      await ref
-          .read(authProvider.notifier)
-          .activateUser(
-            _authCodeController.text.trim(),
-            _passwordController.text,
-          );
+    await ref
+        .read(authProvider.notifier)
+        .activateAccount(
+          _authCodeController.text.trim(),
+          _passwordController.text,
+        );
 
-      // Check if activation was successful
-      final authState = ref.read(authProvider);
-      if (authState.error != null) {
-        _showAlert(authState.error ?? 'Błąd aktywacji');
-        return;
-      }
+    final authState = ref.read(authProvider);
+    if (authState.error != null) {
+      _showAlert(_mapFriendlyError(authState.error!, isActivation: true));
+      return;
+    }
 
-      if (authState.isAuthenticated) {
-        final prefs = ref.read(sharedPreferencesProvider);
-        await prefs.setBool('user-registered', true);
-        widget.onLogin();
-      }
-    } catch (e) {
-      _showAlert('Błąd aktywacji: ${e.toString()}');
+    if (authState.isAuthenticated) {
+      final prefs = ref.read(sharedPreferencesProvider);
+      await prefs.setBool('user-registered', true);
+      widget.onLogin();
     }
   }
 
@@ -65,35 +60,55 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
-    try {
-      // For standard login, we'll use the activation mechanism with email directly
-      final email = _emailController.text.trim();
-      final password = _loginPasswordController.text;
+    await ref
+        .read(authProvider.notifier)
+        .login(_emailController.text.trim(), _loginPasswordController.text);
 
-      // Try to extract code from email or use email directly
-      String codeToUse = email;
-      if (email.contains('@')) {
-        // If it's already an email format, try to use it as-is
-        codeToUse = email;
-      }
-
-      await ref.read(authProvider.notifier).activateUser(codeToUse, password);
-
-      // Check if login was successful
-      final authState = ref.read(authProvider);
-      if (authState.error != null) {
-        _showAlert(authState.error ?? 'Błąd logowania');
-        return;
-      }
-
-      if (authState.isAuthenticated) {
-        final prefs = ref.read(sharedPreferencesProvider);
-        await prefs.setBool('user-registered', true);
-        widget.onLogin();
-      }
-    } catch (e) {
-      _showAlert('Błąd logowania: ${e.toString()}');
+    final authState = ref.read(authProvider);
+    if (authState.error != null) {
+      _showAlert(_mapFriendlyError(authState.error!, isActivation: false));
+      return;
     }
+
+    if (authState.isAuthenticated) {
+      final prefs = ref.read(sharedPreferencesProvider);
+      await prefs.setBool('user-registered', true);
+      widget.onLogin();
+    }
+  }
+
+  String _mapFriendlyError(String rawError, {required bool isActivation}) {
+    final error = rawError.toLowerCase();
+
+    if (error.contains('invalid login credentials') ||
+        error.contains('invalid credentials') ||
+        error.contains('nieprawidłowe hasło')) {
+      return 'Nieprawidłowe hasło. Spróbuj ponownie.';
+    }
+
+    if (error.contains('already activated') ||
+        error.contains('już aktywowane')) {
+      return 'To konto jest już aktywowane. Przejdź do logowania.';
+    }
+
+    if (error.contains('not yet activated') ||
+        error.contains('nie zostało jeszcze aktywowane')) {
+      return 'Konto nie zostało jeszcze aktywowane. Użyj kodu zaproszenia.';
+    }
+
+    if (error.contains('invalid code') ||
+        error.contains('nieprawidłowy kod') ||
+        error.contains('konto nie istnieje')) {
+      return 'Nieprawidłowy kod zaproszenia.';
+    }
+
+    if (error.contains('network') || error.contains('socket')) {
+      return 'Brak połączenia z siecią. Spróbuj ponownie za chwilę.';
+    }
+
+    return isActivation
+        ? 'Nie udało się aktywować konta. Spróbuj ponownie.'
+        : 'Nie udało się zalogować. Sprawdź dane i spróbuj ponownie.';
   }
 
   void _showAlert(String message) {
@@ -278,7 +293,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       SizedBox(height: AppTheme.spacingSm),
                       Text(
-                        'Wprowadź email i hasło',
+                        'Wprowadź email lub kod oraz hasło',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(
                             context,
@@ -288,9 +303,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       SizedBox(height: AppTheme.spacingLg),
                       _buildTextField(
-                        label: 'Email',
+                        label: 'Email lub kod',
                         controller: _emailController,
-                        placeholder: 'Wprowadź email',
+                        placeholder: 'Wprowadź email lub kod',
                       ),
                       SizedBox(height: AppTheme.spacingMd),
                       _buildTextField(

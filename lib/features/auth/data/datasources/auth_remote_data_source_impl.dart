@@ -10,10 +10,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   AuthRemoteDataSourceImpl({required this.supabaseClient});
 
   @override
-  Future<UserModel> activateAndLogin(
-    String code,
-    String userProvidedPassword,
-  ) async {
+  Future<UserModel> activateAccount(String code, String newPassword) async {
     final technicalEmail = AuthConstants.getTechnicalEmail(code);
 
     print('🔐 [AUTH] Starting activation for code: $code');
@@ -24,16 +21,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     );
 
     try {
-      // Step 1: Try primary login with user-provided password
-      print('🔓 [AUTH] Attempt 1: Trying with user-provided password');
+      // Step 1: Login with initial technical password.
+      print('🔓 [AUTH] Attempt 1: Trying with technical password');
       developer.log(
-        'Attempt 1: Trying with user-provided password',
+        'Attempt 1: Trying with technical password',
         name: 'AuthRemoteDataSource',
       );
       final AuthResponse response = await supabaseClient.auth
           .signInWithPassword(
             email: technicalEmail,
-            password: userProvidedPassword,
+            password: AuthConstants.initialTechnicalPassword,
           );
 
       final user = response.user;
@@ -41,108 +38,104 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw Exception('Login failed: User is null');
       }
 
-      print('✅ [AUTH] Primary login successful');
-      developer.log('✓ Primary login successful', name: 'AuthRemoteDataSource');
-
-      // Check if user has already completed onboarding via profiles table
-      final isActivated = await _isProfileActivated(user.id);
-      print('🔍 [AUTH] Profile is_activated=$isActivated');
-      return _userToModel(
-        user,
-        isActivated: true,
-        requiresOnboarding: !isActivated,
-      );
-    } on AuthException catch (e) {
-      print(
-        '❌ [AUTH] Primary login failed - Status: ${e.statusCode}, Message: ${e.message}',
-      );
+      print('✅ [AUTH] Technical password login successful');
       developer.log(
-        'Primary login failed - Status: ${e.statusCode}, Message: ${e.message}',
+        '✓ Technical password login successful',
         name: 'AuthRemoteDataSource',
       );
 
-      // Step 2: If 400/401, try with initial technical password
+      // If profile already activated, invite was already used.
+      final isActivated = await _isProfileActivated(user.id);
+      print('🔍 [AUTH] Profile is_activated=$isActivated');
+      if (isActivated) {
+        await supabaseClient.auth.signOut();
+        throw Exception('Konto jest już aktywowane. Użyj opcji logowania.');
+      }
+
+      // Step 2: Set user password chosen during activation.
+      await supabaseClient.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+      print('✅ [AUTH] Password updated successfully');
+      developer.log(
+        '✓ Password updated successfully',
+        name: 'AuthRemoteDataSource',
+      );
+
+      // Step 3: Mark profile as activated.
+      try {
+        await supabaseClient
+            .from('profiles')
+            .update({'is_activated': true})
+            .eq('id', user.id);
+        print('✅ [AUTH] Profile marked as activated');
+      } catch (e) {
+        print('⚠️ [AUTH] Could not update profile is_activated: $e');
+      }
+
+      return _userToModel(user, isActivated: true, requiresOnboarding: true);
+    } on AuthException catch (e) {
+      print(
+        '❌ [AUTH] Activation with technical password failed - Status: ${e.statusCode}, Message: ${e.message}',
+      );
+      developer.log(
+        'Activation with technical password failed - Status: ${e.statusCode}, Message: ${e.message}',
+        name: 'AuthRemoteDataSource',
+      );
+
+      // If technical password failed, check if account is already activated
+      // by trying user-provided password and converting it into a clear message.
       if (e.statusCode == '400' || e.statusCode == '401') {
         try {
-          print(
-            '🔐 [AUTH] Attempt 2: Trying with technical password (start123)',
+          final existing = await supabaseClient.auth.signInWithPassword(
+            email: technicalEmail,
+            password: newPassword,
           );
-          developer.log(
-            'Attempt 2: Trying with technical password for activation',
-            name: 'AuthRemoteDataSource',
-          );
-          final AuthResponse technicalResponse = await supabaseClient.auth
-              .signInWithPassword(
-                email: technicalEmail,
-                password: AuthConstants.initialTechnicalPassword,
-              );
-
-          final user = technicalResponse.user;
-          if (user == null) {
-            throw Exception('Technical login failed: User is null');
+          if (existing.user != null) {
+            await supabaseClient.auth.signOut();
+            throw Exception('Konto jest już aktywowane. Użyj opcji logowania.');
           }
-
-          print('✅ [AUTH] Technical password login successful');
-          developer.log(
-            '✓ Technical password login successful',
-            name: 'AuthRemoteDataSource',
-          );
-
-          // Step 3: Update password to user-provided password
-          try {
-            await supabaseClient.auth.updateUser(
-              UserAttributes(password: userProvidedPassword),
-            );
-            print('✅ [AUTH] Password updated successfully');
-            developer.log(
-              '✓ Password updated successfully',
-              name: 'AuthRemoteDataSource',
-            );
-          } catch (updateErr) {
-            // Log but don't fail - password update error should not prevent login
-            print(
-              '⚠️  [AUTH] Password update failed (non-blocking): $updateErr',
-            );
-            developer.log(
-              '⚠ Password update failed (non-blocking): $updateErr',
-              name: 'AuthRemoteDataSource',
-            );
-          }
-
-          // Return user with requiresOnboarding = true
-          return _userToModel(user, requiresOnboarding: true);
-        } on AuthException catch (technicalErr) {
-          print('❌ [AUTH] Technical password login FAILED');
-          print('   Status: ${technicalErr.statusCode}');
-          print('   Message: ${technicalErr.message}');
-          print('   Email attempted: $technicalEmail');
-          print(
-            '   Password attempted: ${AuthConstants.initialTechnicalPassword}',
-          );
-          developer.log(
-            'Technical password login failed - Status: ${technicalErr.statusCode}, Message: ${technicalErr.message}',
-            name: 'AuthRemoteDataSource',
-            level: 1000, // Error level
-          );
-
-          throw Exception(
-            'Activation failed: Invalid code or account not found.\n\n'
-            'Details:\n'
-            'Email: $technicalEmail\n'
-            'Error: ${technicalErr.message}\n'
-            'Status: ${technicalErr.statusCode}\n\n'
-            'Possible causes:\n'
-            '• User account does not exist in Supabase\n'
-            '• Account created with different domain/password\n'
-            '• Email not confirmed in Supabase',
-          );
+        } on AuthException {
+          // Ignore, handled by generic message below.
         }
+
+        throw Exception(
+          'Nieprawidłowy kod zaproszenia lub konto nie istnieje.',
+        );
       } else {
-        throw Exception('Login failed: ${e.message}');
+        throw Exception('Aktywacja nie powiodła się: ${e.message}');
       }
     } catch (e) {
       print('❌ [AUTH] Unexpected error: $e');
       rethrow;
+    }
+  }
+
+  @override
+  Future<UserModel> login(String emailOrCode, String password) async {
+    final loginEmail = _normalizeToTechnicalEmail(emailOrCode);
+    print('🔐 [AUTH] Starting login for: $loginEmail');
+
+    try {
+      final AuthResponse response = await supabaseClient.auth
+          .signInWithPassword(email: loginEmail, password: password);
+
+      final user = response.user;
+      if (user == null) {
+        throw Exception('Logowanie nie powiodło się.');
+      }
+
+      final isActivated = await _isProfileActivated(user.id);
+      if (!isActivated) {
+        await supabaseClient.auth.signOut();
+        throw Exception(
+          'Konto nie zostało jeszcze aktywowane. Użyj kodu zaproszenia.',
+        );
+      }
+
+      return _userToModel(user, isActivated: true, requiresOnboarding: false);
+    } on AuthException catch (e) {
+      throw Exception('Błąd logowania: ${e.message}');
     }
   }
 
@@ -195,5 +188,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           requiresOnboarding ??
           (user.userMetadata?['requires_onboarding'] as bool? ?? true),
     );
+  }
+
+  String _normalizeToTechnicalEmail(String emailOrCode) {
+    final value = emailOrCode.trim();
+    if (value.contains('@')) return value;
+    return AuthConstants.getTechnicalEmail(value);
   }
 }

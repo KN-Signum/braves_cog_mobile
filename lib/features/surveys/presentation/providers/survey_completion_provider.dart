@@ -25,11 +25,31 @@ class SurveyCompletionNotifier extends StateNotifier<Map<String, DateTime>> {
     String surveyType,
     DateTime completedAt,
   ) async {
-    final interval = _interval(surveyType);
     final notificationId = _notificationId(surveyType);
-    if (interval == null || notificationId == null) return;
+    if (notificationId == null) return;
 
-    final nextDue = completedAt.add(interval);
+    final interval = _interval(surveyType);
+    DateTime? nextDue;
+
+    if (surveyType == SurveyScheduleConfig.monitoring) {
+      final userId = _ref.read(authProvider).user?.id;
+      if (userId != null) {
+        final onboardingAnchor = await _latestCompletionBySurveyType(
+          userId: userId,
+          surveyType: 'onboarding',
+        );
+        if (onboardingAnchor != null) {
+          nextDue = _nextMonitoringDue(
+            onboardingAnchor: onboardingAnchor,
+            lastCompletedAt: completedAt,
+          );
+        }
+      }
+    }
+
+    nextDue ??= (interval != null) ? completedAt.add(interval) : null;
+    if (nextDue == null) return;
+
     final notificationService = _ref.read(notificationServiceProvider);
 
     // Cancel previous notification for this type before rescheduling.
@@ -112,6 +132,45 @@ DateTime? _maxDate(DateTime? a, DateTime? b) {
   if (a == null) return b;
   if (b == null) return a;
   return a.isAfter(b) ? a : b;
+}
+
+DateTime _dateAtStartOfDay(DateTime value) {
+  final local = value.toLocal();
+  return DateTime(local.year, local.month, local.day);
+}
+
+int _daysSinceAnchor(DateTime anchor, DateTime point) {
+  final a = _dateAtStartOfDay(anchor);
+  final p = _dateAtStartOfDay(point);
+  return p.difference(a).inDays;
+}
+
+DateTime _monitoringDayFromAnchor(DateTime onboardingAnchor, int dayOffset) {
+  return _dateAtStartOfDay(onboardingAnchor).add(Duration(days: dayOffset));
+}
+
+DateTime _nextMonitoringDue({
+  required DateTime onboardingAnchor,
+  DateTime? lastCompletedAt,
+}) {
+  final reference = lastCompletedAt ?? onboardingAnchor;
+  final elapsedDays = _daysSinceAnchor(onboardingAnchor, reference);
+
+  // Monitoring cadence per protocol: day 6 and day 18 within each 30-day cycle.
+  // Global offsets from baseline are: 6, 18, 36, 48, 66, 78, ...
+  var cycle = elapsedDays ~/ 30;
+  while (true) {
+    final day6 = (30 * cycle) + 6;
+    final day18 = (30 * cycle) + 18;
+
+    if (day6 > elapsedDays) {
+      return _monitoringDayFromAnchor(onboardingAnchor, day6);
+    }
+    if (day18 > elapsedDays) {
+      return _monitoringDayFromAnchor(onboardingAnchor, day18);
+    }
+    cycle++;
+  }
 }
 
 Future<DateTime?> _latestCompletionBySurveyIds({
@@ -264,7 +323,23 @@ final monitoringAvailabilityProvider = Provider<SurveyAvailability>((ref) {
     surveyCompletionProvider,
   )[SurveyScheduleConfig.monitoring];
   final remote = ref.watch(_latestMonitoringCompletionProvider).valueOrNull;
+  final onboardingAnchor = ref
+      .watch(_latestOnboardingCompletionProvider)
+      .valueOrNull;
   final effectiveLastCompleted = _maxDate(local, remote);
+
+  if (onboardingAnchor != null) {
+    final nextAvailableAt = _nextMonitoringDue(
+      onboardingAnchor: onboardingAnchor,
+      lastCompletedAt: effectiveLastCompleted,
+    );
+    return SurveyAvailability(
+      isAvailable: DateTime.now().isAfter(nextAvailableAt),
+      nextAvailableAt: nextAvailableAt,
+    );
+  }
+
+  // Fallback for edge cases when onboarding anchor is not available.
   return _computeAvailability(
     effectiveLastCompleted,
     SurveyScheduleConfig.monitoringInterval,

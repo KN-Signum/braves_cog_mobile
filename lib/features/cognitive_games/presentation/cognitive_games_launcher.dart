@@ -47,16 +47,29 @@ class CognitiveGamesLauncher {
       MaterialPageRoute(
         builder: (context) => _CognitiveTaskScreen(
           task: task,
-          onComplete: (result) {
-            _processSequenceResults(ref, result);
-            onComplete?.call();
+          onComplete: (result) async {
+            final saved = await _processSequenceResults(ref, result);
+            if (saved) {
+              onComplete?.call();
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Nie udało się zapisać wyników gier. Spróbuj ponownie.',
+                  ),
+                ),
+              );
+            }
           },
         ),
       ),
     );
   }
 
-  static void _processSequenceResults(WidgetRef ref, RPTaskResult taskResult) {
+  static Future<bool> _processSequenceResults(
+    WidgetRef ref,
+    RPTaskResult taskResult,
+  ) async {
     try {
       final authState = ref.read(authProvider);
       final userId = authState.user?.id;
@@ -65,14 +78,14 @@ class CognitiveGamesLauncher {
         debugPrint(
           '❌ [GamesScreen] Brak zalogowanego użytkownika — wyniki nie zostaną zapisane',
         );
-        return;
+        return false;
       }
 
       final List<CognitiveTestResult> collectedResults = [];
       final fullJson = taskResult.toJson();
       final resultsNode = fullJson['results'] as Map<String, dynamic>?;
 
-      if (resultsNode == null) return;
+      if (resultsNode == null) return false;
 
       _stepMap.forEach((stepId, testType) {
         if (resultsNode.containsKey(stepId)) {
@@ -94,12 +107,15 @@ class CognitiveGamesLauncher {
         debugPrint(
           '📊 [CognitiveGamesLauncher] Wysyłanie ${collectedResults.length} wyników...',
         );
-        ref
+        final saved = await ref
             .read(cognitiveGamesProvider.notifier)
             .saveSequenceResults(collectedResults);
+        return saved;
       }
+      return false;
     } catch (e) {
       debugPrint("❌ Krytyczny błąd przetwarzania wyników: $e");
+      return false;
     }
   }
 
@@ -127,7 +143,7 @@ class CognitiveGamesLauncher {
 
 class _CognitiveTaskScreen extends StatelessWidget {
   final RPOrderedTask task;
-  final void Function(RPTaskResult) onComplete;
+  final Future<void> Function(RPTaskResult) onComplete;
 
   const _CognitiveTaskScreen({required this.task, required this.onComplete});
 

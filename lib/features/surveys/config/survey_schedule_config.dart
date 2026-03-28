@@ -6,7 +6,7 @@ class SurveyScheduleConfig {
   static const String followUp = 'followup';
 
   // --- Repeat intervals ---
-  static const Duration monitoringInterval = Duration(days: 15);
+  static const Duration monitoringInterval = Duration(days: 6);
   static const Duration screeningInterval = Duration(days: 30);
   static const Duration followUpInterval = Duration(days: 180);
 

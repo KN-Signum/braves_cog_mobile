@@ -25,13 +25,13 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
         wantsAdverseEventsMonitoring: consents.wantsAdverseEventsMonitoring,
         pushNotifications: consents.pushNotifications,
       );
-      
+
       await sharedPreferences.setString(
         cachedConsentsKey,
         json.encode(model.toJson()),
       );
       // TODO: Sync to remote if needed
-      
+
       return const Right(unit);
     } catch (e) {
       return Left(CacheFailure());
@@ -51,28 +51,34 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
   @override
   Future<Either<Failure, bool>> isOnboardingCompleted() async {
     try {
-      final completed = sharedPreferences.getBool(onboardingCompletedKey) ?? false;
+      final completed =
+          sharedPreferences.getBool(onboardingCompletedKey) ?? false;
       return Right(completed);
     } catch (e) {
       return Left(CacheFailure());
     }
   }
 
-  Future<Either<Failure, Unit>> saveOnboardingData(Map<String, dynamic> data) async {
+  Future<Either<Failure, Unit>> saveOnboardingData(
+    Map<String, dynamic> data,
+  ) async {
     try {
       final model = OnboardingDataModel(
         demographic: data['Demographic'] as Map<String, dynamic>? ?? {},
-        baselineLifestyle: data['Baseline_Lifestyle'] as Map<String, dynamic>? ?? {},
-        baselineSymptoms: data['Baseline_Symptoms'] as Map<String, dynamic>? ?? {},
-        baselineMedicalHistory: data['Baseline_Medical_History'] as Map<String, dynamic>? ?? {},
+        baselineLifestyle:
+            data['Baseline_Lifestyle'] as Map<String, dynamic>? ?? {},
+        baselineSymptoms:
+            data['Baseline_Symptoms'] as Map<String, dynamic>? ?? {},
+        baselineMedicalHistory:
+            data['Baseline_Medical_History'] as Map<String, dynamic>? ?? {},
         completedAt: DateTime.now(),
       );
-      
+
       await sharedPreferences.setString(
         onboardingDataKey,
         model.toJsonString(),
       );
-      
+
       return const Right(unit);
     } catch (e) {
       return Left(CacheFailure());
@@ -85,11 +91,16 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
       if (jsonString == null) {
         return const Right(null);
       }
-      
+
       final model = OnboardingDataModel.fromJsonString(jsonString);
       return Right(model);
     } catch (e) {
       return Left(CacheFailure());
     }
+  }
+
+  Future<bool> hasSavedConsents() async {
+    final raw = sharedPreferences.getString(cachedConsentsKey);
+    return raw != null && raw.isNotEmpty;
   }
 }

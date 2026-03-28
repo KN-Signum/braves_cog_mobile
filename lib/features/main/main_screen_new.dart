@@ -82,10 +82,14 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
 
   void _handleOnboardingComplete() {
     // Onboarding includes the first monitoring session — seed the completion so
-    // the monitoring card is locked for the next ~15 days.
+    // the monitoring card is locked for the next ~6 days.
     ref
         .read(surveyCompletionProvider.notifier)
         .recordCompletion(SurveyScheduleConfig.monitoring);
+    // First screening should open 30 days after baseline onboarding.
+    ref
+        .read(surveyCompletionProvider.notifier)
+        .recordCompletion(SurveyScheduleConfig.screening);
     // First follow-up should open 180 days after onboarding.
     ref
         .read(surveyCompletionProvider.notifier)

@@ -61,11 +61,13 @@ class OnboardingScreen extends ConsumerWidget {
                   .setStage(OnboardingStage.intro);
             }
           },
-          onComplete: (data) {
-            ref.read(onboardingProvider.notifier).saveOnboardingData(data);
-            ref
+          onComplete: (data) async {
+            await ref
                 .read(onboardingProvider.notifier)
-                .setStage(OnboardingStage.consentsIntro);
+                .saveOnboardingData(data);
+            await ref
+                .read(onboardingProvider.notifier)
+                .moveToPostProfileStage();
           },
         );
 

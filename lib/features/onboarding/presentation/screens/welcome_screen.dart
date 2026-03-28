@@ -15,9 +15,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
     // Ten ekran nie jest już używany – nawigacja przechodzi bezpośrednio do IntroScreen.
-    return const Scaffold(
-      body: SizedBox.shrink(),
-    );
+    return const Scaffold(body: SizedBox.shrink());
   }
 }
 
@@ -61,17 +59,17 @@ class _IntroScreenState extends ConsumerState<IntroScreen> {
 
     final body = switch (_currentPage) {
       0 =>
-          'Dziękujemy, że zdecydowałeś się wziąć udział w tym projekcie badawczym. '
-          'Twoje odpowiedzi pozwolą nam lepiej zrozumieć związek między stylem życia, '
-          'funkcjami poznawczymi i samopoczuciem psychicznym.',
+        'Dziękujemy, że zdecydowałeś się wziąć udział w tym projekcie badawczym. '
+            'Twoje odpowiedzi pozwolą nam lepiej zrozumieć związek między stylem życia, '
+            'funkcjami poznawczymi i samopoczuciem psychicznym.',
       1 =>
-          'Pierwsza sesja — Onboarding — obejmuje kilka kwestionariuszy dotyczących '
-          'Twojej aktywności fizycznej, snu, diety, zdrowia oraz samopoczucia. '
-          'Wypełnienie jej zajmie około 40–55 minut.',
+        'Pierwsza sesja — Onboarding — obejmuje kilka kwestionariuszy dotyczących '
+            'Twojej aktywności fizycznej, snu, diety, zdrowia oraz samopoczucia. '
+            'Wypełnienie jej zajmie około 20–25 minut.',
       _ =>
-          'Możesz robić przerwy i wracać do aplikacji w dowolnym momencie — '
-          'Twoje odpowiedzi są zapisywane automatycznie.\n\n'
-          'Kolejna pełna sesja tego rodzaju odbędzie się po 180 dniach.',
+        'Możesz robić przerwy i wracać do aplikacji w dowolnym momencie — '
+            'Twoje odpowiedzi są zapisywane automatycznie.\n\n'
+            'Kolejna pełna sesja tego rodzaju odbędzie się po 180 dniach.',
     };
 
     final primaryButtonLabel = _currentPage < 2 ? 'Kontynuuj' : 'Zaczynamy';
@@ -94,8 +92,7 @@ class _IntroScreenState extends ConsumerState<IntroScreen> {
                     child: Text(
                       title,
                       textAlign: TextAlign.center,
-                      style:
-                          theme.textTheme.headlineMedium?.copyWith(
+                      style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                         height: 1.3,
                         letterSpacing: -0.24,
@@ -124,7 +121,9 @@ class _IntroScreenState extends ConsumerState<IntroScreen> {
                         width: 8,
                         height: 8,
                         margin: const EdgeInsets.symmetric(
-                            horizontal: 4, vertical: 8),
+                          horizontal: 4,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: index == _currentPage
@@ -152,8 +151,7 @@ class _IntroScreenState extends ConsumerState<IntroScreen> {
                       children: [
                         Text(
                           primaryButtonLabel,
-                          style:
-                              theme.textTheme.titleMedium?.copyWith(
+                          style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w700,
                             color: AppTheme.inverseTextColor,
                           ),
@@ -167,7 +165,7 @@ class _IntroScreenState extends ConsumerState<IntroScreen> {
                     ),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),

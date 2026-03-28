@@ -47,7 +47,7 @@ class CognitiveGamesNotifier extends StateNotifier<CognitiveGamesState> {
     );
   }
 
-  Future<void> saveSequenceResults(List<CognitiveTestResult> results) async {
+  Future<bool> saveSequenceResults(List<CognitiveTestResult> results) async {
     // 1. Resetujemy stan i włączamy loader
     state = state.copyWith(isLoading: true, error: null, isSaved: false);
 
@@ -65,15 +65,17 @@ class CognitiveGamesNotifier extends StateNotifier<CognitiveGamesState> {
           );
 
           state = state.copyWith(isLoading: false, error: errorMessage);
-          return; // Wyjście z funkcji przy pierwszym błędzie
+          return false; // Wyjście z funkcji przy pierwszym błędzie
         }
       }
 
       // 4. Jeśli pętla przeszła bez błędów -> Sukces
       state = state.copyWith(isLoading: false, isSaved: true);
+      return true;
     } catch (e) {
       // Zabezpieczenie na wypadek nieoczekiwanych wyjątków spoza Either
       state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
     }
   }
 }

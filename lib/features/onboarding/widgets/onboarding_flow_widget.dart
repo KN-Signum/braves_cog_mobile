@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
 import 'package:braves_cog/features/surveys/widgets/universal_survey_widget.dart';
 import 'package:braves_cog/features/surveys/domain/entities/survey_entity.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 import 'package:braves_cog/features/surveys/config/survey_flow_rules.dart';
+import 'package:braves_cog/features/surveys/presentation/providers/survey_provider.dart';
 
 bool _isAlertSurvey(String surveyId) {
   if (surveyId == 'PHQ_2' || surveyId == 'GAD_2') return true;
@@ -46,14 +48,80 @@ class _OnboardingFlowWidgetState extends ConsumerState<OnboardingFlowWidget> {
   final Map<String, dynamic> _allAnswers = {};
   bool _startAtEndForCurrentSurvey = false;
   final Set<String> _alertSurveysCompleted = {};
+  bool _isLoadingProgress = true;
 
   late List<Map<String, dynamic>> _modules;
 
   @override
   void initState() {
     super.initState();
+    _initializeFlow();
+  }
+
+  Future<void> _initializeFlow() async {
     final profile = ref.read(profileProvider).profile;
-    _modules = SurveyFlowRules.getOnboardingModules(profile.type);
+    final baseModules = SurveyFlowRules.getOnboardingModules(profile.type);
+    final authUserId = ref.read(authProvider).user?.id;
+
+    Map<String, Map<String, dynamic>> completedSurveyAnswers = {};
+    if (authUserId != null) {
+      try {
+        completedSurveyAnswers = await ref
+            .read(surveyRemoteDataSourceProvider)
+            .getCompletedSurveyAnswersByType(
+              userId: authUserId,
+              surveyType: 'onboarding',
+            );
+      } catch (e) {
+        debugPrint(
+          '[OnboardingFlowWidget] Failed to load onboarding progress from backend: $e',
+        );
+      }
+    }
+
+    final filteredModules = <Map<String, dynamic>>[];
+
+    for (final module in baseModules) {
+      final moduleId = module['id'] as String;
+      final surveys = (module['surveys'] as List).cast<Map<String, dynamic>>();
+      final remainingSurveys = <Map<String, dynamic>>[];
+
+      for (final surveyMeta in surveys) {
+        final surveyId = surveyMeta['id'] as String;
+        final completedAnswers = completedSurveyAnswers[surveyId];
+
+        if (completedAnswers != null) {
+          if (!_allAnswers.containsKey(moduleId)) {
+            _allAnswers[moduleId] = <String, dynamic>{};
+          }
+          final moduleAnswers = _allAnswers[moduleId] as Map<String, dynamic>;
+          moduleAnswers[surveyId] = completedAnswers;
+        } else {
+          remainingSurveys.add(surveyMeta);
+        }
+      }
+
+      if (remainingSurveys.isNotEmpty) {
+        filteredModules.add({...module, 'surveys': remainingSurveys});
+      }
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      _modules = filteredModules;
+      _currentModuleIndex = 0;
+      _currentSurveyIndex = 0;
+      _isLoadingProgress = false;
+    });
+
+    if (filteredModules.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          widget.onComplete(_allAnswers);
+        }
+      });
+    }
   }
 
   void _handleSurveyComplete(
@@ -148,6 +216,10 @@ class _OnboardingFlowWidgetState extends ConsumerState<OnboardingFlowWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingProgress) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     int m = _currentModuleIndex;
     int s = _currentSurveyIndex;
     while (m < _modules.length) {

@@ -8,6 +8,7 @@ import 'package:braves_cog/features/profile/presentation/providers/profile_provi
 import 'package:braves_cog/features/profile/domain/entities/user_type.dart';
 import 'package:braves_cog/core/providers/notification_service_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 // import 'package:braves_cog/features/settings/get_help_screen.dart';
 import 'package:braves_cog/features/settings/researchers_contact_screen.dart';
 
@@ -42,23 +43,9 @@ class SettingsScreen extends ConsumerWidget {
             _buildGroupThemeVariantTile(context, ref),
           _buildSettingsTile(
             context: context,
-            icon: Icons.help_outline,
+            icon: LucideIcons.siren,
             title: 'Uzyskaj pomoc',
             subtitle: 'Numery alarmowe i wsparcie',
-            onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (_) => GetHelpScreen(),
-              //   ),
-              // );
-            },
-          ),
-          _buildSettingsTile(
-            context: context,
-            icon: Icons.mail_outline,
-            title: 'Kontakt do badaczy',
-            subtitle: 'E-mail i adres zespołu badawczego',
             onTap: () {
               Navigator.push(
                 context,
@@ -68,7 +55,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           _buildSettingsTile(
             context: context,
-            icon: Icons.mail_outline,
+            icon: LucideIcons.mail,
             title: 'Kontakt do badaczy',
             subtitle: 'E-mail i adres zespołu badawczego',
             onTap: () {
@@ -82,7 +69,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           _buildSettingsTile(
             context: context,
-            icon: Icons.notifications,
+            icon: LucideIcons.bell,
             title: 'Powiadomienia',
             subtitle: 'Zarządzaj powiadomieniami',
             onTap: () async {
@@ -115,7 +102,7 @@ class SettingsScreen extends ConsumerWidget {
                               return ListTile(
                                 dense: true,
                                 contentPadding: EdgeInsets.zero,
-                                leading: const Icon(Icons.notifications_active),
+                                leading: const Icon(LucideIcons.bellRing),
                                 title: Text(
                                   n.title ?? '(brak tytułu)',
                                   style: const TextStyle(
@@ -162,14 +149,14 @@ class SettingsScreen extends ConsumerWidget {
           ),
           _buildSettingsTile(
             context: context,
-            icon: Icons.privacy_tip,
+            icon: LucideIcons.shield,
             title: 'Prywatność',
             subtitle: 'Zarządzaj danymi osobowymi',
             onTap: () {},
           ),
           _buildSettingsTile(
             context: context,
-            icon: Icons.info,
+            icon: LucideIcons.info,
             title: 'O aplikacji',
             subtitle: 'Wersja 1.0.0',
             onTap: () {},
@@ -232,7 +219,7 @@ class SettingsScreen extends ConsumerWidget {
             borderRadius: BorderRadius.zero,
           ),
           child: Icon(
-            isDarkMode ? Icons.dark_mode : Icons.light_mode,
+            isDarkMode ? LucideIcons.moon : LucideIcons.sun,
             color: accentColor,
             size: 24,
           ),
@@ -307,7 +294,7 @@ class SettingsScreen extends ConsumerWidget {
             color: accentColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.zero,
           ),
-          child: Icon(Icons.palette_outlined, color: accentColor, size: 24),
+          child: Icon(LucideIcons.palette, color: accentColor, size: 24),
         ),
         title: Text(
           'Motyw',
@@ -392,7 +379,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ),
         trailing: Icon(
-          Icons.chevron_right,
+          LucideIcons.chevronRight,
           color: textColor.withValues(alpha: 0.5),
           size: 24,
         ),

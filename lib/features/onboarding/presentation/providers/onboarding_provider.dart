@@ -110,6 +110,16 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
     _updateProfileWithDemographicData(data);
   }
 
+  Future<void> moveToPostProfileStage() async {
+    final repository = _repository as OnboardingRepositoryImpl;
+    final hasConsents = await repository.hasSavedConsents();
+    state = state.copyWith(
+      stage: hasConsents
+          ? OnboardingStage.final_
+          : OnboardingStage.consentsIntro,
+    );
+  }
+
   void _updateProfileWithDemographicData(Map<String, dynamic> allAnswers) {
     try {
       final profileNotifier = ref.read(profileProvider.notifier);

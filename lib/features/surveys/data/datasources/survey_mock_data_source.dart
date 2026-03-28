@@ -40,4 +40,13 @@ class SurveyMockDataSource implements SurveyRemoteDataSource {
     // For now we just return success.
     return;
   }
+
+  @override
+  Future<Map<String, Map<String, dynamic>>> getCompletedSurveyAnswersByType({
+    required String userId,
+    required String surveyType,
+  }) async {
+    // Mock datasource: no persisted remote progress; return empty set.
+    return <String, Map<String, dynamic>>{};
+  }
 }

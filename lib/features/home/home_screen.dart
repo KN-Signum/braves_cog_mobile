@@ -91,7 +91,7 @@ class HomeScreen extends ConsumerWidget {
                     Text(
                       locked
                           ? 'Następne: ${DateFormat('dd.MM.yyyy').format(availability.nextAvailableAt!)}'
-                          : 'Codzienne sprawdzanie samopoczucia i stanu zdrowia',
+                          : 'Kontrola samopoczucia i stanu zdrowia',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                       ),
@@ -99,6 +99,7 @@ class HomeScreen extends ConsumerWidget {
                   ],
                 ),
               ),
+              SizedBox(width: 10),
               Container(
                 width: 70,
                 height: 70,

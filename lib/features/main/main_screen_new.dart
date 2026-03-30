@@ -197,9 +197,6 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
       'games',
       'profile',
       'settings',
-      'monitoring',
-      'screening',
-      'followup',
     ].contains(_currentView);
 
     return Scaffold(

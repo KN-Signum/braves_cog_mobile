@@ -24,6 +24,10 @@ class HomeScreen extends ConsumerWidget {
     final monitoringAvailability = ref.watch(monitoringAvailabilityProvider);
     final screeningAvailability = ref.watch(screeningAvailabilityProvider);
     final followUpAvailability = ref.watch(followUpAvailabilityProvider);
+    final screeningCount =
+        ref.watch(screeningSubmittedCountProvider).valueOrNull ?? 0;
+    final followupCount =
+        ref.watch(followupSubmittedCountProvider).valueOrNull ?? 0;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -46,9 +50,17 @@ class HomeScreen extends ConsumerWidget {
                     SizedBox(height: AppTheme.spacingXl),
                     _buildMonitoringCard(context, monitoringAvailability),
                     SizedBox(height: AppTheme.spacingMd),
-                    _buildScreeningCard(context, screeningAvailability),
+                    _buildScreeningCard(
+                      context,
+                      screeningAvailability,
+                      screeningCount,
+                    ),
                     SizedBox(height: AppTheme.spacingMd),
-                    _buildFollowUpCard(context, followUpAvailability),
+                    _buildFollowUpCard(
+                      context,
+                      followUpAvailability,
+                      followupCount,
+                    ),
                     SizedBox(height: AppTheme.spacingXl),
                   ],
                 ),
@@ -122,8 +134,11 @@ class HomeScreen extends ConsumerWidget {
   Widget _buildScreeningCard(
     BuildContext context,
     SurveyAvailability availability,
+    int submittedCount,
   ) {
     final locked = !availability.isAvailable;
+    final isPartiallyCompleted =
+        !locked && submittedCount > 0 && submittedCount < 8;
     return GestureDetector(
       onTap: locked ? null : onScreeningClick,
       child: Opacity(
@@ -158,7 +173,9 @@ class HomeScreen extends ConsumerWidget {
                     ),
                     SizedBox(height: AppTheme.spacingSm),
                     Text(
-                      locked
+                      isPartiallyCompleted
+                          ? 'W trakcie: $submittedCount z 8 ukończonych'
+                          : locked
                           ? 'Następne: ${DateFormat('dd.MM.yyyy').format(availability.nextAvailableAt!)}'
                           : 'Szczegółowa ocena zdrowia, snu i samopoczucia',
                       style: Theme.of(context).textTheme.bodyMedium,
@@ -181,8 +198,11 @@ class HomeScreen extends ConsumerWidget {
   Widget _buildFollowUpCard(
     BuildContext context,
     SurveyAvailability availability,
+    int submittedCount,
   ) {
     final locked = !availability.isAvailable;
+    final isPartiallyCompleted =
+        !locked && submittedCount > 0 && submittedCount < 11;
     return GestureDetector(
       onTap: locked ? null : onFollowUpClick,
       child: Opacity(
@@ -217,7 +237,9 @@ class HomeScreen extends ConsumerWidget {
                     ),
                     SizedBox(height: AppTheme.spacingSm),
                     Text(
-                      locked
+                      isPartiallyCompleted
+                          ? 'W trakcie: $submittedCount z 11 ukończonych'
+                          : locked
                           ? 'Następne: ${DateFormat('dd.MM.yyyy').format(availability.nextAvailableAt!)}'
                           : 'Ankiety kontrolne: styl życia, sen, odżywianie, samopoczucie',
                       style: Theme.of(context).textTheme.bodyMedium,

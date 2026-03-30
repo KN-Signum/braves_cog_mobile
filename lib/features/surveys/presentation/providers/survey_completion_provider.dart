@@ -3,6 +3,7 @@ import 'package:braves_cog/features/auth/presentation/providers/auth_provider.da
 import 'package:braves_cog/core/providers/notification_service_provider.dart';
 import 'package:braves_cog/features/surveys/config/survey_schedule_config.dart';
 import 'package:braves_cog/features/surveys/domain/entities/survey_availability.dart';
+import 'package:braves_cog/features/surveys/presentation/providers/survey_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// In-memory store of [surveyType] -> [lastCompletedAt].
@@ -346,15 +347,54 @@ final monitoringAvailabilityProvider = Provider<SurveyAvailability>((ref) {
   );
 });
 
+/// Check if all required surveys for screening flow are completed today.
+final _isScreeningCompletedTodayProvider = FutureProvider<bool>((ref) async {
+  ref.watch(_availabilityClockProvider);
+  final userId = ref.watch(authProvider).user?.id;
+  if (userId == null) return false;
+
+  final datasource = ref.watch(surveyRemoteDataSourceProvider);
+  return datasource.isFlowCompletedToday(
+    userId: userId,
+    flowType: SurveyScheduleConfig.screening,
+  );
+});
+
+/// Check if all required surveys for follow-up flow are completed today.
+final _isFollowUpCompletedTodayProvider = FutureProvider<bool>((ref) async {
+  ref.watch(_availabilityClockProvider);
+  final userId = ref.watch(authProvider).user?.id;
+  if (userId == null) return false;
+
+  final datasource = ref.watch(surveyRemoteDataSourceProvider);
+  return datasource.isFlowCompletedToday(
+    userId: userId,
+    flowType: SurveyScheduleConfig.followUp,
+  );
+});
+
 final screeningAvailabilityProvider = Provider<SurveyAvailability>((ref) {
   final local = ref.watch(
     surveyCompletionProvider,
   )[SurveyScheduleConfig.screening];
   final remote = ref.watch(_latestScreeningCompletionProvider).valueOrNull;
   final effectiveLastCompleted = _maxDate(local, remote);
-  return _computeAvailability(
+  final scheduledAvailability = _computeAvailability(
     effectiveLastCompleted,
     SurveyScheduleConfig.screeningInterval,
+  );
+
+  // Check if flow is completed today
+  final isCompletedToday =
+      ref.watch(_isScreeningCompletedTodayProvider).valueOrNull ?? false;
+
+  // Enable if scheduled OR if not completed (partial completion case)
+  final finalAvailability =
+      scheduledAvailability.isAvailable || !isCompletedToday;
+
+  return SurveyAvailability(
+    isAvailable: finalAvailability,
+    nextAvailableAt: scheduledAvailability.nextAvailableAt,
   );
 });
 
@@ -375,5 +415,49 @@ final followUpAvailabilityProvider = Provider<SurveyAvailability>((ref) {
   final latestFollowUp = _maxDate(localFollowUp, remoteFollowUp);
   final anchor = latestFollowUp ?? remoteOnboarding;
 
-  return _computeAvailability(anchor, SurveyScheduleConfig.followUpInterval);
+  final scheduledAvailability = _computeAvailability(
+    anchor,
+    SurveyScheduleConfig.followUpInterval,
+  );
+
+  // Check if flow is completed today
+  final isCompletedToday =
+      ref.watch(_isFollowUpCompletedTodayProvider).valueOrNull ?? false;
+
+  // Enable if scheduled OR if not completed (partial completion case)
+  final finalAvailability =
+      scheduledAvailability.isAvailable || !isCompletedToday;
+
+  return SurveyAvailability(
+    isAvailable: finalAvailability,
+    nextAvailableAt: scheduledAvailability.nextAvailableAt,
+  );
+});
+
+/// Count submitted surveys for screening flow today.
+final screeningSubmittedCountProvider = FutureProvider<int>((ref) async {
+  ref.watch(_availabilityClockProvider);
+  final userId = ref.watch(authProvider).user?.id;
+  if (userId == null) return 0;
+
+  final datasource = ref.watch(surveyRemoteDataSourceProvider);
+  final submitted = await datasource.getCompletedSurveyAnswersByType(
+    userId: userId,
+    surveyType: SurveyScheduleConfig.screening,
+  );
+  return submitted.length;
+});
+
+/// Count submitted surveys for follow-up flow today.
+final followupSubmittedCountProvider = FutureProvider<int>((ref) async {
+  ref.watch(_availabilityClockProvider);
+  final userId = ref.watch(authProvider).user?.id;
+  if (userId == null) return 0;
+
+  final datasource = ref.watch(surveyRemoteDataSourceProvider);
+  final submitted = await datasource.getCompletedSurveyAnswersByType(
+    userId: userId,
+    surveyType: SurveyScheduleConfig.followUp,
+  );
+  return submitted.length;
 });

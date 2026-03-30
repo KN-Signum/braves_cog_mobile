@@ -158,23 +158,24 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
         demographicAnswers.forEach((key, value) {
           switch (key) {
             case 'birth_year':
-              if (value is int)
+              if (value is int) {
                 birthYear = value;
-              else if (value is String)
+              } else if (value is String)
                 birthYear = int.tryParse(value) ?? birthYear;
             case 'height':
-              if (value is int)
+              if (value is int) {
                 height = value;
-              else if (value is String)
+              } else if (value is String)
                 height = int.tryParse(value) ?? height;
             case 'weight':
-              if (value is int)
+              if (value is int) {
                 weight = value;
-              else if (value is String)
+              } else if (value is String)
                 weight = int.tryParse(value) ?? weight;
             case 'biological_sex':
-              if (value is String)
+              if (value is String) {
                 biologicalSex = BiologicalSex.fromString(value);
+              }
             case 'gender_identity':
               if (value is String) genderIdentity = value;
             case 'gender_identity_other':

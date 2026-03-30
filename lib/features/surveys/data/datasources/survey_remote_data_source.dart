@@ -1,3 +1,4 @@
+import 'package:braves_cog/features/surveys/config/survey_schedule_config.dart';
 import 'package:braves_cog/features/surveys/domain/entities/survey_submission_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -8,6 +9,11 @@ abstract class SurveyRemoteDataSource {
   Future<Map<String, Map<String, dynamic>>> getCompletedSurveyAnswersByType({
     required String userId,
     required String surveyType,
+  });
+
+  Future<bool> isFlowCompletedToday({
+    required String userId,
+    required String flowType, // 'screening' or 'followup'
   });
 }
 
@@ -131,6 +137,86 @@ class SurveySupabaseDataSource implements SurveyRemoteDataSource {
     }
 
     return result;
+  }
+
+  @override
+  Future<bool> isFlowCompletedToday({
+    required String userId,
+    required String flowType,
+  }) async {
+    try {
+      debugPrint(
+        '[SurveySupabaseDataSource] START isFlowCompletedToday userId=$userId flowType=$flowType',
+      );
+
+      // Get required survey list for the flow type
+      final requiredSurveys = _getRequiredSurveysForType(flowType);
+      if (requiredSurveys.isEmpty) {
+        debugPrint(
+          '[SurveySupabaseDataSource] No required surveys found for flowType=$flowType',
+        );
+        return false;
+      }
+
+      // Get today's date range
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final tomorrow = today.add(Duration(days: 1));
+      final todayStart = today.toUtc().toIso8601String();
+      final tomorrowStart = tomorrow.toUtc().toIso8601String();
+
+      // Query all survey_responses for this user, today, of the given type
+      final rows = await supabaseClient
+          .from('survey_responses')
+          .select('surveys!inner(survey_key)')
+          .eq('user_id', userId)
+          .eq('surveys.survey_type', flowType)
+          .gte('completed_at', todayStart)
+          .lt('completed_at', tomorrowStart);
+
+      // Extract all survey_keys from the responses
+      final submittedKeys = <String>{};
+      for (final row in rows) {
+        final surveysNode = row['surveys'];
+        final surveyKey = (surveysNode is Map<String, dynamic>)
+            ? surveysNode['survey_key']?.toString()
+            : null;
+
+        if (surveyKey != null && surveyKey.isNotEmpty) {
+          submittedKeys.add(surveyKey);
+        }
+      }
+
+      debugPrint(
+        '[SurveySupabaseDataSource] Found ${submittedKeys.length} unique submitted surveys for flowType=$flowType',
+      );
+
+      // Check if ALL required surveys have been submitted
+      final allRequired = Set<String>.from(requiredSurveys);
+      final isComplete = allRequired.every(
+        (key) => submittedKeys.contains(key),
+      );
+
+      debugPrint(
+        '[SurveySupabaseDataSource] isFlowCompletedToday: required=${allRequired.length} submitted=${submittedKeys.length} complete=$isComplete',
+      );
+
+      return isComplete;
+    } catch (e, stackTrace) {
+      debugPrint(
+        '[SurveySupabaseDataSource] ERROR in isFlowCompletedToday: $e\n$stackTrace',
+      );
+      return false;
+    }
+  }
+
+  List<String> _getRequiredSurveysForType(String flowType) {
+    if (flowType == SurveyScheduleConfig.screening) {
+      return SurveyScheduleConfig.screeningSurveyKeys;
+    } else if (flowType == SurveyScheduleConfig.followUp) {
+      return SurveyScheduleConfig.followUpSurveyKeys;
+    }
+    return [];
   }
 
   Future<Map<String, String>> _resolveSurveyMeta(String surveyIdOrKey) async {

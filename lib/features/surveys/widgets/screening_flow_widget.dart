@@ -4,19 +4,24 @@ import 'package:braves_cog/features/surveys/widgets/universal_survey_widget.dart
 import 'package:braves_cog/features/surveys/domain/entities/survey_entity.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
 import 'package:braves_cog/features/surveys/config/survey_flow_rules.dart';
+import 'package:braves_cog/features/surveys/config/survey_schedule_config.dart';
 import 'package:braves_cog/features/surveys/config/survey_configs/mini_eat_survey_config.dart';
+import 'package:braves_cog/features/surveys/presentation/providers/survey_provider.dart';
+import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
 import 'package:braves_cog/features/cognitive_games/presentation/cognitive_games_launcher.dart';
 
 bool _isAlertSurvey(String surveyId) {
   if (surveyId == 'PHQ_2' || surveyId == 'GAD_2') return true;
   if (surveyId == 'Baseline_Depression' ||
       surveyId.contains('PHQ_9') ||
-      surveyId.contains('phq9'))
+      surveyId.contains('phq9')) {
     return true;
+  }
   if (surveyId == 'Baseline_Stress_And_Anxiety_GAD7' ||
       surveyId.contains('GAD_7') ||
-      surveyId.contains('gad7'))
+      surveyId.contains('gad7')) {
     return true;
+  }
   return false;
 }
 
@@ -50,6 +55,49 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
     super.initState();
     final profile = ref.read(profileProvider).profile;
     _surveys = SurveyFlowRules.getScreeningSurveys(profile.type);
+
+    // Load previously submitted answers
+    _loadPreviousAnswers();
+  }
+
+  Future<void> _loadPreviousAnswers() async {
+    final userId = ref.read(authProvider).user?.id;
+    if (userId == null) return;
+
+    try {
+      final datasource = ref.read(surveyRemoteDataSourceProvider);
+      final submitted = await datasource.getCompletedSurveyAnswersByType(
+        userId: userId,
+        surveyType: SurveyScheduleConfig.screening,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        // Pre-populate _allAnswers with previously submitted answers
+        _allAnswers.addAll(submitted);
+
+        // Find first unanswered survey and start from there
+        int firstUnansweredIndex = 0;
+        for (int i = 0; i < _surveys.length; i++) {
+          final surveyId = _surveys[i]['id'] as String;
+          if (_allAnswers.containsKey(surveyId)) {
+            firstUnansweredIndex = i + 1;
+          } else {
+            break;
+          }
+        }
+
+        // Ensure we don't go past the end
+        if (firstUnansweredIndex >= _surveys.length) {
+          firstUnansweredIndex = _surveys.length - 1;
+        }
+
+        _currentSurveyIndex = firstUnansweredIndex;
+      });
+    } catch (e) {
+      debugPrint('[ScreeningFlowWidget] Error loading previous answers: $e');
+    }
   }
 
   void _handleSurveyComplete(

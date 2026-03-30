@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 
 class HoursMinutesPickerWidget extends StatefulWidget {
   final int? hours;
@@ -42,10 +41,7 @@ class _HoursMinutesPickerWidgetState extends State<HoursMinutesPickerWidget> {
 
     _hoursController = FixedExtentScrollController(initialItem: _selectedHours);
 
-    final initialMinuteIndex = _selectedMinutes.clamp(
-      0,
-      widget.maxMinutes,
-    );
+    final initialMinuteIndex = _selectedMinutes.clamp(0, widget.maxMinutes);
     _minutesController = FixedExtentScrollController(
       initialItem: initialMinuteIndex,
     );
@@ -67,10 +63,7 @@ class _HoursMinutesPickerWidgetState extends State<HoursMinutesPickerWidget> {
       _selectedMinutes = widget.minutes ?? widget.minMinutesIfZeroHours;
 
       _hoursController.jumpToItem(_selectedHours);
-      final minuteIndex = _selectedMinutes.clamp(
-        0,
-        widget.maxMinutes,
-      );
+      final minuteIndex = _selectedMinutes.clamp(0, widget.maxMinutes);
       _minutesController.jumpToItem(minuteIndex);
     }
   }
@@ -78,8 +71,7 @@ class _HoursMinutesPickerWidgetState extends State<HoursMinutesPickerWidget> {
   @override
   Widget build(BuildContext context) {
     final hoursList = List.generate(widget.maxHours + 1, (index) => index);
-    final minutesList =
-        List.generate(widget.maxMinutes + 1, (index) => index);
+    final minutesList = List.generate(widget.maxMinutes + 1, (index) => index);
     final primary = Theme.of(context).colorScheme.primary;
     final fieldBg = Theme.of(context).scaffoldBackgroundColor;
 
@@ -98,9 +90,9 @@ class _HoursMinutesPickerWidgetState extends State<HoursMinutesPickerWidget> {
               Text(
                 'Wybierz czas',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: primary,
-                    ),
+                  fontWeight: FontWeight.w700,
+                  color: primary,
+                ),
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -141,9 +133,7 @@ class _HoursMinutesPickerWidgetState extends State<HoursMinutesPickerWidget> {
                               ),
                               child: Text(
                                 hour.toString().padLeft(2, '0'),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .displaySmall
+                                style: Theme.of(context).textTheme.displaySmall
                                     ?.copyWith(
                                       fontSize: isSelected ? 32 : 24,
                                       fontWeight: isSelected
@@ -165,12 +155,12 @@ class _HoursMinutesPickerWidgetState extends State<HoursMinutesPickerWidget> {
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Text(
                         ':',
-                        style:
-                            Theme.of(context).textTheme.displaySmall?.copyWith(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.w700,
-                                  color: primary,
-                                ),
+                        style: Theme.of(context).textTheme.displaySmall
+                            ?.copyWith(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w700,
+                              color: primary,
+                            ),
                       ),
                     ),
                     // Minutes picker
@@ -207,9 +197,7 @@ class _HoursMinutesPickerWidgetState extends State<HoursMinutesPickerWidget> {
                               ),
                               child: Text(
                                 minute.toString().padLeft(2, '0'),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .displaySmall
+                                style: Theme.of(context).textTheme.displaySmall
                                     ?.copyWith(
                                       fontSize: isSelected ? 32 : 24,
                                       fontWeight: isSelected

@@ -16,16 +16,13 @@ class IPAQSurveyConfig {
               'Pytania dotyczą intensywnych i umiarkowanych ćwiczeń, a także codziennego chodzenia i czasu spędzanego w pozycji siedzącej.\n\n'
               'Szacowany czas: ok. 3–5 minut.',
           required: false,
-          options: {
-            'info': true,
-            'intro': true,
-          },
+          options: {'info': true, 'intro': true},
         ),
         SurveyQuestionEntity(
           id: 'ipaq_vigorous_days',
           type: QuestionType.choice,
           question:
-              'W ciągu ostatnich 7 dni, przez ile dni wykonywałeś intensywne aktywności fizyczne, takie jak podnoszenie ciężarów, kopanie, aerobik lub szybka jazda na rowerze?',
+              'W ciągu ostatnich 7 dni, przez ile dni wykonywałeś intensywne aktywności fizyczne, takie jak podnoszenie ciężarów, kopanie ziemi, aerobik lub szybka jazda na rowerze?',
           description:
               'Intensywne aktywności fizyczne to takie, które wymagają dużego wysiłku i powodują znacznie szybszy oddech niż normalnie. Uwzględnij tylko te aktywności, które trwały co najmniej 10 minut jednorazowo.',
           required: true,
@@ -46,7 +43,8 @@ class IPAQSurveyConfig {
         SurveyQuestionEntity(
           id: 'ipaq_vigorous_time',
           type: QuestionType.number,
-          question: 'Ile czasu zazwyczaj poświęcałeś na intensywną aktywność fizyczną w jeden z tych dni?',
+          question:
+              'Ile czasu zazwyczaj poświęcałeś na intensywną aktywność fizyczną w jeden z tych dni?',
           required: true,
           options: {
             'composite': 'hours_minutes',
@@ -86,7 +84,8 @@ class IPAQSurveyConfig {
         SurveyQuestionEntity(
           id: 'ipaq_moderate_time',
           type: QuestionType.number,
-          question: 'Ile czasu zazwyczaj poświęcałeś na umiarkowaną aktywność fizyczną w jeden z tych dni?',
+          question:
+              'Ile czasu zazwyczaj poświęcałeś na umiarkowaną aktywność fizyczną w jeden z tych dni?',
           required: true,
           options: {
             'composite': 'hours_minutes',
@@ -126,7 +125,8 @@ class IPAQSurveyConfig {
         SurveyQuestionEntity(
           id: 'ipaq_walking_time',
           type: QuestionType.number,
-          question: 'Ile czasu zazwyczaj poświęcałeś na chodzenie w jeden z tych dni?',
+          question:
+              'Ile czasu zazwyczaj poświęcałeś na chodzenie w jeden z tych dni?',
           required: true,
           options: {
             'composite': 'hours_minutes',
@@ -146,7 +146,8 @@ class IPAQSurveyConfig {
         SurveyQuestionEntity(
           id: 'ipaq_sitting_time',
           type: QuestionType.number,
-          question: 'W ciągu ostatnich 7 dni, ile czasu spędzałeś siedząc w dzień roboczy?',
+          question:
+              'W ciągu ostatnich 7 dni, ile czasu spędzałeś siedząc w dzień roboczy?',
           required: true,
           options: {
             'composite': 'hours_minutes',
@@ -160,5 +161,3 @@ class IPAQSurveyConfig {
     );
   }
 }
-
-

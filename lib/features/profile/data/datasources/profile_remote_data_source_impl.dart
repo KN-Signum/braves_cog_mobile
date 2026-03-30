@@ -78,33 +78,46 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     map['drinking_alcohol'] = profile.drinkingAlcohol;
     map['other_substances'] = profile.otherSubstances;
 
-    if (profile.currentIllness != defaults.currentIllness)
+    if (profile.currentIllness != defaults.currentIllness) {
       map['current_illness'] = profile.currentIllness;
-    if (profile.chronicDiseases != defaults.chronicDiseases)
+    }
+    if (profile.chronicDiseases != defaults.chronicDiseases) {
       map['chronic_diseases'] = profile.chronicDiseases;
-    if (profile.smokingFrequency != defaults.smokingFrequency)
+    }
+    if (profile.smokingFrequency != defaults.smokingFrequency) {
       map['smoking_frequency'] = profile.smokingFrequency;
-    if (profile.alcoholFrequency != defaults.alcoholFrequency)
+    }
+    if (profile.alcoholFrequency != defaults.alcoholFrequency) {
       map['alcohol_frequency'] = profile.alcoholFrequency;
-    if (profile.otherSubstancesName != defaults.otherSubstancesName)
+    }
+    if (profile.otherSubstancesName != defaults.otherSubstancesName) {
       map['other_substances_name'] = profile.otherSubstancesName;
-    if (profile.otherSubstancesFrequency != defaults.otherSubstancesFrequency)
+    }
+    if (profile.otherSubstancesFrequency != defaults.otherSubstancesFrequency) {
       map['other_substances_frequency'] = profile.otherSubstancesFrequency;
+    }
     if (profile.allergies.isNotEmpty) map['allergies'] = profile.allergies;
-    if (profile.medications.isNotEmpty)
+    if (profile.medications.isNotEmpty) {
       map['medications'] = profile.medications;
-    if (profile.biologicalSex != defaults.biologicalSex)
+    }
+    if (profile.biologicalSex != defaults.biologicalSex) {
       map['biological_sex'] = profile.biologicalSex.value;
-    if (profile.genderIdentity != defaults.genderIdentity)
+    }
+    if (profile.genderIdentity != defaults.genderIdentity) {
       map['gender_identity'] = profile.genderIdentity;
-    if (profile.genderIdentityOther != defaults.genderIdentityOther)
+    }
+    if (profile.genderIdentityOther != defaults.genderIdentityOther) {
       map['gender_identity_other'] = profile.genderIdentityOther;
-    if (profile.education != defaults.education)
+    }
+    if (profile.education != defaults.education) {
       map['education'] = profile.education.value;
-    if (profile.educationOther != defaults.educationOther)
+    }
+    if (profile.educationOther != defaults.educationOther) {
       map['education_other'] = profile.educationOther;
-    if (profile.disability != defaults.disability)
+    }
+    if (profile.disability != defaults.disability) {
       map['disability'] = profile.disability;
+    }
     // 'type' is intentionally excluded — set by admin, not editable by user
 
     print(

@@ -36,7 +36,8 @@ final corsiBlockTapping = RPCorsiBlockTappingActivity(
 
 final stroopEffect = RPStroopEffectActivity(
   identifier: 'stroop_ffect_step',
-  delayTime: 1000,
+  delayTime: 1500,
+  displayTime: 1000,
 );
 
 final flanker = RPFlankerActivity(identifier: 'flanker_step');

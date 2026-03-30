@@ -49,4 +49,13 @@ class SurveyMockDataSource implements SurveyRemoteDataSource {
     // Mock datasource: no persisted remote progress; return empty set.
     return <String, Map<String, dynamic>>{};
   }
+
+  @override
+  Future<bool> isFlowCompletedToday({
+    required String userId,
+    required String flowType,
+  }) async {
+    // Mock datasource: never complete; always allow resume
+    return false;
+  }
 }

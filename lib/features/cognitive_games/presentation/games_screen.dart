@@ -70,6 +70,10 @@ class GamesScreen extends ConsumerWidget {
     final yesterday = today.subtract(const Duration(days: 1));
 
     final localDate = DateTime(local.year, local.month, local.day);
+    if (localDate == today) {
+      return 'Dzisiaj';
+    }
+
     if (localDate == yesterday) {
       return 'Wczoraj';
     }

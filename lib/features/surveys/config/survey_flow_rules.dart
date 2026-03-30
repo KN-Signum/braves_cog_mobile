@@ -108,7 +108,7 @@ class SurveyFlowRules {
           description:
               'Dziękujemy za dotychczasowy udział w badaniu BRAVES Cog. Przez ostatnie pół roku regularnie odpowiadałeś/aś na pytania dotyczące swojego zdrowia i samopoczucia — to bardzo cenne dane.\n\n'
               'Dzisiejsza sesja jest bardziej rozbudowana niż comiesięczne sprawdzenia. Ponownie wypełnisz część kwestionariuszy z początku badania, a także kilka nowych narzędzi.\n\n'
-              'Szacowany czas: ok. 30–45 minut.\n\n'
+              'Szacowany czas: ok. 15–25 minut.\n\n'
               'Możesz robić przerwy — Twoje odpowiedzi są zapisywane automatycznie.',
         ),
       },
@@ -130,7 +130,7 @@ class SurveyFlowRules {
           description:
               'To już 12 miesięcy od dołączenia do projektu BRAVES Cog. Bardzo dziękujemy za Twój udział i zaangażowanie przez cały ten czas.\n\n'
               'Dzisiejsza sesja jest ostatnią pełną sesją w badaniu. Ponownie wypełnisz kluczowe kwestionariusze, które pozwolą nam ocenić zmiany na przestrzeni roku.\n\n'
-              'Szacowany czas: ok. 30–45 minut.\n\n'
+              'Szacowany czas: ok. 15–25 minut.\n\n'
               'Twoje odpowiedzi są zapisywane automatycznie — możesz robić przerwy.',
         ),
       },

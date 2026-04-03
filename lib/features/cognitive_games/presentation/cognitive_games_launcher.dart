@@ -29,6 +29,8 @@ class CognitiveGamesLauncher {
       steps.add(_getStepById(stepId));
     });
 
+    steps.shuffle();
+
     steps.add(
       RPCompletionStep(
         identifier: 'sequence_completion',

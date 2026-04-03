@@ -294,7 +294,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "612193a79ea82d2fbcff201c2aff59236e144f78"
+      resolved-ref: "97d505d817f56fa680a5000982fe488b7ea217cc"
       url: "https://github.com/Adidadi0112/cognition_package.git"
     source: git
     version: "1.7.0"

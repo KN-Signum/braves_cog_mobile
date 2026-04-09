@@ -125,8 +125,9 @@ class DoctorVisitBuilder extends ConsumerWidget {
           ),
           if (newDiagnosis == true) ...[
             const SizedBox(height: 16),
-            TextField(
-              controller: TextEditingController(text: diagnosisDesc ?? ''),
+            TextFormField(
+              key: ValueKey('${question.id}_new_diagnosis_desc_input'),
+              initialValue: diagnosisDesc ?? '',
               maxLines: 3,
               onChanged: (value) {
                 notifier.updateAnswer(

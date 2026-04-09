@@ -614,47 +614,12 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
   }) {
     return Container(
       constraints: const BoxConstraints(maxWidth: 343),
-      child: TextField(
-        controller: TextEditingController(text: value)
-          ..selection = TextSelection.fromPosition(
-            TextPosition(offset: value.length),
-          ),
+      child: _StableProfileTextField(
+        fieldKey: '$label-$hint',
+        label: label,
+        hint: hint,
+        value: value,
         onChanged: onChanged,
-        style: Theme.of(context).textTheme.bodyMedium,
-        decoration: InputDecoration(
-          labelText: label,
-          hintText: hint,
-          hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
-          ),
-          labelStyle: Theme.of(
-            context,
-          ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
-          filled: true,
-          fillColor: Theme.of(context).scaffoldBackgroundColor,
-          contentPadding: const EdgeInsets.all(16),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(24),
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              width: 2,
-            ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(24),
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              width: 2,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(24),
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.secondary,
-              width: 2,
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -840,6 +805,102 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
             ),
           ),
       ],
+    );
+  }
+}
+
+class _StableProfileTextField extends StatefulWidget {
+  final String fieldKey;
+  final String label;
+  final String hint;
+  final String value;
+  final ValueChanged<String> onChanged;
+
+  const _StableProfileTextField({
+    required this.fieldKey,
+    required this.label,
+    required this.hint,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  State<_StableProfileTextField> createState() => _StableProfileTextFieldState();
+}
+
+class _StableProfileTextFieldState extends State<_StableProfileTextField> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.value);
+  }
+
+  @override
+  void didUpdateWidget(covariant _StableProfileTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.fieldKey != widget.fieldKey) {
+      _controller.text = widget.value;
+      _controller.selection = TextSelection.fromPosition(
+        TextPosition(offset: _controller.text.length),
+      );
+      return;
+    }
+    if (widget.value != _controller.text) {
+      final oldSelection = _controller.selection;
+      _controller.text = widget.value;
+      final nextOffset = oldSelection.baseOffset.clamp(0, _controller.text.length);
+      _controller.selection = TextSelection.collapsed(offset: nextOffset);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _controller,
+      onChanged: widget.onChanged,
+      style: Theme.of(context).textTheme.bodyMedium,
+      decoration: InputDecoration(
+        labelText: widget.label,
+        hintText: widget.hint,
+        hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+        ),
+        labelStyle: Theme.of(
+          context,
+        ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
+        filled: true,
+        fillColor: Theme.of(context).scaffoldBackgroundColor,
+        contentPadding: const EdgeInsets.all(16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            width: 2,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            width: 2,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.secondary,
+            width: 2,
+          ),
+        ),
+      ),
     );
   }
 }

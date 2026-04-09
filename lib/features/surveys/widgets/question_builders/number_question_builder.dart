@@ -66,34 +66,39 @@ class _NumberQuestionBuilderState extends ConsumerState<NumberQuestionBuilder> {
       final minMinutesIfZeroHours =
           widget.question.options?['minMinutesIfZeroHours'] as int? ?? 0;
 
-      // Get hours and minutes from answers, with fallback to cache.
+      final defaultHours = widget.question.options?['defaultHours'] as int? ?? 0;
+      final defaultMinutes =
+          widget.question.options?['defaultMinutes'] as int? ??
+          (defaultHours == 0 ? minMinutesIfZeroHours : 0);
+
+      // Get hours and minutes from answers, with fallback to cache and defaults.
       final cached = _hoursMinutesCache;
       int hoursValue =
           state.answers['${widget.question.id}_hours'] as int? ??
           cached?[0] ??
-          0;
+          defaultHours;
       int minutesValue =
           state.answers['${widget.question.id}_minutes'] as int? ??
           cached?[1] ??
-          0;
+          defaultMinutes;
 
       // Jeśli 0 godzin – minimalnie minMinutesIfZeroHours minut (np. 10 dla aktywności fizycznej).
       if (hoursValue == 0 && minutesValue < minMinutesIfZeroHours) {
         minutesValue = minMinutesIfZeroHours;
       }
 
-      // Initialize if not set – domyślnie 0h + minimalne minuty.
+      // Initialize if not set – domyślnie wartości z konfiguracji pytania.
       if (!dontKnowValue) {
         if (!state.answers.containsKey('${widget.question.id}_hours')) {
           Future.microtask(
-            () => notifier.updateAnswer('${widget.question.id}_hours', 0),
+            () => notifier.updateAnswer('${widget.question.id}_hours', hoursValue),
           );
         }
         if (!state.answers.containsKey('${widget.question.id}_minutes')) {
           Future.microtask(
             () => notifier.updateAnswer(
               '${widget.question.id}_minutes',
-              hoursValue == 0 ? minMinutesIfZeroHours : 0,
+              minutesValue,
             ),
           );
         }
@@ -192,11 +197,14 @@ class _NumberQuestionBuilderState extends ConsumerState<NumberQuestionBuilder> {
     // Check if this is a single hours picker
     if (compositeType == 'single_hours') {
       final maxHours = widget.question.options?['maxHours'] as int? ?? 23;
-      final hoursValue = state.answers[widget.question.id] as int? ?? 0;
+      final defaultHours = widget.question.options?['defaultHours'] as int? ?? 0;
+      final hoursValue = state.answers[widget.question.id] as int? ?? defaultHours;
 
       // Initialize if not set
       if (!state.answers.containsKey(widget.question.id)) {
-        Future.microtask(() => notifier.updateAnswer(widget.question.id, 0));
+        Future.microtask(
+          () => notifier.updateAnswer(widget.question.id, defaultHours),
+        );
       }
 
       return SingleHoursPickerWidget(
@@ -211,11 +219,14 @@ class _NumberQuestionBuilderState extends ConsumerState<NumberQuestionBuilder> {
     // Check if this is a single minutes picker
     if (compositeType == 'single_minutes') {
       final maxMinutes = widget.question.options?['maxMinutes'] as int? ?? 59;
-      final minutesValue = state.answers[widget.question.id] as int? ?? 0;
+      final defaultMinutes = widget.question.options?['defaultMinutes'] as int? ?? 0;
+      final minutesValue = state.answers[widget.question.id] as int? ?? defaultMinutes;
 
       // Initialize if not set
       if (!state.answers.containsKey(widget.question.id)) {
-        Future.microtask(() => notifier.updateAnswer(widget.question.id, 0));
+        Future.microtask(
+          () => notifier.updateAnswer(widget.question.id, defaultMinutes),
+        );
       }
 
       return SingleMinutesPickerWidget(

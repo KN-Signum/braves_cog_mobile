@@ -8,4 +8,7 @@ abstract class AuthRemoteDataSource {
   Future<UserModel> login(String emailOrCode, String password);
 
   Future<UserModel> getCurrentUser();
+
+  /// Sign out from Supabase, invalidating the current session.
+  Future<void> signOut();
 }

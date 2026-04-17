@@ -2,9 +2,9 @@ import 'package:braves_cog/features/surveys/domain/entities/survey_entity.dart';
 import 'package:braves_cog/features/surveys/domain/entities/survey_question_entity.dart';
 
 class ScreeningSUSurveyConfig {
-  static SurveyEntity getSurvey() {
+  static SurveyEntity getSurvey({String id = 'screening_SU'}) {
     return SurveyEntity(
-      id: 'screening_SU',
+      id: id,
       title: 'Screening',
       questions: [
         // Info page

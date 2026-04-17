@@ -24,41 +24,12 @@ class MainScreenNew extends ConsumerStatefulWidget {
 }
 
 class _MainScreenNewState extends ConsumerState<MainScreenNew> {
-  String _currentView = 'splash';
-  bool _isLoading = true;
+  String _currentView = 'home';
   int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _checkAuthStatus();
-  }
-
-  Future<void> _checkAuthStatus() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    // Check if user is authenticated first
-    final authState = ref.read(authProvider);
-
-    if (authState.user == null) {
-      // Not authenticated - show login
-      setState(() {
-        _isLoading = false;
-        _currentView = 'login';
-      });
-    } else if (!authState.user!.isActivated) {
-      // Activated but requires onboarding
-      setState(() {
-        _isLoading = false;
-        _currentView = 'onboarding';
-      });
-    } else {
-      // Fully activated with completed onboarding
-      setState(() {
-        _isLoading = false;
-        _currentView = 'home';
-      });
-    }
   }
 
   void _handleLoginComplete() async {
@@ -164,7 +135,11 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
+    final authState = ref.watch(authProvider);
+
+    // Show splash/loading while the silent re-auth check runs on app start.
+    // isInitializing is true only during the very first checkAuthStatus() call.
+    if (authState.isInitializing) {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Center(
@@ -175,11 +150,11 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
       );
     }
 
-    if (_currentView == 'login') {
+    if (!authState.isAuthenticated) {
       return LoginScreen(onLogin: _handleLoginComplete);
     }
 
-    if (_currentView == 'onboarding') {
+    if (authState.user!.requiresOnboarding) {
       return OnboardingScreen(
         onComplete: _handleOnboardingComplete,
         onBackToLogin: _handleBackFromOnboarding,
@@ -188,9 +163,6 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
 
     // Check if we should show bottom nav.
     // We show it for: home, health, games, profile, settings.
-    // What about tests? If tests is a full screen flow, maybe hide it?
-    // User asked for bottom nav to be accessed from main health, home, games and settings.
-    // Let's show it for all these "main" views.
     final bool showBottomNav = [
       'home',
       'health',

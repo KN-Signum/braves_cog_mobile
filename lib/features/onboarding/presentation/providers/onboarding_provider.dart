@@ -106,8 +106,80 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
     final repository = _repository as OnboardingRepositoryImpl;
     await repository.saveOnboardingData(data);
 
-    // Extract demographic data and update ProfileNotifier with it
+    // Update ProfileNotifier in memory with demographic + lifestyle answers
     _updateProfileWithDemographicData(data);
+
+    // Immediately persist to Supabase so profile data is not lost if the user
+    // aborts the rest of onboarding. This is safe to call multiple times.
+    try {
+      await ref.read(profileProvider.notifier).saveProfile();
+      final profileState = ref.read(profileProvider);
+      if (profileState.error != null) {
+        print('⚠️ [Onboarding] Profile DB save failed: ${profileState.error}');
+      } else {
+        print(
+          '✅ [Onboarding] Profile saved to Supabase after final survey module',
+        );
+      }
+    } catch (e) {
+      print('⚠️ [Onboarding] Unexpected error saving profile: $e');
+    }
+  }
+
+  /// Progressively saves data from a single completed module.
+  /// Useful for ensuring data persistence (especially demographics) even if
+  /// the user aborts onboarding halfway through.
+  Future<void> saveOnboardingModule(
+    String moduleId,
+    Map<String, dynamic> moduleData,
+  ) async {
+    try {
+      print('💾 [Onboarding] Progressive save for module: $moduleId');
+
+      // 1. Get current data from repository to merge
+      final repository = _repository as OnboardingRepositoryImpl;
+      final currentDataResult = await repository.getOnboardingData();
+      final currentData = currentDataResult.fold((_) => null, (d) => d);
+
+      final Map<String, dynamic> mergedAnswers = {};
+      if (currentData != null) {
+        if (currentData.demographic.isNotEmpty) {
+          mergedAnswers['Demographic'] = currentData.demographic;
+        }
+        if (currentData.baselineLifestyle.isNotEmpty) {
+          mergedAnswers['Baseline_Lifestyle'] = currentData.baselineLifestyle;
+        }
+        if (currentData.baselineSymptoms.isNotEmpty) {
+          mergedAnswers['Baseline_Symptoms'] = currentData.baselineSymptoms;
+        }
+        if (currentData.baselineMedicalHistory.isNotEmpty) {
+          mergedAnswers['Baseline_Medical_History'] =
+              currentData.baselineMedicalHistory;
+        }
+      }
+
+      // 2. Add the newly completed module data
+      // Note:moduleId is typically 'demographic', 'Baseline_Lifestyle', etc.
+      // Normalization check just in case legacy upper-case was passed
+      String storageKey = moduleId;
+      if (storageKey == 'Demographic') storageKey = 'demographic';
+      
+      mergedAnswers[storageKey] = moduleData;
+
+      // 3. Save to local repository cache
+      await repository.saveOnboardingData(mergedAnswers);
+
+      // 4. Update ProfileNotifier in memory
+      _updateProfileWithDemographicData(mergedAnswers);
+
+      // 5. If it's a demographic-related module, persist to DB immediately
+      // Actually, we can save any module update to be safe.
+      await ref.read(profileProvider.notifier).saveProfile();
+
+      print('✅ [Onboarding] Module $moduleId persisted to Supabase');
+    } catch (e) {
+      print('⚠️ [Onboarding] Error during progressive module save ($moduleId): $e');
+    }
   }
 
   Future<void> moveToPostProfileStage() async {
@@ -148,7 +220,7 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
 
       // ── DEMOGRAPHIC MODULE ──────────────────────────────────────────────────
       final demographicModule =
-          (allAnswers['Demographic'] as Map<String, dynamic>?) ?? {};
+          (allAnswers['demographic'] as Map<String, dynamic>?) ?? {};
       final demographicAnswers = demographicModule.values.isNotEmpty
           ? demographicModule.values.first as Map<String, dynamic>?
           : <String, dynamic>{};
@@ -190,11 +262,11 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
         });
       }
 
-      // ── SUBSTANCE USE (Baseline_Lifestyle → Baseline_Substance_Use) ─────────
+      // ── SUBSTANCE USE (Baseline_Lifestyle → onboarding_SU) ─────────
       final lifestyleModule =
           (allAnswers['Baseline_Lifestyle'] as Map<String, dynamic>?) ?? {};
       final substanceAnswers =
-          (lifestyleModule['Baseline_Substance_Use']
+          (lifestyleModule['onboarding_SU']
               as Map<String, dynamic>?) ??
           {};
 
@@ -244,12 +316,12 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
             : '';
       }
 
-      // ── MEDICATIONS (Baseline_Medical_History → Baseline_Medications) ───────
+      // ── MEDICATIONS (Baseline_Medical_History → medications) ───────
       final medicalHistoryModule =
           (allAnswers['Baseline_Medical_History'] as Map<String, dynamic>?) ??
           {};
       final medicationsAnswers =
-          (medicalHistoryModule['Baseline_Medications']
+          (medicalHistoryModule['medications']
               as Map<String, dynamic>?) ??
           {};
 
@@ -269,13 +341,13 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
         print("💊 Medications: $medications");
       }
 
-      // ── DISEASES (somatic + mental → chronicDiseases as JSON) ────────────────
+      // ── DISEASES (somatic_diseases + mental_disorders → chronicDiseases as JSON) ────────────────
       final somaticAnswers =
-          (medicalHistoryModule['Baseline_Somatic_Disease']
+          (medicalHistoryModule['somatic_diseases']
               as Map<String, dynamic>?) ??
           {};
       final mentalAnswers =
-          (medicalHistoryModule['Baseline_Mental_Health_Disorders']
+          (medicalHistoryModule['mental_disorders']
               as Map<String, dynamic>?) ??
           {};
 
@@ -347,14 +419,18 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
   }
 
   Future<void> completeOnboarding() async {
+    if (state.isLoading) return;
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      // 1. Save Profile (via ProfileNotifier)
+      // 1. Mark completed and Save Profile (via ProfileNotifier)
       final profileNotifier = ref.read(profileProvider.notifier);
+      profileNotifier.markOnboardingCompleted();
       await profileNotifier.saveProfile();
-      final profileState = ref.read(profileProvider);
 
+      // Read state immediately after save — saveProfile() is fully awaited
+      // before this line runs, so any error set inside it is visible here.
+      final profileState = ref.read(profileProvider);
       if (profileState.error != null) {
         state = state.copyWith(
           isLoading: false,
@@ -362,9 +438,6 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
         );
         return;
       }
-
-      // 1.5. Invalidate profile cache to force fresh load from Supabase
-      ref.invalidate(profileProvider);
 
       // 2. Save Consents
       final consentsResult = await _saveConsentsUseCase(state.consents);
@@ -386,6 +459,14 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
         (failure) =>
             state = state.copyWith(isLoading: false, error: failure.message),
         (_) {
+          // Reload fresh profile from Supabase now that it's saved —
+          // do this AFTER success so we don't destroy the error signal.
+          final authState = ref.read(authProvider);
+          if (authState.user != null) {
+            ref
+                .read(profileProvider.notifier)
+                .loadProfile(email: authState.user!.email);
+          }
           // Update auth state to mark onboarding as complete
           ref.read(authProvider.notifier).completeOnboardingInAuth();
           state = state.copyWith(

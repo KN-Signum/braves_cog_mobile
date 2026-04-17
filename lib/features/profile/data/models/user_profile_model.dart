@@ -27,6 +27,7 @@ class UserProfileModel extends UserProfileEntity {
     super.educationOther,
     super.disability,
     super.type,
+    super.isOnboardingCompleted,
   });
 
   /// Factory constructor to handle both camelCase (API) and snake_case (Database) JSON
@@ -59,6 +60,8 @@ class UserProfileModel extends UserProfileEntity {
     final educationOther = json['educationOther'] ?? json['education_other'];
     final disability = json['disability'] ?? json['disability'];
     final typeVal = json['type'] ?? json['type'];
+    final isOnboardingCompleted =
+        json['isOnboardingCompleted'] ?? json['is_onboarding_completed'];
 
     return UserProfileModel(
       id: json['id'],
@@ -89,6 +92,7 @@ class UserProfileModel extends UserProfileEntity {
       educationOther: educationOther ?? '',
       disability: disability ?? '',
       type: UserType.fromString(typeVal ?? 'NormalCog'),
+      isOnboardingCompleted: isOnboardingCompleted ?? false,
     );
   }
 
@@ -116,6 +120,7 @@ class UserProfileModel extends UserProfileEntity {
       'educationOther': educationOther,
       'disability': disability,
       'type': type.value,
+      'isOnboardingCompleted': isOnboardingCompleted,
     };
   }
 }

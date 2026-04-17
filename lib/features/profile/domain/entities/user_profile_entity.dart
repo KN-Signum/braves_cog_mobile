@@ -26,6 +26,7 @@ class UserProfileEntity extends Equatable {
   final String educationOther;
   final String disability;
   final UserType type;
+  final bool isOnboardingCompleted;
 
   const UserProfileEntity({
     this.id,
@@ -50,6 +51,7 @@ class UserProfileEntity extends Equatable {
     this.educationOther = '',
     this.disability = '',
     this.type = UserType.normalCog,
+    this.isOnboardingCompleted = false,
   });
 
   UserProfileEntity copyWith({
@@ -75,6 +77,7 @@ class UserProfileEntity extends Equatable {
     String? educationOther,
     String? disability,
     UserType? type,
+    bool? isOnboardingCompleted,
   }) {
     return UserProfileEntity(
       id: id ?? this.id,
@@ -100,6 +103,7 @@ class UserProfileEntity extends Equatable {
       educationOther: educationOther ?? this.educationOther,
       disability: disability ?? this.disability,
       type: type ?? this.type,
+      isOnboardingCompleted: isOnboardingCompleted ?? this.isOnboardingCompleted,
     );
   }
 
@@ -127,5 +131,6 @@ class UserProfileEntity extends Equatable {
     educationOther,
     disability,
     type,
+    isOnboardingCompleted,
   ];
 }

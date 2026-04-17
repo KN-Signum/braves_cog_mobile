@@ -125,15 +125,30 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw Exception('Logowanie nie powiodło się.');
       }
 
-      final isActivated = await _isProfileActivated(user.id);
-      if (!isActivated) {
+      final profileStatus = await _fetchProfileStatus(user.id);
+      print(
+        '🔍 [AUTH] profileExists=${profileStatus.profileExists}, '
+        'isActivated=${profileStatus.isActivated}, '
+        'requiresOnboarding=${profileStatus.requiresOnboarding}',
+      );
+
+      if (profileStatus.profileExists && !profileStatus.isActivated) {
+        // Profile row exists but is_activated is still false.
+        // This means the activation step was never completed.
         await supabaseClient.auth.signOut();
         throw Exception(
           'Konto nie zostało jeszcze aktywowane. Użyj kodu zaproszenia.',
         );
       }
 
-      return _userToModel(user, isActivated: true, requiresOnboarding: false);
+      // If no profile row exists the user authenticated with their own password
+      // (not the technical one), proving they went through activation but
+      // aborted before finishing onboarding. Allow login and route them back.
+      return _userToModel(
+        user,
+        isActivated: true,
+        requiresOnboarding: profileStatus.requiresOnboarding,
+      );
     } on AuthException catch (e) {
       throw Exception('Błąd logowania: ${e.message}');
     }
@@ -152,15 +167,53 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     }
   }
 
-  /// Check if the user's profile has is_activated = true in the profiles table
+  /// Fetches the profile row to determine activation and onboarding status.
+  ///
+  /// Returns a record with:
+  /// - [profileExists]: whether a `profiles` row was found for this user
+  /// - [isActivated]: value of `is_activated` column (false when row missing)
+  /// - [requiresOnboarding]: true when no profile row or demographic data absent
+  Future<({bool profileExists, bool isActivated, bool requiresOnboarding})>
+  _fetchProfileStatus(String userId) async {
+    try {
+      final response = await supabaseClient
+          .from('profiles')
+          .select('is_activated, is_onboarding_completed')
+          .eq('id', userId)
+          .maybeSingle(); // null when 0 rows — no exception
+
+      if (response == null) {
+        // No profile row: user authenticated but aborted onboarding before
+        // completing the demographic section (profile was never saved to DB).
+        return (profileExists: false, isActivated: false, requiresOnboarding: true);
+      }
+
+      final isActivated = (response['is_activated'] as bool?) ?? false;
+      final isOnboardingCompleted = (response['is_onboarding_completed'] as bool?) ?? false;
+      final requiresOnboarding = !isOnboardingCompleted;
+
+      return (
+        profileExists: true,
+        isActivated: isActivated,
+        requiresOnboarding: requiresOnboarding,
+      );
+    } catch (e) {
+      print('⚠️ [AUTH] Could not fetch profile status: $e');
+      // Fail open: let the user through so they can complete onboarding.
+      return (profileExists: false, isActivated: false, requiresOnboarding: true);
+    }
+  }
+
+  /// Used only during [activateAccount] to guard against double-activation.
+  /// A missing profile row means the account has NOT been activated yet.
   Future<bool> _isProfileActivated(String userId) async {
     try {
       final response = await supabaseClient
           .from('profiles')
           .select('is_activated')
           .eq('id', userId)
-          .single();
-      return (response['is_activated'] as bool?) ?? false;
+          .maybeSingle(); // null → not activated
+      return (response?['is_activated'] as bool?) ?? false;
     } catch (e) {
       print('⚠️ [AUTH] Could not check profile activation status: $e');
       return false;
@@ -194,5 +247,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     final value = emailOrCode.trim();
     if (value.contains('@')) return value;
     return AuthConstants.getTechnicalEmail(value);
+  }
+
+  @override
+  Future<void> signOut() async {
+    await supabaseClient.auth.signOut();
   }
 }

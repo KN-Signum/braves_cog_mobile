@@ -28,6 +28,11 @@ class AuthRepositoryImpl implements AuthRepository {
       if (userModel.token != null) {
         await localDataSource.saveToken(userModel.token!);
       }
+      // Persist credentials so the user is auto-logged in on next app start
+      await localDataSource.saveCredentials(
+        emailOrCode: code,
+        password: newPassword,
+      );
       return Right(userModel);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
@@ -45,6 +50,11 @@ class AuthRepositoryImpl implements AuthRepository {
       if (userModel.token != null) {
         await localDataSource.saveToken(userModel.token!);
       }
+      // Persist credentials so the user is auto-logged in on next app start
+      await localDataSource.saveCredentials(
+        emailOrCode: emailOrCode,
+        password: password,
+      );
       return Right(userModel);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
@@ -54,6 +64,9 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, void>> logout() async {
     try {
+      // Invalidate the Supabase session on the server side
+      await remoteDataSource.signOut();
+      // Wipe local cache and stored credentials from secure storage
       await localDataSource.clearUser();
       return const Right(null);
     } catch (e) {
@@ -64,13 +77,28 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, UserEntity>> getCurrentUser() async {
     try {
-      // First check local cache
-      final localUser = await localDataSource.getLastUser();
-      return Right(localUser);
+      // Strategy B: always re-authenticate using stored credentials.
+      // This ensures a fresh Supabase session on every app start.
+      final credentials = await localDataSource.loadCredentials();
+      if (credentials == null) {
+        return const Left(CacheFailure('No stored credentials'));
+      }
+
+      // Silent re-authentication — same code path as the login screen
+      final userModel = await remoteDataSource.login(
+        credentials.emailOrCode,
+        credentials.password,
+      );
+      await localDataSource.cacheUser(userModel);
+      if (userModel.token != null) {
+        await localDataSource.saveToken(userModel.token!);
+      }
+      return Right(userModel);
     } catch (e) {
-      // If no local user, try remote (optional, depending on auth strategy)
-      // For now we assume if no local user, user is logged out
-      return const Left(CacheFailure('No user logged in'));
+      // Re-auth failed (wrong credentials, network error, account deactivated, etc.)
+      // Clear stale credentials so the user sees the login screen.
+      await localDataSource.clearUser();
+      return Left(ServerFailure(e.toString()));
     }
   }
 }

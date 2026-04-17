@@ -55,7 +55,10 @@ class SurveyFlowRules {
             'id': 'MINI_EAT',
             'config': MiniEatOnboardingSurveyConfig.getSurvey(),
           },
-          {'id': 'screening_SU', 'config': ScreeningSUSurveyConfig.getSurvey()},
+          {
+            'id': 'onboarding_SU',
+            'config': ScreeningSUSurveyConfig.getSurvey(id: 'onboarding_SU'),
+          },
           {
             'id': 'social_support',
             'config': Brief2WaySSSSurveyConfig.getSurvey(),
@@ -146,7 +149,10 @@ class SurveyFlowRules {
         'id': 'MINI_EAT_OB',
         'config': MiniEatOnboardingSurveyConfig.getSurvey(),
       },
-      {'id': 'followup_SU', 'config': ScreeningSUSurveyConfig.getSurvey()},
+      {
+        'id': 'followup_SU',
+        'config': ScreeningSUSurveyConfig.getSurvey(id: 'followup_SU'),
+      },
       {
         'id': 'followup_Brief2Way',
         'config': Brief2WaySSSSurveyConfig.getSurvey(),

@@ -61,6 +61,11 @@ class OnboardingScreen extends ConsumerWidget {
                   .setStage(OnboardingStage.intro);
             }
           },
+          onModuleComplete: (moduleId, data) {
+            ref
+                .read(onboardingProvider.notifier)
+                .saveOnboardingModule(moduleId, data);
+          },
           onComplete: (data) async {
             await ref
                 .read(onboardingProvider.notifier)

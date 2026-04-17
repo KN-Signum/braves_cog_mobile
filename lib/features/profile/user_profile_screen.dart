@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:braves_cog/features/profile/presentation/providers/profile_provider.dart';
+import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
+import 'package:braves_cog/core/config/auth_constants.dart';
 
 class UserProfileScreen extends ConsumerWidget {
   const UserProfileScreen({super.key});
@@ -9,6 +11,7 @@ class UserProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileState = ref.watch(profileProvider);
     final profile = profileState.profile;
+    final authState = ref.watch(authProvider);
 
     if (profileState.isLoading) {
       return Scaffold(
@@ -44,7 +47,14 @@ class UserProfileScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _buildBasicInfo(context, age, bmi, profile),
+            Builder(
+              builder: (context) {
+                final braveCode = authState.user != null 
+                    ? AuthConstants.extractCodeFromEmail(authState.user!.email).toUpperCase() 
+                    : '--';
+                return _buildBasicInfo(context, age, bmi, profile, braveCode);
+              }
+            ),
             const SizedBox(height: 16),
             _buildHealthInfo(context, profile),
             const SizedBox(height: 16),
@@ -87,6 +97,7 @@ class UserProfileScreen extends ConsumerWidget {
     int age,
     double bmi,
     dynamic profile,
+    String braveCode,
   ) {
     return Container(
       padding: const EdgeInsets.all(24),
@@ -101,6 +112,15 @@ class UserProfileScreen extends ConsumerWidget {
       ),
       child: Column(
         children: [
+          Text(
+            braveCode,
+            style: Theme.of(context).textTheme.displaySmall?.copyWith(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 8),
           Text(
             '$age lat',
             style: Theme.of(

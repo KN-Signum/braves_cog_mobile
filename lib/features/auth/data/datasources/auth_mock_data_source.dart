@@ -90,4 +90,10 @@ class AuthMockDataSource implements AuthRemoteDataSource {
       requiresOnboarding: false,
     );
   }
+
+  @override
+  Future<void> signOut() async {
+    // No-op for mock — session is in-memory only
+    _activatedCodes.clear();
+  }
 }

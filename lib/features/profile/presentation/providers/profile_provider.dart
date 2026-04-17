@@ -1,7 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:braves_cog/core/config/env_config.dart';
 import 'package:braves_cog/core/providers/shared_preferences_provider.dart';
+import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart'
+    show supabaseClientProvider;
 import 'package:braves_cog/features/profile/data/datasources/profile_local_data_source.dart';
 import 'package:braves_cog/features/profile/data/datasources/profile_mock_data_source.dart';
 import 'package:braves_cog/features/profile/data/datasources/profile_remote_data_source.dart';
@@ -16,10 +17,6 @@ import 'package:braves_cog/features/profile/domain/usecases/save_user_profile_us
 final profileLocalDataSourceProvider = Provider<ProfileLocalDataSource>((ref) {
   final prefs = ref.watch(sharedPreferencesProvider);
   return ProfileLocalDataSourceImpl(prefs);
-});
-
-final supabaseClientProvider = Provider<SupabaseClient>((ref) {
-  return Supabase.instance.client;
 });
 
 final profileRemoteDataSourceProvider = Provider<ProfileRemoteDataSource>((
@@ -100,6 +97,13 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
 
   void updateProfile(UserProfileEntity newProfile) {
     state = state.copyWith(profile: newProfile, isSaved: false);
+  }
+
+  void markOnboardingCompleted() {
+    state = state.copyWith(
+      profile: state.profile.copyWith(isOnboardingCompleted: true),
+      isSaved: false,
+    );
   }
 
   Future<void> saveProfile() async {

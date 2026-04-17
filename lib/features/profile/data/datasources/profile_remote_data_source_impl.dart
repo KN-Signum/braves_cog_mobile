@@ -39,23 +39,24 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
 
       // Convert profile to snake_case JSON for database
       final profileData = _entityToSnakeCase(profile);
-      profileData['id'] = userId;
+      
+      // Do not include 'id' in the payload for an UPDATE to avoid modifying
+      // the primary key or triggering unnecessary constraints.
 
-      print("🔄 [PROFILE RPC] Calling activate_user_profile RPC with data:");
-      print("🔄 [PROFILE RPC] userId=$userId");
-      print("🔄 [PROFILE RPC] profileData keys: ${profileData.keys}");
+      print("🔄 [PROFILE] Updating profile for userId=$userId");
+      print("🔄 [PROFILE] Fields being sent: ${profileData.keys.toList()}");
 
-      // Call the activate_user_profile RPC with JSON parameter
-      final result = await supabaseClient.rpc(
-        'activate_user_profile',
-        params: {'profile_data': profileData},
-      );
+      // Direct update — we know the row already exists (created by admin).
+      // RLS policy on public.profiles must allow UPDATE for auth.uid() = id.
+      await supabaseClient
+          .from('profiles')
+          .update(profileData)
+          .eq('id', userId);
 
-      print("✅ [PROFILE RPC] RPC call successful");
-      print("✅ [PROFILE RPC] Result: $result");
+      print("✅ [PROFILE] Profile updated successfully");
     } catch (e) {
-      print("❌ [PROFILE RPC] RPC call failed: $e");
-      print("❌ [PROFILE RPC] Error type: ${e.runtimeType}");
+      print("❌ [PROFILE] Upsert failed: $e");
+      print("❌ [PROFILE] Error type: ${e.runtimeType}");
       throw Exception('Failed to update user profile: $e');
     }
   }
@@ -68,10 +69,12 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     const defaults = UserProfileEntity();
     final map = <String, dynamic>{};
 
-    // Always send mandatory demographic fields
+    // Always send mandatory demographic/identity fields
     map['birth_year'] = profile.birthYear;
     map['height'] = profile.height;
     map['weight'] = profile.weight;
+    map['biological_sex'] = profile.biologicalSex.value;
+    map['education'] = profile.education.value;
 
     // Always send substance use booleans — "no" (false) also needs to persist
     map['smoking_cigarettes'] = profile.smokingCigarettes;
@@ -100,17 +103,11 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     if (profile.medications.isNotEmpty) {
       map['medications'] = profile.medications;
     }
-    if (profile.biologicalSex != defaults.biologicalSex) {
-      map['biological_sex'] = profile.biologicalSex.value;
-    }
     if (profile.genderIdentity != defaults.genderIdentity) {
       map['gender_identity'] = profile.genderIdentity;
     }
     if (profile.genderIdentityOther != defaults.genderIdentityOther) {
       map['gender_identity_other'] = profile.genderIdentityOther;
-    }
-    if (profile.education != defaults.education) {
-      map['education'] = profile.education.value;
     }
     if (profile.educationOther != defaults.educationOther) {
       map['education_other'] = profile.educationOther;
@@ -118,7 +115,12 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     if (profile.disability != defaults.disability) {
       map['disability'] = profile.disability;
     }
-    // 'type' is intentionally excluded — set by admin, not editable by user
+    // 'type' is strictly excluded from updates — it is set by the admin 
+    // upon user creation and should never be modified by the app logic.
+
+    if (profile.isOnboardingCompleted) {
+      map['is_onboarding_completed'] = true;
+    }
 
     print(
       "🔄 [PROFILE RPC] Non-default fields being sent: ${map.keys.toList()}",

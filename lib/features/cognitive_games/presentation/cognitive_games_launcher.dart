@@ -51,17 +51,14 @@ class CognitiveGamesLauncher {
           task: task,
           onComplete: (result) async {
             final saved = await _processSequenceResults(ref, result);
+            // Pop the fullscreen task route FIRST so the navigation
+            // stack returns to the caller before onComplete fires.
+            if (context.mounted) Navigator.of(context).pop();
             if (saved) {
               onComplete?.call();
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    'Nie udało się zapisać wyników gier. Spróbuj ponownie.',
-                  ),
-                ),
-              );
             }
+            // On failure: the user is back on FinalScreen and can retry.
+            // No SnackBar here — context is potentially deactivated after pop.
           },
         ),
       ),

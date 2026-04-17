@@ -30,11 +30,13 @@ bool _isAlertSurvey(String surveyId) {
 class OnboardingFlowWidget extends ConsumerStatefulWidget {
   final VoidCallback onBack;
   final Function(Map<String, dynamic>) onComplete;
+  final Function(String, Map<String, dynamic>)? onModuleComplete;
 
   const OnboardingFlowWidget({
     super.key,
     required this.onBack,
     required this.onComplete,
+    this.onModuleComplete,
   });
 
   @override
@@ -80,6 +82,8 @@ class _OnboardingFlowWidgetState extends ConsumerState<OnboardingFlowWidget> {
     }
 
     final filteredModules = <Map<String, dynamic>>[];
+    final List<String> allCompletedLog = [];
+    final List<String> allRemainingLog = [];
 
     for (final module in baseModules) {
       final moduleId = module['id'] as String;
@@ -91,12 +95,14 @@ class _OnboardingFlowWidgetState extends ConsumerState<OnboardingFlowWidget> {
         final completedAnswers = completedSurveyAnswers[surveyId];
 
         if (completedAnswers != null) {
+          allCompletedLog.add(surveyId);
           if (!_allAnswers.containsKey(moduleId)) {
             _allAnswers[moduleId] = <String, dynamic>{};
           }
           final moduleAnswers = _allAnswers[moduleId] as Map<String, dynamic>;
           moduleAnswers[surveyId] = completedAnswers;
         } else {
+          allRemainingLog.add(surveyId);
           remainingSurveys.add(surveyMeta);
         }
       }
@@ -115,12 +121,26 @@ class _OnboardingFlowWidgetState extends ConsumerState<OnboardingFlowWidget> {
       _isLoadingProgress = false;
     });
 
+    debugPrint('\n========================================');
+    debugPrint('🚦 [ONBOARDING PROGRESS RESUME]');
+    debugPrint('✅ Completed Surveys (${allCompletedLog.length}): ${allCompletedLog.join(', ')}');
+    debugPrint('⏳ Remaining Surveys (${allRemainingLog.length}): ${allRemainingLog.join(', ')}');
+    
     if (filteredModules.isEmpty) {
+      debugPrint('🎉 Result: ALL onboarding surveys are fully completed!');
+      debugPrint('========================================\n');
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           widget.onComplete(_allAnswers);
         }
       });
+    } else {
+      final startingModule = filteredModules[0]['id'];
+      final startingSurvey = filteredModules[0]['surveys'][0]['id'];
+      debugPrint('▶️ Starting User At:');
+      debugPrint('   Module: $startingModule');
+      debugPrint('   Survey: $startingSurvey');
+      debugPrint('========================================\n');
     }
   }
 
@@ -149,12 +169,20 @@ class _OnboardingFlowWidgetState extends ConsumerState<OnboardingFlowWidget> {
     final surveys = currentModule['surveys'] as List;
     if (nextS < surveys.length - 1) {
       nextS++;
-    } else if (nextM < _modules.length - 1) {
-      nextM++;
-      nextS = 0;
     } else {
-      widget.onComplete(_allAnswers);
-      return;
+      // Current survey is the last in its module!
+      // Module completed: trigger progressive save.
+      final moduleId = currentModule['id'] as String;
+      final moduleAnswers = _allAnswers[moduleId] as Map<String, dynamic>;
+      widget.onModuleComplete?.call(moduleId, moduleAnswers);
+
+      if (nextM < _modules.length - 1) {
+        nextM++;
+        nextS = 0;
+      } else {
+        widget.onComplete(_allAnswers);
+        return;
+      }
     }
     while (nextM < _modules.length) {
       final nextSurveys = _modules[nextM]['surveys'] as List;

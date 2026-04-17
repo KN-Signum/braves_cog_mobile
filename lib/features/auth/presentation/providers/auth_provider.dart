@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:braves_cog/core/config/env_config.dart';
 import 'package:braves_cog/core/services/api_client.dart';
@@ -14,9 +15,20 @@ import 'package:braves_cog/features/profile/presentation/providers/profile_provi
 
 // --- Dependency Injection ---
 
+/// A single, shared FlutterSecureStorage instance with recommended options.
+final flutterSecureStorageProvider = Provider<FlutterSecureStorage>((ref) {
+  return const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
+});
+
 final authLocalDataSourceProvider = Provider<AuthLocalDataSource>((ref) {
   final prefs = ref.watch(sharedPreferencesProvider);
-  return AuthLocalDataSourceImpl(sharedPreferences: prefs);
+  final secureStorage = ref.watch(flutterSecureStorageProvider);
+  return AuthLocalDataSourceImpl(
+    sharedPreferences: prefs,
+    secureStorage: secureStorage,
+  );
 });
 
 final supabaseClientProvider = Provider<SupabaseClient>((ref) {
@@ -55,16 +67,28 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 class AuthState {
   final UserEntity? user;
   final bool isLoading;
+  final bool isInitializing;
   final String? error;
 
-  const AuthState({this.user, this.isLoading = false, this.error});
+  const AuthState({
+    this.user,
+    this.isLoading = false,
+    this.isInitializing = false,
+    this.error,
+  });
 
   bool get isAuthenticated => user != null;
 
-  AuthState copyWith({UserEntity? user, bool? isLoading, String? error}) {
+  AuthState copyWith({
+    UserEntity? user,
+    bool? isLoading,
+    bool? isInitializing,
+    String? error,
+  }) {
     return AuthState(
       user: user ?? this.user,
       isLoading: isLoading ?? this.isLoading,
+      isInitializing: isInitializing ?? this.isInitializing,
       error: error,
     );
   }
@@ -74,16 +98,23 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository _repository;
   final Ref _ref;
 
-  AuthNotifier(this._repository, this._ref) : super(const AuthState()) {
+  AuthNotifier(this._repository, this._ref)
+    : super(const AuthState(isInitializing: true)) {
     checkAuthStatus();
   }
 
+  /// Called on app start. Attempts silent re-authentication using stored
+  /// credentials (Strategy B). Sets [isInitializing] to false when done,
+  /// which unblocks the navigation layer.
   Future<void> checkAuthStatus() async {
     final result = await _repository.getCurrentUser();
-    result.fold((failure) => state = const AuthState(), (user) {
-      state = AuthState(user: user);
-      _ref.read(profileProvider.notifier).loadProfile(email: user.email);
-    });
+    result.fold(
+      (failure) => state = const AuthState(isInitializing: false),
+      (user) {
+        state = AuthState(user: user, isInitializing: false);
+        _ref.read(profileProvider.notifier).loadProfile(email: user.email);
+      },
+    );
   }
 
   Future<void> activateAccount(String code, String newPassword) async {
@@ -95,11 +126,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       },
       (user) {
         state = AuthState(user: user);
-        // Load profile after activation
-        if (user.requiresOnboarding) {
-          // User needs to complete onboarding, don't load profile yet
-          // This is handled in the routing/navigation layer
-        } else {
+        if (!user.requiresOnboarding) {
           _ref.read(profileProvider.notifier).loadProfile(email: user.email);
         }
       },
@@ -128,12 +155,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> completeOnboardingInAuth() async {
-    // Update the current user to mark onboarding as complete
     if (state.user != null) {
       final updatedUser = state.user!.copyWith(requiresOnboarding: false);
       state = state.copyWith(user: updatedUser);
-      // Load profile after onboarding is complete
-      _ref.read(profileProvider.notifier).loadProfile(email: updatedUser.email);
+      _ref
+          .read(profileProvider.notifier)
+          .loadProfile(email: updatedUser.email);
     }
   }
 }

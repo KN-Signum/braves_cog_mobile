@@ -15,6 +15,13 @@ abstract class SurveyRemoteDataSource {
     required String userId,
     required String flowType, // 'screening' or 'followup'
   });
+
+  /// Check if user has started any surveys in the given flow today.
+  /// Returns true if there are any responses for this flow submitted today.
+  Future<bool> isFlowStartedToday({
+    required String userId,
+    required String flowType,
+  });
 }
 
 class SurveySupabaseDataSource implements SurveyRemoteDataSource {
@@ -42,9 +49,11 @@ class SurveySupabaseDataSource implements SurveyRemoteDataSource {
           submission.metadata['completedAt']?.toString() ??
           DateTime.now().toUtc().toIso8601String();
 
-      if (submission.answersMap.isEmpty) {
+      // For non-onboarding surveys, skip if answers are empty
+      // Onboarding surveys should always be submitted (even with empty answers = all defaults)
+      if (submission.answersMap.isEmpty && surveyType != 'onboarding') {
         debugPrint(
-          '[SurveySupabaseDataSource] Skip empty payload for survey=${submission.surveyId}',
+          '[SurveySupabaseDataSource] Skip empty payload for non-onboarding survey=${submission.surveyId}',
         );
         return;
       }
@@ -205,6 +214,49 @@ class SurveySupabaseDataSource implements SurveyRemoteDataSource {
     } catch (e, stackTrace) {
       debugPrint(
         '[SurveySupabaseDataSource] ERROR in isFlowCompletedToday: $e\n$stackTrace',
+      );
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> isFlowStartedToday({
+    required String userId,
+    required String flowType,
+  }) async {
+    try {
+      debugPrint(
+        '[SurveySupabaseDataSource] START isFlowStartedToday userId=$userId flowType=$flowType',
+      );
+
+      // Get today's date range
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final tomorrow = today.add(Duration(days: 1));
+      final todayStart = today.toUtc().toIso8601String();
+      final tomorrowStart = tomorrow.toUtc().toIso8601String();
+
+      // Query ANY survey_response for this user today in this flow
+      // Must include surveys relationship in select to filter by surveys.survey_type
+      final rows = await supabaseClient
+          .from('survey_responses')
+          .select('id, surveys!inner(id)')
+          .eq('user_id', userId)
+          .eq('surveys.survey_type', flowType)
+          .gte('completed_at', todayStart)
+          .lt('completed_at', tomorrowStart)
+          .limit(1);
+
+      final hasResponses = rows.isNotEmpty;
+
+      debugPrint(
+        '[SurveySupabaseDataSource] isFlowStartedToday flowType=$flowType hasResponses=$hasResponses',
+      );
+
+      return hasResponses;
+    } catch (e, stackTrace) {
+      debugPrint(
+        '[SurveySupabaseDataSource] ERROR in isFlowStartedToday: $e\n$stackTrace',
       );
       return false;
     }

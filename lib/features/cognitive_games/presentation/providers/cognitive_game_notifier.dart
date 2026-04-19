@@ -1,6 +1,24 @@
 import 'package:braves_cog/features/cognitive_games/domain/entities/cognitive_game_result.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/usecases/save_test_result_usecase.dart';
+
+// ─── RESULT TYPE ───
+class SaveSequenceResultWithFeedback {
+  final bool success;
+  final String? errorMessage;
+  final int savedCount;
+  final int failedCount;
+  final List<String> failedTests;
+
+  SaveSequenceResultWithFeedback({
+    required this.success,
+    this.errorMessage,
+    this.savedCount = 0,
+    this.failedCount = 0,
+    List<String>? failedTests,
+  }) : failedTests = failedTests ?? [];
+}
 
 // --- STATE ---
 class CognitiveGamesState {
@@ -47,17 +65,14 @@ class CognitiveGamesNotifier extends StateNotifier<CognitiveGamesState> {
     );
   }
 
+  /// Original all-or-nothing batch save
   Future<bool> saveSequenceResults(List<CognitiveTestResult> results) async {
-    // 1. Resetujemy stan i włączamy loader
     state = state.copyWith(isLoading: true, error: null, isSaved: false);
 
     try {
-      // 2. Iterujemy przez wszystkie wyniki
       for (final result in results) {
         final response = await _saveTestResultUseCase(result);
 
-        // 3. Sprawdzamy czy wystąpił błąd (Left)
-        // Jeśli tak - przerywamy pętlę i zwracamy błąd użytkownikowi
         if (response.isLeft()) {
           final errorMessage = response.fold(
             (failure) => failure.message,
@@ -69,13 +84,96 @@ class CognitiveGamesNotifier extends StateNotifier<CognitiveGamesState> {
         }
       }
 
-      // 4. Jeśli pętla przeszła bez błędów -> Sukces
       state = state.copyWith(isLoading: false, isSaved: true);
       return true;
     } catch (e) {
-      // Zabezpieczenie na wypadek nieoczekiwanych wyjątków spoza Either
       state = state.copyWith(isLoading: false, error: e.toString());
       return false;
+    }
+  }
+
+  /// New method: Allows partial saves, returns detailed feedback
+  Future<SaveSequenceResultWithFeedback> saveSequenceResultsWithFeedback(
+    List<CognitiveTestResult> results,
+  ) async {
+    state = state.copyWith(isLoading: true, error: null, isSaved: false);
+
+    int savedCount = 0;
+    int failedCount = 0;
+    final List<String> failedTests = [];
+
+    try {
+      // Attempt to save each result individually
+      for (final result in results) {
+        try {
+          final response = await _saveTestResultUseCase(result);
+
+          if (response.isRight()) {
+            savedCount++;
+            debugPrint('✅ [CognitiveGamesNotifier] Saved: ${result.testType}');
+          } else {
+            failedCount++;
+            failedTests.add(result.testType.toString());
+            final errorMsg = response.fold(
+              (failure) => failure.message,
+              (_) => 'Nieznany błąd',
+            );
+            debugPrint(
+              '❌ [CognitiveGamesNotifier] Failed to save ${result.testType}: $errorMsg',
+            );
+          }
+        } catch (e) {
+          failedCount++;
+          failedTests.add(result.testType.toString());
+          debugPrint(
+            '❌ [CognitiveGamesNotifier] Exception saving ${result.testType}: $e',
+          );
+        }
+      }
+
+      // Determine overall success
+      final overallSuccess = savedCount > 0 && failedCount == 0;
+
+      if (overallSuccess) {
+        state = state.copyWith(isLoading: false, isSaved: true);
+        return SaveSequenceResultWithFeedback(
+          success: true,
+          savedCount: savedCount,
+          failedCount: failedCount,
+        );
+      } else if (savedCount > 0 && failedCount > 0) {
+        // Partial success
+        final errorMessage =
+            'Zapisano $savedCount z ${results.length} testów. Błędy: ${failedTests.join(", ")}';
+        state = state.copyWith(isLoading: false, error: errorMessage);
+        return SaveSequenceResultWithFeedback(
+          success: true, // Consider partial success as acceptable
+          errorMessage: errorMessage,
+          savedCount: savedCount,
+          failedCount: failedCount,
+          failedTests: failedTests,
+        );
+      } else {
+        // Complete failure
+        final errorMessage = 'Nie udało się zapisać żadnych testów';
+        state = state.copyWith(isLoading: false, error: errorMessage);
+        return SaveSequenceResultWithFeedback(
+          success: false,
+          errorMessage: errorMessage,
+          savedCount: 0,
+          failedCount: failedCount,
+          failedTests: failedTests,
+        );
+      }
+    } catch (e) {
+      final errorMessage = 'Krytyczny błąd: $e';
+      state = state.copyWith(isLoading: false, error: errorMessage);
+      return SaveSequenceResultWithFeedback(
+        success: false,
+        errorMessage: errorMessage,
+        failedCount: results.length,
+        failedTests: results.map((r) => r.testType.toString()).toList(),
+      );
     }
   }
 }

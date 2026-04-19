@@ -199,11 +199,39 @@ class GamesScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: () => CognitiveGamesLauncher.launchFullSequence(
-                    context,
-                    ref,
-                    null,
-                  ),
+                  onPressed: () {
+                    CognitiveGamesLauncher.launchFullSequenceWithFeedback(
+                      context: context,
+                      ref: ref,
+                      onSuccess: () {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: const Text('✅ Sesja została zapisana!'),
+                            backgroundColor: Colors.green.shade600,
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      onError: (errorMessage) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('❌ Błąd: $errorMessage'),
+                            backgroundColor: Colors.red.shade600,
+                            action: SnackBarAction(
+                              label: 'Spróbuj ponownie',
+                              textColor: Colors.white,
+                              onPressed: () {
+                                // User can retry by tapping again
+                              },
+                            ),
+                            duration: const Duration(seconds: 5),
+                          ),
+                        );
+                      },
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorScheme.of(context).primary,
                     foregroundColor: ColorScheme.of(context).surface,

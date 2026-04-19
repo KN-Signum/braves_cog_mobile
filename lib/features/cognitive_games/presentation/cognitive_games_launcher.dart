@@ -74,9 +74,7 @@ class CognitiveGamesLauncher {
       final userId = authState.user?.id;
 
       if (userId == null) {
-        debugPrint(
-          '❌ [GamesScreen] Brak zalogowanego użytkownika — wyniki nie zostaną zapisane',
-        );
+        debugPrint('❌ Użytkownik nie zalogowany');
         return false;
       }
 
@@ -84,7 +82,10 @@ class CognitiveGamesLauncher {
       final fullJson = taskResult.toJson();
       final resultsNode = fullJson['results'] as Map<String, dynamic>?;
 
-      if (resultsNode == null) return false;
+      if (resultsNode == null) {
+        debugPrint('❌ Brak wyników z testu');
+        return false;
+      }
 
       _stepMap.forEach((stepId, testType) {
         if (resultsNode.containsKey(stepId)) {
@@ -102,19 +103,157 @@ class CognitiveGamesLauncher {
         }
       });
 
-      if (collectedResults.isNotEmpty) {
-        debugPrint(
-          '📊 [CognitiveGamesLauncher] Wysyłanie ${collectedResults.length} wyników...',
-        );
-        final saved = await ref
-            .read(cognitiveGamesProvider.notifier)
-            .saveSequenceResults(collectedResults);
-        return saved;
+      if (collectedResults.isEmpty) {
+        debugPrint('❌ Brak wyników do zapisania');
+        return false;
       }
-      return false;
+
+      debugPrint(
+        '📊 [CognitiveGamesLauncher] Wysyłanie ${collectedResults.length} wyników...',
+      );
+
+      final saved = await ref
+          .read(cognitiveGamesProvider.notifier)
+          .saveSequenceResults(collectedResults);
+
+      return saved;
     } catch (e) {
       debugPrint("❌ Krytyczny błąd przetwarzania wyników: $e");
       return false;
+    }
+  }
+
+  /// New method with structured feedback for FinalScreen and GamesScreen
+  static void launchFullSequenceWithFeedback({
+    required BuildContext context,
+    required WidgetRef ref,
+    required VoidCallback onSuccess,
+    required Function(String errorMessage) onError,
+  }) {
+    final List<RPStep> steps = [];
+
+    _stepMap.forEach((stepId, testType) {
+      steps.add(_getStepById(stepId));
+    });
+
+    steps.shuffle();
+
+    steps.add(
+      RPCompletionStep(
+        identifier: 'sequence_completion',
+        title: 'Świetna robota!',
+        text: 'Dziękujemy za Twój wkład w badania. Trening został ukończony.',
+      ),
+    );
+
+    final task = RPOrderedTask(
+      identifier: 'full_cognitive_sequence',
+      steps: steps,
+    );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => _CognitiveTaskScreen(
+          task: task,
+          onComplete: (result) async {
+            final processResult = await _processSequenceResultsWithFeedback(
+              ref,
+              result,
+            );
+
+            // Pop the fullscreen task route first
+            if (context.mounted) Navigator.of(context).pop();
+
+            // Call appropriate callback
+            if (processResult.success) {
+              onSuccess();
+            } else {
+              onError(processResult.errorMessage ?? 'Nieznany błąd');
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  static Future<ProcessSequenceResult> _processSequenceResultsWithFeedback(
+    WidgetRef ref,
+    RPTaskResult taskResult,
+  ) async {
+    try {
+      final authState = ref.read(authProvider);
+      final userId = authState.user?.id;
+
+      if (userId == null) {
+        return ProcessSequenceResult(
+          success: false,
+          errorMessage: 'Użytkownik nie zalogowany',
+        );
+      }
+
+      final List<CognitiveTestResult> collectedResults = [];
+      final List<String> mappingErrors = [];
+      final fullJson = taskResult.toJson();
+      final resultsNode = fullJson['results'] as Map<String, dynamic>?;
+
+      if (resultsNode == null) {
+        return ProcessSequenceResult(
+          success: false,
+          errorMessage: 'Brak wyników z testu',
+        );
+      }
+
+      // Collect results and track errors
+      _stepMap.forEach((stepId, testType) {
+        if (resultsNode.containsKey(stepId)) {
+          try {
+            final cleanResult = RPResultMapper.fromRPTaskResult(
+              taskResult: taskResult,
+              userId: userId,
+              testType: testType,
+              stepIdentifier: stepId,
+            );
+            collectedResults.add(cleanResult);
+          } catch (e) {
+            debugPrint('❌ Błąd mapowania kroku $stepId: $e');
+            mappingErrors.add('$stepId: $e');
+          }
+        }
+      });
+
+      if (collectedResults.isEmpty) {
+        final errorMsg = mappingErrors.isNotEmpty
+            ? 'Błędy mapowania: ${mappingErrors.join(", ")}'
+            : 'Brak wyników do zapisania';
+        return ProcessSequenceResult(success: false, errorMessage: errorMsg);
+      }
+
+      debugPrint(
+        '📊 [CognitiveGamesLauncher] Wysyłanie ${collectedResults.length} wyników (błędy mapowania: ${mappingErrors.length})...',
+      );
+
+      final saveResult = await ref
+          .read(cognitiveGamesProvider.notifier)
+          .saveSequenceResultsWithFeedback(collectedResults);
+
+      if (saveResult.success) {
+        return ProcessSequenceResult(
+          success: true,
+          savedCount: saveResult.savedCount,
+        );
+      } else {
+        return ProcessSequenceResult(
+          success: false,
+          errorMessage: saveResult.errorMessage ?? 'Błąd zapisu wyników',
+        );
+      }
+    } catch (e) {
+      debugPrint("❌ Krytyczny błąd przetwarzania wyników: $e");
+      return ProcessSequenceResult(
+        success: false,
+        errorMessage: 'Krytyczny błąd: $e',
+      );
     }
   }
 
@@ -161,4 +300,34 @@ class _CognitiveTaskScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+// ─── Result Types for Structured Feedback ───
+
+/// Result from processing a sequence of cognitive games
+class ProcessSequenceResult {
+  final bool success;
+  final String? errorMessage;
+  final int savedCount;
+
+  ProcessSequenceResult({
+    required this.success,
+    this.errorMessage,
+    this.savedCount = 0,
+  });
+}
+
+/// Result from saving sequence results with feedback
+class SaveSequenceResultWithFeedback {
+  final bool success;
+  final String? errorMessage;
+  final int savedCount;
+  final int failedCount;
+
+  SaveSequenceResultWithFeedback({
+    required this.success,
+    this.errorMessage,
+    this.savedCount = 0,
+    this.failedCount = 0,
+  });
 }

@@ -14,6 +14,19 @@ class ConsentsIntroScreen extends ConsumerStatefulWidget {
       _ConsentsIntroScreenState();
 }
 
+// ─── Result type for structured game session feedback ───
+class GameSessionResult {
+  final bool success;
+  final String? errorMessage;
+  final int savedCount;
+
+  const GameSessionResult({
+    required this.success,
+    this.errorMessage,
+    this.savedCount = 0,
+  });
+}
+
 class _ConsentsIntroScreenState extends ConsumerState<ConsentsIntroScreen> {
   @override
   void initState() {
@@ -50,13 +63,52 @@ class _ConsentsIntroScreenState extends ConsumerState<ConsentsIntroScreen> {
   }
 }
 
-class FinalScreen extends ConsumerWidget {
+class FinalScreen extends ConsumerStatefulWidget {
   final VoidCallback onAnimationComplete;
 
   const FinalScreen({super.key, required this.onAnimationComplete});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<FinalScreen> createState() => _FinalScreenState();
+}
+
+class _FinalScreenState extends ConsumerState<FinalScreen> {
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  void _handleStartGames() async {
+    if (_isLoading) return;
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    // Launch the cognitive games sequence with structured result
+    CognitiveGamesLauncher.launchFullSequenceWithFeedback(
+      context: context,
+      ref: ref,
+      onSuccess: () {
+        if (!mounted) return;
+        // Auto-proceed after 1-2 second delay
+        Future.delayed(const Duration(milliseconds: 1500), () {
+          if (mounted) {
+            widget.onAnimationComplete();
+          }
+        });
+      },
+      onError: (error) {
+        if (!mounted) return;
+        setState(() {
+          _isLoading = false;
+          _errorMessage = error;
+        });
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -101,32 +153,110 @@ class FinalScreen extends ConsumerWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.timer_outlined,
-                        size: 20,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Szacowany czas: ~10 minut',
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
+                  // Loading indicator
+                  if (_isLoading)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: SizedBox(
+                        height: 24,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation(
+                                  Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              'Przygotowuję sesję...',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () => CognitiveGamesLauncher.launchFullSequence(
-                      context,
-                      ref,
-                      onAnimationComplete,
                     ),
+                  // Error message
+                  if (_errorMessage != null && !_isLoading)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade50,
+                          border: Border.all(color: Colors.red.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  color: Colors.red.shade700,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Błąd podczas sesji',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.red.shade700,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              _errorMessage!,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.red.shade700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  // Time estimate (always show)
+                  if (!_isLoading)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.timer_outlined,
+                          size: 20,
+                          color: Color(0xFF0F2847),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Szacowany czas: ~10 minut',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF0F2847),
+                          ),
+                        ),
+                      ],
+                    ),
+                  const SizedBox(height: 24),
+                  // Main button
+                  ElevatedButton(
+                    onPressed: _isLoading ? null : _handleStartGames,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.secondary,
+                      backgroundColor: _isLoading
+                          ? Theme.of(
+                              context,
+                            ).colorScheme.secondary.withOpacity(0.6)
+                          : Theme.of(context).colorScheme.secondary,
                       foregroundColor: Theme.of(
                         context,
                       ).colorScheme.onSecondary,
@@ -135,9 +265,14 @@ class FinalScreen extends ConsumerWidget {
                         borderRadius: BorderRadius.zero,
                       ),
                       elevation: 0,
+                      disabledBackgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.secondary.withOpacity(0.6),
                     ),
                     child: Text(
-                      'ROZPOCZNIJ SESJĘ GIER',
+                      _errorMessage != null && !_isLoading
+                          ? 'SPRÓBUJ PONOWNIE'
+                          : 'ROZPOCZNIJ SESJĘ GIER',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                         color: Theme.of(context).colorScheme.onSecondary,

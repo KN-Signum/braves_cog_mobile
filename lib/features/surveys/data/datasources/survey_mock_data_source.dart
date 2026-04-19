@@ -58,4 +58,13 @@ class SurveyMockDataSource implements SurveyRemoteDataSource {
     // Mock datasource: never complete; always allow resume
     return false;
   }
+
+  @override
+  Future<bool> isFlowStartedToday({
+    required String userId,
+    required String flowType,
+  }) async {
+    // Mock datasource: never started
+    return false;
+  }
 }

@@ -360,14 +360,15 @@ final _isScreeningCompletedTodayProvider = FutureProvider<bool>((ref) async {
   );
 });
 
-/// Check if all required surveys for follow-up flow are completed today.
-final _isFollowUpCompletedTodayProvider = FutureProvider<bool>((ref) async {
+/// Check if user has started ANY follow-up surveys today (even if not completed).
+/// Used to allow users to continue partial follow-up sessions.
+final _isFollowUpStartedTodayProvider = FutureProvider<bool>((ref) async {
   ref.watch(_availabilityClockProvider);
   final userId = ref.watch(authProvider).user?.id;
   if (userId == null) return false;
 
   final datasource = ref.watch(surveyRemoteDataSourceProvider);
-  return datasource.isFlowCompletedToday(
+  return datasource.isFlowStartedToday(
     userId: userId,
     flowType: SurveyScheduleConfig.followUp,
   );
@@ -420,13 +421,12 @@ final followUpAvailabilityProvider = Provider<SurveyAvailability>((ref) {
     SurveyScheduleConfig.followUpInterval,
   );
 
-  // Check if flow is completed today
-  final isCompletedToday =
-      ref.watch(_isFollowUpCompletedTodayProvider).valueOrNull ?? false;
+  // Check if user has started (but not necessarily completed) follow-up today
+  final isStartedToday =
+      ref.watch(_isFollowUpStartedTodayProvider).valueOrNull ?? false;
 
-  // Enable if scheduled OR if not completed (partial completion case)
-  final finalAvailability =
-      scheduledAvailability.isAvailable || !isCompletedToday;
+  // Enable if scheduled by time, OR if user already started it today (partial completion)
+  final finalAvailability = scheduledAvailability.isAvailable || isStartedToday;
 
   return SurveyAvailability(
     isAvailable: finalAvailability,

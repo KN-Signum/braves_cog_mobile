@@ -26,7 +26,6 @@ class SurveyScheduleConfig {
     'screening_diet',
     'GAD_2',
     'PHQ_2',
-    'screening_games_intro',
   ];
 
   static const List<String> followUpSurveyKeys = [

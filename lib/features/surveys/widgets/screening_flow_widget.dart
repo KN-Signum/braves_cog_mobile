@@ -7,6 +7,7 @@ import 'package:braves_cog/features/surveys/config/survey_flow_rules.dart';
 import 'package:braves_cog/features/surveys/config/survey_schedule_config.dart';
 import 'package:braves_cog/features/surveys/config/survey_configs/mini_eat_survey_config.dart';
 import 'package:braves_cog/features/surveys/presentation/providers/survey_provider.dart';
+import 'package:braves_cog/features/surveys/presentation/providers/survey_completion_provider.dart';
 import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
 import 'package:braves_cog/features/cognitive_games/presentation/cognitive_games_launcher.dart';
 
@@ -114,10 +115,27 @@ class _ScreeningFlowWidgetState extends ConsumerState<ScreeningFlowWidget> {
 
     // Special handling for screening games intro
     if (currentSurveyId == 'screening_games_intro') {
-      CognitiveGamesLauncher.launchFullSequence(context, ref, () {
-        // After games complete, call onComplete to navigate away
-        widget.onComplete(_allAnswers);
-      });
+      CognitiveGamesLauncher.launchFullSequenceWithFeedback(
+        context: context,
+        ref: ref,
+        onSuccess: () {
+          if (!mounted) return;
+          // Trigger availability refresh after cognitive games complete
+          ref.read(availabilityRefreshProvider.notifier).triggerRefresh();
+          // Navigate back to home
+          widget.onComplete(_allAnswers);
+        },
+        onError: (errorMessage) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('❌ Błąd: $errorMessage'),
+              backgroundColor: Colors.red.shade600,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        },
+      );
       return;
     }
 

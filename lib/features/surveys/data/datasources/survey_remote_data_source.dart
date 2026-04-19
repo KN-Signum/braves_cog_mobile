@@ -49,9 +49,11 @@ class SurveySupabaseDataSource implements SurveyRemoteDataSource {
           submission.metadata['completedAt']?.toString() ??
           DateTime.now().toUtc().toIso8601String();
 
-      // For non-onboarding surveys, skip if answers are empty
-      // Onboarding surveys should always be submitted (even with empty answers = all defaults)
-      if (submission.answersMap.isEmpty && surveyType != 'onboarding') {
+      // Allow empty answers for onboarding and screening flows
+      // (these have info/intro screens with no user input)
+      final flowsAllowingEmptyAnswers = {'onboarding', 'screening'};
+      if (submission.answersMap.isEmpty &&
+          !flowsAllowingEmptyAnswers.contains(surveyType)) {
         debugPrint(
           '[SurveySupabaseDataSource] Skip empty payload for non-onboarding survey=${submission.surveyId}',
         );

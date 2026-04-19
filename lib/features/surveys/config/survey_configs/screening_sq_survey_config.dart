@@ -32,6 +32,8 @@ class ScreeningSQSurveyConfig {
             'composite': 'hours_minutes',
             'maxHours': 23,
             'maxMinutes': 59,
+            'defaultHours': 22,
+            'defaultMinutes': 0,
           },
         ),
         // Q2: Godzina wstania
@@ -44,6 +46,8 @@ class ScreeningSQSurveyConfig {
             'composite': 'hours_minutes',
             'maxHours': 23,
             'maxMinutes': 59,
+            'defaultHours': 6,
+            'defaultMinutes': 0,
           },
         ),
         // Q3: Czas zaśnięcia (minuty)
@@ -66,6 +70,7 @@ class ScreeningSQSurveyConfig {
           options: {
             'composite': 'single_hours',
             'maxHours': 12,
+            'defaultHours': 8,
           },
         ),
         // Q5: Trudności ze snem

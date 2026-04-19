@@ -301,7 +301,9 @@ class SubstanceUseBuilder extends ConsumerWidget {
                 ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 8),
-              TextField(
+              TextFormField(
+                key: ValueKey('${question.id}_name_input'),
+                initialValue: otherNameValue ?? '',
                 decoration: InputDecoration(
                   hintText: 'Wpisz nazwę substancji',
                   border: const OutlineInputBorder(
@@ -320,7 +322,6 @@ class SubstanceUseBuilder extends ConsumerWidget {
                     horizontal: 16,
                   ),
                 ),
-                controller: TextEditingController(text: otherNameValue ?? ''),
                 onChanged: (value) {
                   notifier.updateAnswer(otherNameKey, value.trim());
                 },

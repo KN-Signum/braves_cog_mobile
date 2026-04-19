@@ -805,16 +805,26 @@ class _UniversalSurveyWidgetState extends ConsumerState<UniversalSurveyWidget> {
     final compositeType = question.options?['composite'];
 
     if (compositeType == 'doctor_visit') {
-      return DoctorVisitBuilder(surveyId: widget.survey.id, question: question);
+      return DoctorVisitBuilder(
+        key: ValueKey('doctor_visit_${question.id}'),
+        surveyId: widget.survey.id,
+        question: question,
+      );
     } else if (compositeType == 'medications') {
-      return MedicationsBuilder(surveyId: widget.survey.id, question: question);
+      return MedicationsBuilder(
+        key: ValueKey('medications_${question.id}'),
+        surveyId: widget.survey.id,
+        question: question,
+      );
     } else if (compositeType == 'substance_use') {
       return SubstanceUseBuilder(
+        key: ValueKey('substance_use_${question.id}'),
         surveyId: widget.survey.id,
         question: question,
       );
     } else if (compositeType == 'somatic_disease') {
       return SomaticDiseaseBuilder(
+        key: ValueKey('somatic_disease_${question.id}'),
         surveyId: widget.survey.id,
         question: question,
       );

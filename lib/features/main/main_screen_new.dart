@@ -65,6 +65,8 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
     ref
         .read(surveyCompletionProvider.notifier)
         .recordCompletion(SurveyScheduleConfig.followUp);
+    // Refresh availability after recording completions
+    ref.read(availabilityRefreshProvider.notifier).triggerRefresh();
     setState(() {
       _currentView = 'home';
       _currentIndex = 0;
@@ -77,6 +79,8 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
       switch (index) {
         case 0:
           _currentView = 'home';
+          // Trigger refresh of availability when user navigates to home
+          ref.read(availabilityRefreshProvider.notifier).triggerRefresh();
           break;
         case 1:
           _currentView = 'health';
@@ -99,6 +103,8 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
       _currentView = 'home';
       _currentIndex = 0;
     });
+    // Trigger refresh of availability when returning home
+    ref.read(availabilityRefreshProvider.notifier).triggerRefresh();
   }
 
   void _navigateToTests() {
@@ -206,6 +212,8 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
               ref
                   .read(surveyCompletionProvider.notifier)
                   .recordCompletion(SurveyScheduleConfig.monitoring);
+              // Refresh availability after survey completion
+              ref.read(availabilityRefreshProvider.notifier).triggerRefresh();
               _navigateToHome();
             }
           },
@@ -220,6 +228,8 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
             ref
                 .read(surveyCompletionProvider.notifier)
                 .recordCompletion(SurveyScheduleConfig.screening);
+            // Refresh availability after survey completion
+            ref.read(availabilityRefreshProvider.notifier).triggerRefresh();
             _navigateToHome();
           },
           onBack: _navigateToHome,
@@ -231,6 +241,8 @@ class _MainScreenNewState extends ConsumerState<MainScreenNew> {
             ref
                 .read(surveyCompletionProvider.notifier)
                 .recordCompletion(SurveyScheduleConfig.followUp);
+            // Refresh availability after survey completion
+            ref.read(availabilityRefreshProvider.notifier).triggerRefresh();
             _navigateToHome();
           },
           onBack: _navigateToHome,

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:braves_cog/features/onboarding/presentation/providers/onboarding_provider.dart';
 import 'package:braves_cog/features/cognitive_games/presentation/cognitive_games_launcher.dart';
+import 'package:braves_cog/features/surveys/presentation/providers/survey_completion_provider.dart';
 
 class ConsentsIntroScreen extends ConsumerStatefulWidget {
   final VoidCallback? onBackToLogin;
@@ -90,6 +91,8 @@ class _FinalScreenState extends ConsumerState<FinalScreen> {
       ref: ref,
       onSuccess: () {
         if (!mounted) return;
+        // Trigger availability refresh after cognitive games complete
+        ref.read(availabilityRefreshProvider.notifier).triggerRefresh();
         // Auto-proceed after 1-2 second delay
         Future.delayed(const Duration(milliseconds: 1500), () {
           if (mounted) {

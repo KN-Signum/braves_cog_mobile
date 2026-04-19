@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart';
 import 'package:braves_cog/features/auth/presentation/providers/auth_provider.dart';
 import 'package:braves_cog/core/providers/notification_service_provider.dart';
 import 'package:braves_cog/features/surveys/config/survey_schedule_config.dart';
@@ -122,12 +123,29 @@ final surveyCompletionProvider =
       (ref) => SurveyCompletionNotifier(ref),
     );
 
-/// Periodic clock that ticks every 30 seconds.
-/// Availability providers watch this so they re-evaluate [DateTime.now()]
-/// automatically once the interval has elapsed, without requiring any user action.
-final _availabilityClockProvider = StreamProvider<DateTime>((ref) {
-  return Stream.periodic(const Duration(seconds: 30), (_) => DateTime.now());
-});
+/// ─── AVAILABILITY REFRESH TRIGGER (Manual, Event-Driven) ───
+
+/// Notifier that triggers availability refresh on demand.
+/// Replaces the 30-second clock with event-driven updates.
+class AvailabilityRefreshNotifier extends StateNotifier<int> {
+  AvailabilityRefreshNotifier() : super(0);
+
+  /// Trigger a refresh by incrementing the counter.
+  /// All providers watching this will re-evaluate.
+  void triggerRefresh() {
+    debugPrint(
+      '🔄 [AvailabilityRefreshNotifier] Triggering availability refresh',
+    );
+    state = state + 1;
+  }
+}
+
+/// Refresh trigger provider - watch this to invalidate availability caches.
+/// Only fires when explicitly triggered via triggerRefresh().
+final availabilityRefreshProvider =
+    StateNotifierProvider<AvailabilityRefreshNotifier, int>(
+      (ref) => AvailabilityRefreshNotifier(),
+    );
 
 DateTime? _maxDate(DateTime? a, DateTime? b) {
   if (a == null) return b;
@@ -252,7 +270,7 @@ Future<DateTime?> _latestCompletionByTypeWithFallbackKeys({
 final _latestMonitoringCompletionProvider = FutureProvider<DateTime?>((
   ref,
 ) async {
-  ref.watch(_availabilityClockProvider);
+  ref.watch(availabilityRefreshProvider);
   final userId = ref.watch(authProvider).user?.id;
   if (userId == null) return null;
 
@@ -266,7 +284,7 @@ final _latestMonitoringCompletionProvider = FutureProvider<DateTime?>((
 final _latestScreeningCompletionProvider = FutureProvider<DateTime?>((
   ref,
 ) async {
-  ref.watch(_availabilityClockProvider);
+  ref.watch(availabilityRefreshProvider);
   final userId = ref.watch(authProvider).user?.id;
   if (userId == null) return null;
 
@@ -280,7 +298,7 @@ final _latestScreeningCompletionProvider = FutureProvider<DateTime?>((
 final _latestFollowUpCompletionProvider = FutureProvider<DateTime?>((
   ref,
 ) async {
-  ref.watch(_availabilityClockProvider);
+  ref.watch(availabilityRefreshProvider);
   final userId = ref.watch(authProvider).user?.id;
   if (userId == null) return null;
 
@@ -294,7 +312,7 @@ final _latestFollowUpCompletionProvider = FutureProvider<DateTime?>((
 final _latestOnboardingCompletionProvider = FutureProvider<DateTime?>((
   ref,
 ) async {
-  ref.watch(_availabilityClockProvider);
+  ref.watch(availabilityRefreshProvider);
   final userId = ref.watch(authProvider).user?.id;
   if (userId == null) return null;
 
@@ -349,7 +367,7 @@ final monitoringAvailabilityProvider = Provider<SurveyAvailability>((ref) {
 
 /// Check if all required surveys for screening flow are completed today.
 final _isScreeningCompletedTodayProvider = FutureProvider<bool>((ref) async {
-  ref.watch(_availabilityClockProvider);
+  ref.watch(availabilityRefreshProvider);
   final userId = ref.watch(authProvider).user?.id;
   if (userId == null) return false;
 
@@ -363,7 +381,7 @@ final _isScreeningCompletedTodayProvider = FutureProvider<bool>((ref) async {
 /// Check if user has started ANY follow-up surveys today (even if not completed).
 /// Used to allow users to continue partial follow-up sessions.
 final _isFollowUpStartedTodayProvider = FutureProvider<bool>((ref) async {
-  ref.watch(_availabilityClockProvider);
+  ref.watch(availabilityRefreshProvider);
   final userId = ref.watch(authProvider).user?.id;
   if (userId == null) return false;
 
@@ -436,7 +454,7 @@ final followUpAvailabilityProvider = Provider<SurveyAvailability>((ref) {
 
 /// Count submitted surveys for screening flow today.
 final screeningSubmittedCountProvider = FutureProvider<int>((ref) async {
-  ref.watch(_availabilityClockProvider);
+  ref.watch(availabilityRefreshProvider);
   final userId = ref.watch(authProvider).user?.id;
   if (userId == null) return 0;
 
@@ -450,7 +468,7 @@ final screeningSubmittedCountProvider = FutureProvider<int>((ref) async {
 
 /// Count submitted surveys for follow-up flow today.
 final followupSubmittedCountProvider = FutureProvider<int>((ref) async {
-  ref.watch(_availabilityClockProvider);
+  ref.watch(availabilityRefreshProvider);
   final userId = ref.watch(authProvider).user?.id;
   if (userId == null) return 0;
 

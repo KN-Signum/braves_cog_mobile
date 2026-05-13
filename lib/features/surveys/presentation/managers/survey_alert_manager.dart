@@ -155,6 +155,7 @@ class SurveyAlertManager {
       );
     }
 
+
     if (surveyId == 'Baseline_ASD' ||
         surveyId == 'followup_AQ' ||
         surveyId.contains('AQ') ||
@@ -164,15 +165,24 @@ class SurveyAlertManager {
         score += getIntAnswer('aq_$i');
       }
 
-      if (score >= 32) {
+      if (score >= 36) {
         return SurveyAlert(
-          title: 'Wynik AQ – informacja',
+          title: 'Alert podwyższony',
           message:
-              'Twój wynik w kwestionariuszu AQ jest podwyższony. Ten wynik nie jest diagnozą, ale może wskazywać na obecność cech ze spektrum autyzmu. Jeśli chcesz, możesz omówić go ze specjalistą (psycholog/psychiatra).',
+              'Twój wynik mieści się w zakresie, który w badaniach naukowych częściej uzyskują osoby z rozpoznaniem ze spektrum autyzmu. Nie jest to diagnoza. Jeśli chcesz dowiedzieć się więcej lub masz pytania dotyczące swojego funkcjonowania, warto skonsultować się ze specjalistą (psychologiem lub psychiatrą). W ustwieniach w zakładce „Uzyskaj pomoc” znajdziesz dostępne formy wsparcia.',
+        );
+      } else if (score >= 26) {
+        return SurveyAlert(
+          title: 'Alert ostrzegawczy',
+          message:
+              'Twój wynik wskazuje na ponadprzeciętne nasilenie cech związanych ze spektrum autyzmu. Nie jest to diagnoza, ale sygnał, który może być wart omówienia ze specjalistą, jeśli dostrzegasz u siebie trudności w codziennym funkcjonowaniu.',
         );
       }
-
-      return null;
+      return SurveyAlert(
+        title: 'Alert informacyjny',
+        message:
+            'Twój wynik mieści się w zakresie typowym dla populacji ogólnej i wskazuje na niskie nasilenie cech ze spektrum autyzmu. Ten wynik pochodzi z kwestionariusza badawczego i nie stanowi diagnozy.',
+      );
     }
 
     return null;
